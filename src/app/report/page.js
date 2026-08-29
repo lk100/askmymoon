@@ -172,6 +172,18 @@ export default function ReportPage() {
   const [selectedPlanet, setSelectedPlanet] = useState('Sun');
   const [selectedDomain, setSelectedDomain] = useState('career');
   const [isPaid, setIsPaid] = useState(false);
+  const [isDownloading, setIsDownloading] = useState(false);
+
+  const handleDownloadPdf = async () => {
+    if (isDownloading) return;
+
+    setIsDownloading(true);
+    try {
+      await savePDF();
+    } finally {
+      setIsDownloading(false);
+    }
+  };
 
   useEffect(() => {
     if (typeof window !== 'undefined') {
@@ -572,11 +584,21 @@ export default function ReportPage() {
                 </div>
                 <button
                   type="button"
-                  onClick={savePDF}
-                  className="inline-flex items-center gap-2 rounded-lg bg-[#3D6B4F] px-4 py-2.5 text-xs font-semibold text-white transition hover:bg-[#2A4C38]"
+                  onClick={handleDownloadPdf}
+                  disabled={isDownloading}
+                  className={`inline-flex items-center justify-center gap-2 rounded-lg bg-[#3D6B4F] px-4 py-2.5 text-xs font-semibold text-white transition-all duration-200 ease-out ${isDownloading ? 'cursor-not-allowed opacity-90 scale-[0.99] shadow-inner' : 'hover:bg-[#2A4C38] active:scale-[0.98]'} `}
                 >
-                  <Printer className="h-3.5 w-3.5" />
-                  Download full PDF
+                  {isDownloading ? (
+                    <>
+                      <Loader2 className="h-3.5 w-3.5 animate-spin" />
+                      <span className="animate-pulse">Preparing PDF...</span>
+                    </>
+                  ) : (
+                    <>
+                      <Printer className="h-3.5 w-3.5" />
+                      Download full PDF
+                    </>
+                  )}
                 </button>
               </div>
 

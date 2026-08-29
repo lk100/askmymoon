@@ -37,13 +37,13 @@ export default function Home() {
   const [suggestions, setSuggestions] = useState([]);
   const [isSearchingLocation, setIsSearchingLocation] = useState(false);
   const [showDropdown, setShowDropdown] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [hasSelectedLocation, setHasSelectedLocation] = useState(false);
   const dropdownRef = useRef(null);
 
   // Debounced Nominatim Geocoding Search
   useEffect(() => {
-    if (placeQuery.trim().length < 3) {
-      setSuggestions([]);
-      setShowDropdown(false);
+    if (placeQuery.trim().length < 3 || hasSelectedLocation) {
       return;
     }
 
@@ -64,7 +64,7 @@ export default function Home() {
     }, 350);
 
     return () => clearTimeout(timer);
-  }, [placeQuery]);
+  }, [placeQuery, hasSelectedLocation]);
 
   // Click Outside Listener for Location Suggestions Dropdown
   useEffect(() => {
@@ -86,11 +86,15 @@ export default function Home() {
       lon: parseFloat(place.lon),
     }));
     setPlaceQuery(formattedName);
+    setHasSelectedLocation(true);
+    setSuggestions([]);
     setShowDropdown(false);
   };
 
   const handleFormSubmit = (e) => {
     e.preventDefault();
+    if (isSubmitting) return;
+    setIsSubmitting(true);
 
     const latitude = formData.lat !== null ? formData.lat : 28.6139;
     const longitude = formData.lon !== null ? formData.lon : 77.2090;
@@ -133,6 +137,8 @@ export default function Home() {
     } catch (error) {
       console.error("Failed to calculate chart on submit:", error);
       alert("There was an error calculating your birth chart. Please check your inputs.");
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -199,7 +205,7 @@ export default function Home() {
             </div>
 
             <h1 className="text-2xl sm:text-4xl md:text-5xl font-black text-slate-900 leading-[1.15] tracking-tight">
-              India's first spiritual <span className="text-amber-800">remedial tool</span>
+              India&apos;s first spiritual <span className="text-amber-800">remedial tool</span>
             </h1>
 
             <p className="text-slate-600 text-sm sm:text-base md:text-lg leading-relaxed">
@@ -298,8 +304,10 @@ export default function Home() {
                     className="w-full bg-[#FAF6F0] border border-amber-900/15 rounded-xl pl-4 pr-10 py-3 text-sm text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-amber-700/20 focus:border-amber-800 transition-all"
                     value={placeQuery}
                     onChange={(e) => {
-                      setPlaceQuery(e.target.value);
-                      setFormData((prev) => ({ ...prev, place: e.target.value, lat: null, lon: null }));
+                      const nextValue = e.target.value;
+                      setPlaceQuery(nextValue);
+                      setHasSelectedLocation(false);
+                      setFormData((prev) => ({ ...prev, place: nextValue, lat: null, lon: null }));
                     }}
                   />
                   <div className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none">
@@ -338,10 +346,20 @@ export default function Home() {
               <div className="pt-2">
                 <button
                   type="submit"
-                  className="w-full flex items-center justify-center gap-2 bg-amber-800 hover:bg-amber-900 text-white font-bold py-3.5 px-6 rounded-xl text-sm transition-all shadow-sm active:scale-[0.99]"
+                  disabled={isSubmitting}
+                  className="w-full flex items-center justify-center gap-2 bg-amber-800 hover:bg-amber-900 disabled:bg-amber-700 disabled:cursor-not-allowed text-white font-bold py-3.5 px-6 rounded-xl text-sm transition-all shadow-sm active:scale-[0.99]"
                 >
-                    <span className="text-xs sm:text-sm">Generate Free Astro Report</span>
-                  <ArrowRight className="w-4 h-4" />
+                  {isSubmitting ? (
+                    <>
+                      <Loader2 className="w-4 h-4 animate-spin" />
+                      <span className="text-xs sm:text-sm">Generating...</span>
+                    </>
+                  ) : (
+                    <>
+                      <span className="text-xs sm:text-sm">Generate Free Astro Report</span>
+                      <ArrowRight className="w-4 h-4" />
+                    </>
+                  )}
                 </button>
               </div>
 

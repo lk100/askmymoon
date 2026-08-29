@@ -98,7 +98,7 @@ export default function DomainReportPayment({ onSuccess }) {
     event?.preventDefault();
     setTouched({ email: true, phone: true });
     if (!pricing || isPaying || !isContactValid) return;
-    if (!process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID) {
+    if (!process.env.NEXT_USER_RAZORPAY_KEY_ID) {
       setStatus({ type: 'error', message: 'Payment is not configured yet.' });
       return;
     }
@@ -121,7 +121,7 @@ export default function DomainReportPayment({ onSuccess }) {
       await loadRazorpayScript();
 
       const razorpay = new window.Razorpay({
-        key: process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID,
+        key: process.env.NEXT_USER_RAZORPAY_KEY_ID,
         order_id: order.order_id,
         amount: order.amount,
         currency: order.currency,

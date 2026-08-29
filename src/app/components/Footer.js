@@ -20,7 +20,7 @@ export default function Footer() {
                     {/* Social / credit links */}
                     <div className="flex items-center gap-5">
                         <a
-                            href="https://www.instagram.com/_13verse/"
+                            href="https://www.instagram.com/askmymoon/"
                             target="_blank"
                             rel="noopener noreferrer"
                             className="flex items-center gap-1.5 text-xs font-semibold text-slate-600 hover:text-amber-800 transition-colors duration-150"
@@ -36,7 +36,7 @@ export default function Footer() {
                             className="flex items-center gap-1.5 text-xs font-semibold text-slate-600 hover:text-amber-800 transition-colors duration-150"
                         >
                             <Camera className="w-3.5 h-3.5" />
-                            <span>@askmymoon</span>
+                            <span>@_13verse</span>
                         </a>
                     </div>
 

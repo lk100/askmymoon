@@ -166,6 +166,32 @@ function DomainPlacementsPdf({ placements }) {
   );
 }
 
+/* Static, always-visible summary of what the full report unlocks.
+   Moved out of the payment modal so it's shown right on the page,
+   directly above the email/phone capture button. */
+function FullReportIncludes() {
+  return (
+    <div className="w-full max-w-sm mt-4">
+      <h3 className="font-serif text-[15px] sm:text-[16px] font-semibold uppercase tracking-[-0.02em] text-[#14171F] leading-[1.25] text-center">
+        Unlock career, finance,
+        <span className="block">health & marriage analysis</span>
+      </h3>
+
+      <div className="mt-3 rounded-[16px] border border-[#E7E2D8] bg-[#F4F0EA] p-3">
+        <p className="mb-2 text-[9px] font-bold uppercase tracking-[0.14em] text-[#B4571F] text-center">
+          Full report includes
+        </p>
+        <div className="grid grid-cols-2 gap-2 text-[11px] font-medium text-[#14171F]">
+          <div className="rounded-xl border border-[#E7E2D8] bg-[#FAF8F4] px-2 py-2.5 text-center leading-tight">Career remedies</div>
+          <div className="rounded-xl border border-[#E7E2D8] bg-[#FAF8F4] px-2 py-2.5 text-center leading-tight">Finance remedies</div>
+          <div className="rounded-xl border border-[#E7E2D8] bg-[#FAF8F4] px-2 py-2.5 text-center leading-tight">Health remedies</div>
+          <div className="rounded-xl border border-[#E7E2D8] bg-[#FAF8F4] px-2 py-2.5 text-center leading-tight">Marriage remedies</div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 export default function ReportPage() {
   const [userData, setUserData] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -631,30 +657,17 @@ export default function ReportPage() {
 
           {/* ---- MARRIAGE / HEALTH (or unpaid CAREER/FINANCES): locked ---- */}
           {(!isPaid || !activeDomain.live) && (
-            <div className="relative min-h-[260px] rounded-xl overflow-hidden border border-[#E7E2D8] bg-[#FAF8F4]">
-              <div className="p-5 blur-sm select-none pointer-events-none opacity-40 space-y-2">
-                <div className="flex items-center gap-2 text-[#B4571F]">
-                  <ActiveDomainIcon className="w-4 h-4" />
-                  <h3 className="font-serif font-semibold text-[#14171F] text-sm">{activeDomain.label}</h3>
-                </div>
-                <p className="text-xs text-[#78715F] leading-relaxed">
-                  Detailed {activeDomain.label.toLowerCase()} remedies based on your relevant house placements and lords.
-                </p>
-              </div>
+            <div className="relative rounded-xl border border-[#E7E2D8] bg-[#FAF8F4]">
+              {!isPaid && activeDomain.live ? (
+                <div className="flex flex-col items-center py-8 px-4 text-center">
+                  <div className="w-10 h-10 rounded-xl bg-[#14171F] text-white flex items-center justify-center mb-3">
+                    <Lock className="w-4 h-4" />
+                  </div>
 
-              <div className="absolute inset-0 z-10 flex flex-col items-center justify-center overflow-y-auto p-4 text-center bg-white/85 backdrop-blur-sm">
-                <div className="w-10 h-10 rounded-xl bg-[#14171F] text-white flex items-center justify-center mb-3">
-                  <Lock className="w-4 h-4" />
-                </div>
-                <h3 className="text-base font-serif font-semibold text-[#14171F]">
-                  {!isPaid && activeDomain.live ? `Unlock ${activeDomain.label.toLowerCase()} analysis` : `${activeDomain.label} — coming soon`}
-                </h3>
-                <p className="text-xs text-[#78715F] mt-1.5 max-w-sm leading-relaxed">
-                  {!isPaid && activeDomain.live
-                    ? 'Complete payment to unlock your analysis on this screen and receive it by email.'
-                    : 'This report is being calibrated and will launch soon.'}
-                </p>
-                {!isPaid && activeDomain.live ? (
+                  {/* Full report contents shown directly on the page now —
+                      the payment modal below only asks for email + phone. */}
+                  <FullReportIncludes />
+
                   <div className="mt-4 w-full max-w-xs">
                     <DomainReportPayment
                       userName={userData.name}
@@ -662,13 +675,24 @@ export default function ReportPage() {
                       onSuccess={handlePaymentSuccess}
                     />
                   </div>
-                ) : (
+                </div>
+              ) : (
+                <div className="flex flex-col items-center py-8 px-4 text-center">
+                  <div className="w-10 h-10 rounded-xl bg-[#14171F] text-white flex items-center justify-center mb-3">
+                    <Lock className="w-4 h-4" />
+                  </div>
+                  <h3 className="text-base font-serif font-semibold text-[#14171F]">
+                    {activeDomain.label} — coming soon
+                  </h3>
+                  <p className="text-xs text-[#78715F] mt-1.5 max-w-sm leading-relaxed">
+                    This report is being calibrated and will launch soon.
+                  </p>
                   <div className="mt-4 bg-[#B4571F]/10 text-[#B4571F] font-semibold py-2.5 px-5 rounded-xl text-xs border border-[#B4571F]/20 flex items-center gap-2 cursor-not-allowed">
                     <Sparkles className="w-4 h-4" />
                     <span>Launching soon</span>
                   </div>
-                )}
-              </div>
+                </div>
+              )}
             </div>
           )}
         </section>

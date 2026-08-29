@@ -30,13 +30,13 @@ export default function Footer() {
                         </a>
                         <span className="w-1 h-1 rounded-full bg-amber-900/20" />
                         <a
-                            href="https://www.askmymoon.com"
+                            href="https://www.instagram.com/_13verse/"
                             target="_blank"
                             rel="noopener noreferrer"
                             className="flex items-center gap-1.5 text-xs font-semibold text-slate-600 hover:text-amber-800 transition-colors duration-150"
                         >
-                            <Globe className="w-3.5 h-3.5" />
-                            <span>askmymoon.com</span>
+                            <Camera className="w-3.5 h-3.5" />
+                            <span>@askmymoon</span>
                         </a>
                     </div>
 

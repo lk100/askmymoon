@@ -83,7 +83,7 @@ function getManglikDosha(planetPositions) {
     remedies: {
       practical: "Exercise regularly and pause before reacting during arguments.",
       spiritual: "Visit a Hanuman temple on Tuesdays and offer a red cloth or sindoor.",
-      mantra: "Chant the Hanuman Chalisa or 'Om Kraam Kreem Kroum Sah Bhaumaya Namah' 108 times on Tuesdays.",
+      
       puja: "Perform a Mangal Shanti Puja with a qualified priest."
     }
   };
@@ -117,7 +117,7 @@ function getKaalSarpDosha(planetPositions) {
       remedies: {
         practical: "Keep a steady routine and organise important documents carefully.",
         spiritual: "Offer milk to a Shiva lingam on Mondays.",
-        mantra: "Chant the Maha Mrityunjaya Mantra or 'Om Rahave Namah' 108 times daily.",
+        
         puja: "Perform a Kaal Sarp Shanti Puja with a qualified priest."
       }
     };
@@ -134,7 +134,7 @@ function getKaalSarpDosha(planetPositions) {
       remedies: {
         practical: "Follow a steady routine and complete important decisions on time.",
         spiritual: "Offer water to a Shiva lingam on Mondays.",
-        mantra: "Chant 'Om Namah Shivaya' 108 times daily.",
+        
         puja: "Perform a simple Shiva Puja with a qualified priest."
       }
     };
@@ -182,7 +182,7 @@ function getGuruChandalDosha(planetPositions) {
     remedies: {
       practical: "Seek trusted advice before major decisions and avoid shortcuts.",
       spiritual: "Donate turmeric, chana dal, or yellow items on Thursdays.",
-      mantra: "Chant 'Om Graam Greem Groum Sah Gurave Namah' 108 times on Thursdays.",
+      
       puja: "Perform a Guru Shanti Puja with a qualified priest."
     }
   };
@@ -231,7 +231,7 @@ function getGrahanDosha(planetPositions) {
     remedies: {
       practical: "Maintain regular sleep and get gentle morning sunlight.",
       spiritual: "Offer water to the rising sun each morning.",
-      mantra: "Chant the Gayatri Mantra or 'Om Shreem Som Somaya Namah' daily.",
+      
       puja: "Perform a Navagraha Shanti Puja with a qualified priest."
     }
   };
@@ -273,7 +273,7 @@ function getPitraDosha(planetPositions) {
     remedies: {
       practical: "Resolve family disputes and make peace with your family history.",
       spiritual: "Offer water to a Peepal tree on Saturdays and feed crows or cows.",
-      mantra: "Chant 'Om Pitru Devaya Namah' or the Gayatri Mantra daily.",
+      
       puja: "Perform Shraddha or a Pitra Shanti Puja with a qualified priest."
     }
   };
@@ -310,7 +310,7 @@ function getShrapitDosha(planetPositions) {
     remedies: {
       practical: "Take steady steps, avoid shortcuts, and stay organised.",
       spiritual: "Feed stray dogs and crows on Saturdays and keep spaces clean.",
-      mantra: "Chant 'Om Praam Preem Proum Sah Shanaishcharaya Namah' 108 times on Saturdays.",
+      
       puja: "Perform a Shani-Rahu Shanti Puja with a qualified priest."
     }
   };
@@ -347,7 +347,7 @@ function getAngarakDosha(planetPositions) {
     remedies: {
       practical: "Pause before reacting and exercise regularly to release tension.",
       spiritual: "Donate red lentils or jaggery on Tuesdays.",
-      mantra: "Chant the Hanuman Chalisa or 'Om Kraam Kreem Kroum Sah Bhaumaya Namah' 108 times on Tuesdays.",
+      
       puja: "Perform a Mangal-Rahu Shanti Puja with a qualified priest."
     }
   };

@@ -1,6 +1,6 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  output: 'export',   // enables static export
+  allowedDevOrigins: ['192.168.1.3'],
   images: {
     unoptimized: true // avoids image optimization issues on static hosting
   }

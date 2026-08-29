@@ -29,7 +29,6 @@ export default function Home() {
     place: '',
     lat: null,
     lon: null,
-    email: '',
     system: 'vedic', // Default system selection
   });
 
@@ -127,6 +126,7 @@ export default function Home() {
 
       if (typeof window !== 'undefined') {
         sessionStorage.setItem('astro_user_data', JSON.stringify(fullUserData));
+        localStorage.setItem('astro_user_data', JSON.stringify(fullUserData));
       }
 
       router.push('/report');

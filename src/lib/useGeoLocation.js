@@ -7,15 +7,12 @@ export function useGeoLocation() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    // 1. Check local storage first
     const cachedCountry = localStorage.getItem('user_country');
     if (cachedCountry) {
       setCountry(cachedCountry);
-      setLoading(false);
-      return;
     }
 
-    // 2. Fetch from IP API if not cached
+    // Use the cached value immediately, then refresh it without touching form data.
     fetch('https://ipapi.co/json/')
       .then((res) => res.json())
       .then((data) => {

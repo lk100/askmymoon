@@ -604,27 +604,23 @@ export default function ReportPage() {
 
               {domainConfig.theme && (
                 <div className="p-4 sm:p-5 rounded-xl bg-[#FAF8F4] border border-[#E7E2D8] space-y-2">
-                  {selectedDomain === 'career' || selectedDomain === 'finances' ? (
+                  <Eyebrow tone="marigold">{domainConfig.signLabel} — {domainConfig.sign}</Eyebrow>
+                  <p className="text-[13px] text-[#3A362C] leading-relaxed">{domainConfig.theme}</p>
+                  {domainConfig.expansion && (
                     <>
-                      <Eyebrow tone="marigold">{domainConfig.signLabel} — {domainConfig.sign}</Eyebrow>
-                      <p className="text-[13px] text-[#3A362C] leading-relaxed">{domainConfig.theme}</p>
                       <p className="text-[13px] text-[#3A362C] leading-relaxed"><span className="font-semibold">Strengths: </span>{domainConfig.expansion?.strengths}</p>
                       <p className="text-[13px] text-[#3A362C] leading-relaxed"><span className="font-semibold">Watch-out: </span>{domainConfig.expansion?.watchOut}</p>
                       <p className="text-[13px] text-[#3A362C] leading-relaxed"><span className="font-semibold">Best direction: </span>{domainConfig.expansion?.direction}</p>
-                      <p className="text-[13px] text-[#3A362C] leading-relaxed"><span className="font-semibold">{domainConfig.lordLabel} placement: </span>{domainConfig.lord} in house {domainConfig.placement}</p>
-                      <p className="text-[13px] text-[#3A362C] leading-relaxed"><span className="font-semibold">Placement theme: </span>{domainConfig.placementRemedy?.theme}</p>
-                      <p className="text-[13px] text-[#3A362C] leading-relaxed"><span className="font-semibold">Remedy: </span>{domainConfig.placementRemedy?.remedy || domainConfig.placementRemedy}</p>
-                      <p className="text-[13px] text-[#3A362C] leading-relaxed"><span className="font-semibold">Action: </span>{domainConfig.placementRemedy?.action}</p>
-                      <p className="text-[13px] text-[#3A362C] leading-relaxed"><span className="font-semibold">Avoid: </span>{domainConfig.placementRemedy?.watchOut}</p>
                     </>
-                  ) : (
-                    <>
-                      <Eyebrow tone="marigold">{domainConfig.signLabel} — {domainConfig.sign}</Eyebrow>
-                      <p className="text-[13px] text-[#3A362C] leading-relaxed">{domainConfig.theme}</p>
-                      <p className="text-[13px] text-[#3A362C] leading-relaxed"><span className="font-semibold">{domainConfig.lordLabel} placement: </span>{domainConfig.lord} in house {domainConfig.placement}</p>
-                      <p className="text-[13px] text-[#3A362C] leading-relaxed"><span className="font-semibold">Placement theme: </span>{domainConfig.placementRemedy?.theme}</p>
-                      <p className="text-[13px] text-[#3A362C] leading-relaxed"><span className="font-semibold">Remedy: </span>{domainConfig.placementRemedy?.remedy || domainConfig.placementRemedy}</p>
-                    </>
+                  )}
+                  <p className="text-[13px] text-[#3A362C] leading-relaxed"><span className="font-semibold">{domainConfig.lordLabel} placement: </span>{domainConfig.lord} in house {domainConfig.placement}</p>
+                  <p className="text-[13px] text-[#3A362C] leading-relaxed"><span className="font-semibold">Placement theme: </span>{domainConfig.placementRemedy?.theme}</p>
+                  <p className="text-[13px] text-[#3A362C] leading-relaxed"><span className="font-semibold">Remedy: </span>{domainConfig.placementRemedy?.remedy || domainConfig.placementRemedy}</p>
+                  {domainConfig.placementRemedy?.action && (
+                    <p className="text-[13px] text-[#3A362C] leading-relaxed"><span className="font-semibold">Action: </span>{domainConfig.placementRemedy?.action}</p>
+                  )}
+                  {domainConfig.placementRemedy?.watchOut && (
+                    <p className="text-[13px] text-[#3A362C] leading-relaxed"><span className="font-semibold">Avoid: </span>{domainConfig.placementRemedy?.watchOut}</p>
                   )}
                 </div>
               )}
@@ -682,7 +678,7 @@ export default function ReportPage() {
             Never visible on screen. html2canvas renders this off-DOM-flow
             when savePDF() runs. Contains only free content:
             Identity + Ascendant + all planets Sun→Ketu + Dosha, plus
-            unlocked Career and Finance analysis if paid. */}
+            Career and Finance analysis if paid. */}
       <div
         id="pdf-content"
         style={{ display: 'none' }}
@@ -749,76 +745,6 @@ export default function ReportPage() {
           </div>
         </div>
 
-        {isPaid && (
-          <div className="mb-6">
-            <h2 className="text-lg font-serif font-semibold mb-3">Unlocked Career Analysis</h2>
-            {careerData.tenthHouseTheme && (
-              <div className="pdf-block mb-4 p-4 rounded-xl border border-[#E7E2D8]">
-                <Eyebrow tone="marigold">10th house sign: {careerData.tenthHouseSign}</Eyebrow>
-                <p className="text-[11px] mt-2 leading-relaxed">{careerData.tenthHouseTheme}</p>
-                <p className="text-[11px] mt-1 leading-relaxed"><b>Career strengths:</b> {careerData.tenthHouseExpansion?.strengths}</p>
-                <p className="text-[11px] mt-1 leading-relaxed"><b>Watch-out:</b> {careerData.tenthHouseExpansion?.watchOut}</p>
-                <p className="text-[11px] mt-1 leading-relaxed"><b>Best direction:</b> {careerData.tenthHouseExpansion?.direction}</p>
-                <p className="text-[11px] mt-1 leading-relaxed"><b>10th Lord placement:</b> {careerData.tenthLord} in house {careerData.tenthLordPlacement}</p>
-                <p className="text-[11px] mt-1 leading-relaxed"><b>Placement theme:</b> {careerData.tenthLordPlacementRemedy?.theme}</p>
-                <p className="text-[11px] mt-1 leading-relaxed"><b>Remedy:</b> {careerData.tenthLordPlacementRemedy?.remedy}</p>
-                <p className="text-[11px] mt-1 leading-relaxed"><b>Action:</b> {careerData.tenthLordPlacementRemedy?.action}</p>
-                <p className="text-[11px] mt-1 leading-relaxed"><b>Avoid:</b> {careerData.tenthLordPlacementRemedy?.watchOut}</p>
-              </div>
-            )}
-            <DomainPlacementsPdf placements={careerData.placements} />
-          </div>
-        )}
-
-        {isPaid && (
-          <div className="mb-6">
-            <h2 className="text-lg font-serif font-semibold mb-3">Unlocked Finance Analysis</h2>
-            {financeData.secondHouseTheme && (
-              <div className="pdf-block mb-4 p-4 rounded-xl border border-[#E7E2D8]">
-                <Eyebrow tone="marigold">2nd house sign: {financeData.secondHouseSign}</Eyebrow>
-                <p className="text-[11px] mt-2 leading-relaxed">{financeData.secondHouseTheme}</p>
-                <p className="text-[11px] mt-1 leading-relaxed"><b>Financial strengths:</b> {financeData.secondHouseExpansion?.strengths}</p>
-                <p className="text-[11px] mt-1 leading-relaxed"><b>Watch-out:</b> {financeData.secondHouseExpansion?.watchOut}</p>
-                <p className="text-[11px] mt-1 leading-relaxed"><b>Best direction:</b> {financeData.secondHouseExpansion?.direction}</p>
-                <p className="text-[11px] mt-1 leading-relaxed"><b>2nd lord placement:</b> {financeData.secondLord} in house {financeData.secondLordPlacement}</p>
-                <p className="text-[11px] mt-1 leading-relaxed"><b>Placement theme:</b> {financeData.secondLordPlacementRemedy?.theme}</p>
-                <p className="text-[11px] mt-1 leading-relaxed"><b>Remedy:</b> {financeData.secondLordPlacementRemedy?.remedy}</p>
-                <p className="text-[11px] mt-1 leading-relaxed"><b>Action:</b> {financeData.secondLordPlacementRemedy?.action}</p>
-                <p className="text-[11px] mt-1 leading-relaxed"><b>Avoid:</b> {financeData.secondLordPlacementRemedy?.watchOut}</p>
-              </div>
-            )}
-            <DomainPlacementsPdf placements={financeData.placements} />
-          </div>
-        )}
-
-        {isPaid && (
-          <div className="mb-6">
-            <h2 className="text-lg font-serif font-semibold mb-3">Unlocked Marriage & Relationship Analysis</h2>
-            <div className="pdf-block mb-4 p-4 rounded-xl border border-[#E7E2D8]">
-              <Eyebrow tone="marigold">7th house sign: {marriageData.seventhHouseSign}</Eyebrow>
-              <p className="text-[11px] mt-2 leading-relaxed">{marriageData.seventhHouseTheme}</p>
-              <p className="text-[11px] mt-1 leading-relaxed"><b>7th lord placement:</b> {marriageData.seventhLord} in house {marriageData.seventhLordPlacement}</p>
-              <p className="text-[11px] mt-1 leading-relaxed"><b>Placement theme:</b> {marriageData.seventhLordPlacementRemedy?.theme}</p>
-              <p className="text-[11px] mt-1 leading-relaxed"><b>Remedy:</b> {marriageData.seventhLordPlacementRemedy?.remedy || marriageData.seventhLordPlacementRemedy}</p>
-            </div>
-            <DomainPlacementsPdf placements={marriageData.placements} />
-          </div>
-        )}
-
-        {isPaid && (
-          <div className="mb-6">
-            <h2 className="text-lg font-serif font-semibold mb-3">Unlocked Health & Vitality Analysis</h2>
-            <div className="pdf-block mb-4 p-4 rounded-xl border border-[#E7E2D8]">
-              <Eyebrow tone="marigold">6th house sign: {healthData.sixthHouseSign}</Eyebrow>
-              <p className="text-[11px] mt-2 leading-relaxed">{healthData.sixthHouseTheme}</p>
-              <p className="text-[11px] mt-1 leading-relaxed"><b>6th lord placement:</b> {healthData.sixthLord} in house {healthData.sixthLordPlacement}</p>
-              <p className="text-[11px] mt-1 leading-relaxed"><b>Placement theme:</b> {healthData.sixthLordPlacementRemedy?.theme}</p>
-              <p className="text-[11px] mt-1 leading-relaxed"><b>Remedy:</b> {healthData.sixthLordPlacementRemedy?.remedy || healthData.sixthLordPlacementRemedy}</p>
-            </div>
-            <DomainPlacementsPdf placements={healthData.placements} />
-          </div>
-        )}
-
         <div className="mb-2">
           <h2 className="text-lg font-serif font-semibold mb-2">Special Dosha Diagnostics</h2>
           <div className="grid grid-cols-2 gap-6">
@@ -843,6 +769,90 @@ export default function ReportPage() {
             ))}
           </div>
         </div>
+
+        {isPaid && (
+          <div className="mb-6">
+            <h2 className="text-lg font-serif font-semibold mb-3">Career Analysis</h2>
+            {careerData.tenthHouseTheme && (
+              <div className="pdf-block mb-4 p-4 rounded-xl border border-[#E7E2D8]">
+                <Eyebrow tone="marigold">10th house sign: {careerData.tenthHouseSign}</Eyebrow>
+                <p className="text-[11px] mt-2 leading-relaxed">{careerData.tenthHouseTheme}</p>
+                <p className="text-[11px] mt-1 leading-relaxed"><b>Career strengths:</b> {careerData.tenthHouseExpansion?.strengths}</p>
+                <p className="text-[11px] mt-1 leading-relaxed"><b>Watch-out:</b> {careerData.tenthHouseExpansion?.watchOut}</p>
+                <p className="text-[11px] mt-1 leading-relaxed"><b>Best direction:</b> {careerData.tenthHouseExpansion?.direction}</p>
+                <p className="text-[11px] mt-1 leading-relaxed"><b>10th Lord placement:</b> {careerData.tenthLord} in house {careerData.tenthLordPlacement}</p>
+                <p className="text-[11px] mt-1 leading-relaxed"><b>Placement theme:</b> {careerData.tenthLordPlacementRemedy?.theme}</p>
+                <p className="text-[11px] mt-1 leading-relaxed"><b>Remedy:</b> {careerData.tenthLordPlacementRemedy?.remedy}</p>
+                <p className="text-[11px] mt-1 leading-relaxed"><b>Action:</b> {careerData.tenthLordPlacementRemedy?.action}</p>
+                <p className="text-[11px] mt-1 leading-relaxed"><b>Avoid:</b> {careerData.tenthLordPlacementRemedy?.watchOut}</p>
+              </div>
+            )}
+            <DomainPlacementsPdf placements={careerData.placements} />
+          </div>
+        )}
+
+        {isPaid && (
+          <div className="mb-6">
+            <h2 className="text-lg font-serif font-semibold mb-3">Finance Analysis</h2>
+            {financeData.secondHouseTheme && (
+              <div className="pdf-block mb-4 p-4 rounded-xl border border-[#E7E2D8]">
+                <Eyebrow tone="marigold">2nd house sign: {financeData.secondHouseSign}</Eyebrow>
+                <p className="text-[11px] mt-2 leading-relaxed">{financeData.secondHouseTheme}</p>
+                <p className="text-[11px] mt-1 leading-relaxed"><b>Financial strengths:</b> {financeData.secondHouseExpansion?.strengths}</p>
+                <p className="text-[11px] mt-1 leading-relaxed"><b>Watch-out:</b> {financeData.secondHouseExpansion?.watchOut}</p>
+                <p className="text-[11px] mt-1 leading-relaxed"><b>Best direction:</b> {financeData.secondHouseExpansion?.direction}</p>
+                <p className="text-[11px] mt-1 leading-relaxed"><b>2nd lord placement:</b> {financeData.secondLord} in house {financeData.secondLordPlacement}</p>
+                <p className="text-[11px] mt-1 leading-relaxed"><b>Placement theme:</b> {financeData.secondLordPlacementRemedy?.theme}</p>
+                <p className="text-[11px] mt-1 leading-relaxed"><b>Remedy:</b> {financeData.secondLordPlacementRemedy?.remedy}</p>
+                <p className="text-[11px] mt-1 leading-relaxed"><b>Action:</b> {financeData.secondLordPlacementRemedy?.action}</p>
+                <p className="text-[11px] mt-1 leading-relaxed"><b>Avoid:</b> {financeData.secondLordPlacementRemedy?.watchOut}</p>
+              </div>
+            )}
+            <DomainPlacementsPdf placements={financeData.placements} />
+          </div>
+        )}
+
+        {isPaid && (
+          <div className="mb-6">
+            <h2 className="text-lg font-serif font-semibold mb-3">Marriage & Relationship Analysis</h2>
+            {marriageData.seventhHouseTheme && (
+              <div className="pdf-block mb-4 p-4 rounded-xl border border-[#E7E2D8]">
+                <Eyebrow tone="marigold">7th house sign: {marriageData.seventhHouseSign}</Eyebrow>
+                <p className="text-[11px] mt-2 leading-relaxed">{marriageData.seventhHouseTheme}</p>
+                <p className="text-[11px] mt-1 leading-relaxed"><b>Relationship strengths:</b> {marriageData.seventhHouseExpansion?.strengths}</p>
+                <p className="text-[11px] mt-1 leading-relaxed"><b>Watch-out:</b> {marriageData.seventhHouseExpansion?.watchOut}</p>
+                <p className="text-[11px] mt-1 leading-relaxed"><b>Best direction:</b> {marriageData.seventhHouseExpansion?.direction}</p>
+                <p className="text-[11px] mt-1 leading-relaxed"><b>7th lord placement:</b> {marriageData.seventhLord} in house {marriageData.seventhLordPlacement}</p>
+                <p className="text-[11px] mt-1 leading-relaxed"><b>Placement theme:</b> {marriageData.seventhLordPlacementRemedy?.theme}</p>
+                <p className="text-[11px] mt-1 leading-relaxed"><b>Remedy:</b> {marriageData.seventhLordPlacementRemedy?.remedy}</p>
+                <p className="text-[11px] mt-1 leading-relaxed"><b>Action:</b> {marriageData.seventhLordPlacementRemedy?.action}</p>
+                <p className="text-[11px] mt-1 leading-relaxed"><b>Avoid:</b> {marriageData.seventhLordPlacementRemedy?.watchOut}</p>
+              </div>
+            )}
+            <DomainPlacementsPdf placements={marriageData.placements} />
+          </div>
+        )}
+
+        {isPaid && (
+          <div className="mb-6">
+            <h2 className="text-lg font-serif font-semibold mb-3">Health & Vitality Analysis</h2>
+            {healthData.sixthHouseTheme && (
+              <div className="pdf-block mb-4 p-4 rounded-xl border border-[#E7E2D8]">
+                <Eyebrow tone="marigold">6th house sign: {healthData.sixthHouseSign}</Eyebrow>
+                <p className="text-[11px] mt-2 leading-relaxed">{healthData.sixthHouseTheme}</p>
+                <p className="text-[11px] mt-1 leading-relaxed"><b>Health strengths:</b> {healthData.sixthHouseExpansion?.strengths}</p>
+                <p className="text-[11px] mt-1 leading-relaxed"><b>Watch-out:</b> {healthData.sixthHouseExpansion?.watchOut}</p>
+                <p className="text-[11px] mt-1 leading-relaxed"><b>Best direction:</b> {healthData.sixthHouseExpansion?.direction}</p>
+                <p className="text-[11px] mt-1 leading-relaxed"><b>6th lord placement:</b> {healthData.sixthLord} in house {healthData.sixthLordPlacement}</p>
+                <p className="text-[11px] mt-1 leading-relaxed"><b>Placement theme:</b> {healthData.sixthLordPlacementRemedy?.theme}</p>
+                <p className="text-[11px] mt-1 leading-relaxed"><b>Remedy:</b> {healthData.sixthLordPlacementRemedy?.remedy}</p>
+                <p className="text-[11px] mt-1 leading-relaxed"><b>Action:</b> {healthData.sixthLordPlacementRemedy?.action}</p>
+                <p className="text-[11px] mt-1 leading-relaxed"><b>Avoid:</b> {healthData.sixthLordPlacementRemedy?.watchOut}</p>
+              </div>
+            )}
+            <DomainPlacementsPdf placements={healthData.placements} />
+          </div>
+        )}
       </div>
       <Footer />
     </div>

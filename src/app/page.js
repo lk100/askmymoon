@@ -20,11 +20,11 @@ import Navbar from './components/Navbar';
 import { fromZonedTime } from 'date-fns-tz';
 
 const heroPills = ['Instant Remedies', 'Career', 'Finances', 'Marriage', 'Health'];
-const DEFAULT_TIME_VALUE = '08:00';
+const DEFAULT_TIME_VALUE = '';
 
 const parseTimeInputValue = (value) => {
   if (!value) {
-    return { hour: '08', minute: '00', meridiem: 'AM' };
+    return { hour: '', minute: '', meridiem: 'AM' };
   }
 
   const [hourValue, minuteValue] = value.split(':');
@@ -32,7 +32,7 @@ const parseTimeInputValue = (value) => {
   const minutes = Number(minuteValue);
 
   if (Number.isNaN(hours) || Number.isNaN(minutes)) {
-    return { hour: '08', minute: '00', meridiem: 'AM' };
+    return { hour: '', minute: '', meridiem: 'AM' };
   }
 
   const meridiem = hours >= 12 ? 'PM' : 'AM';
@@ -46,6 +46,14 @@ const parseTimeInputValue = (value) => {
 };
 
 const buildTimeFromParts = (hour, minute, meridiem) => {
+  if (!hour || !minute) {
+    return '';
+  }
+
+  if (!meridiem) {
+    meridiem = 'AM';
+  }
+
   let hourValue = Number(hour);
 
   if (meridiem === 'AM' && hourValue === 12) {
@@ -167,12 +175,15 @@ export default function Home() {
       return;
     }
 
+    if (!formData.time || !/^\d{2}:\d{2}$/.test(formData.time)) {
+      alert('Please select your exact time of birth before generating the report.');
+      return;
+    }
+
     submitCooldownRef.current = now;
     setIsSubmitting(true);
 
-    const safeTime = formData.time && /^\d{2}:\d{2}$/.test(formData.time)
-      ? formData.time
-      : DEFAULT_TIME_VALUE;
+    const safeTime = formData.time;
     const latitude = formData.lat !== null ? formData.lat : 28.6139;
     const longitude = formData.lon !== null ? formData.lon : 77.2090;
 
@@ -367,6 +378,7 @@ export default function Home() {
                       onChange={(e) => handleTimeSelectorChange('hour', e.target.value)}
                       className="w-full min-w-0 bg-[#FAF6F0] border border-amber-900/15 rounded-xl px-2 py-2.5 sm:py-3 text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-amber-700/20 focus:border-amber-800 transition-all"
                     >
+                      <option value="" disabled>HH</option>
                       {Array.from({ length: 12 }, (_, index) => {
                         const value = String(index + 1).padStart(2, '0');
                         return (
@@ -383,6 +395,7 @@ export default function Home() {
                       onChange={(e) => handleTimeSelectorChange('minute', e.target.value)}
                       className="w-full min-w-0 bg-[#FAF6F0] border border-amber-900/15 rounded-xl px-2 py-2.5 sm:py-3 text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-amber-700/20 focus:border-amber-800 transition-all"
                     >
+                      <option value="" disabled>MM</option>
                       {Array.from({ length: 60 }, (_, index) => {
                         const value = String(index).padStart(2, '0');
                         return (
@@ -395,7 +408,7 @@ export default function Home() {
 
                     <select
                       required
-                      value={timeSelector.meridiem}
+                      value={timeSelector.meridiem || 'AM'}
                       onChange={(e) => handleTimeSelectorChange('meridiem', e.target.value)}
                       className="w-full min-w-0 bg-[#FAF6F0] border border-amber-900/15 rounded-xl px-2 py-2.5 sm:py-3 text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-amber-700/20 focus:border-amber-800 transition-all"
                     >

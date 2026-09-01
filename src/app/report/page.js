@@ -6,6 +6,8 @@ import { getAllDoshaAnalysis, getActiveDoshaAnalysis } from '@/data/Doshaanalysi
 import Link from 'next/link';
 import { getCareerReport } from '@/data/careerRemedies';
 import { getFinanceReport } from '@/data/financeRemedies';
+import { getMarriageReport } from '@/data/marriageRemedies';
+import { getHealthReport } from '@/data/healthRemedies';
 import {
   ArrowLeft,
   Printer,
@@ -61,8 +63,8 @@ const ELEMENT_EMOJIS = { Fire: '🔥', Earth: '🌍', Air: '💨', Water: '💧'
 const LIFE_DOMAINS = [
   { key: 'career', label: 'Career & Profession', icon: Briefcase, live: true },
   { key: 'finances', label: 'Finances & Wealth', icon: Coins, live: true },
-  { key: 'marriage', label: 'Marriage & Relationships', icon: Heart, live: false },
-  { key: 'health', label: 'Health & Vitality', icon: Flame, live: false },
+  { key: 'marriage', label: 'Marriage & Relationships', icon: Heart, live: true },
+  { key: 'health', label: 'Health & Vitality', icon: Flame, live: true },
 ];
 
 /* Small reusable eyebrow label — the recurring "structural device"
@@ -248,6 +250,20 @@ export default function ReportPage() {
     return getFinanceReport(userData.planetPositions, userData.ascendant, [5, 6, 9, 10, 11]);
   }, [userData]);
 
+  const marriageData = useMemo(() => {
+    if (!userData?.planetPositions || !userData?.ascendant) {
+      return { placements: [], seventhLord: null, seventhLordNature: null, seventhLordRemedy: null };
+    }
+    return getMarriageReport(userData.planetPositions, userData.ascendant, [2, 5, 7, 8, 11]);
+  }, [userData]);
+
+  const healthData = useMemo(() => {
+    if (!userData?.planetPositions || !userData?.ascendant) {
+      return { placements: [], sixthLord: null, sixthLordNature: null, sixthLordRemedy: null };
+    }
+    return getHealthReport(userData.planetPositions, userData.ascendant, [1, 6, 8, 12]);
+  }, [userData]);
+
   if (loading) {
     return (
       <div className="min-h-screen bg-[#FAF8F4] flex flex-col items-center justify-center text-[#14171F]">
@@ -318,14 +334,37 @@ export default function ReportPage() {
   const activeDomain = LIFE_DOMAINS.find((d) => d.key === selectedDomain) || LIFE_DOMAINS[0];
   const ActiveDomainIcon = activeDomain.icon;
 
-  // Data + copy for whichever live domain is currently selected (career or finances)
-  const activeLiveDomainData = selectedDomain === 'finances' ? financeData : careerData;
-  const activeLordLabel = selectedDomain === 'finances' ? '2nd lord' : '10th lord';
-  const activeLord = selectedDomain === 'finances' ? financeData.secondLord : careerData.tenthLord;
-  const activeLordRemedy = selectedDomain === 'finances' ? financeData.secondLordRemedy : careerData.tenthLordRemedy;
+  const activeLiveDomainData =
+    selectedDomain === 'finances' ? financeData :
+    selectedDomain === 'marriage' ? marriageData :
+    selectedDomain === 'health' ? healthData :
+    careerData;
+
+  const activeLordLabel =
+    selectedDomain === 'finances' ? '2nd lord' :
+    selectedDomain === 'marriage' ? '7th lord' :
+    selectedDomain === 'health' ? '6th lord' :
+    '10th lord';
+
+  const activeLord =
+    selectedDomain === 'finances' ? financeData.secondLord :
+    selectedDomain === 'marriage' ? marriageData.seventhLord :
+    selectedDomain === 'health' ? healthData.sixthLord :
+    careerData.tenthLord;
+
+  const activeLordRemedy =
+    selectedDomain === 'finances' ? financeData.secondLordRemedy :
+    selectedDomain === 'marriage' ? marriageData.seventhLordRemedy :
+    selectedDomain === 'health' ? healthData.sixthLordRemedy :
+    careerData.tenthLordRemedy;
+
   const activeEmptyMessage = selectedDomain === 'finances'
     ? 'No additional financial placements found for this chart.'
-    : 'No additional career placements found for this chart.';
+    : selectedDomain === 'marriage'
+      ? 'No additional relationship placements found for this chart.'
+      : selectedDomain === 'health'
+        ? 'No additional health placements found for this chart.'
+        : 'No additional career placements found for this chart.';
 
   const handlePaymentSuccess = (paymentResult) => {
     const updatedUserData = {
@@ -548,7 +587,7 @@ export default function ReportPage() {
                   >
                     {LIFE_DOMAINS.map((domain) => (
                       <option key={domain.key} value={domain.key}>
-                        {domain.label}{domain.live ? '' : ' (Coming soon)'}
+                        {domain.label}
                       </option>
                     ))}
                   </select>
@@ -557,7 +596,7 @@ export default function ReportPage() {
               </div>
 
               {/* ---- CAREER / FINANCES: live data ---- */}
-              {activeDomain.live && isPaid && (
+              {isPaid && (
                 <div className="space-y-4">
                   <div className="flex flex-wrap items-center justify-between gap-3 rounded-xl border border-[#3D6B4F]/25 bg-[#3D6B4F]/[0.06] p-4">
                     <div>
@@ -587,8 +626,8 @@ export default function ReportPage() {
                 </div>
               )}
 
-              {/* ---- MARRIAGE / HEALTH (or unpaid CAREER/FINANCES): locked ---- */}
-              {(!isPaid || !activeDomain.live) && (
+              {/* ---- Paid domain content is fully unlocked once payment is verified ---- */}
+              {!isPaid && (
                 <div className="relative min-h-[260px] rounded-xl overflow-hidden border border-[#E7E2D8] bg-[#FAF8F4]">
                   <div className="p-5 blur-sm select-none pointer-events-none opacity-40 space-y-2">
                     <div className="flex items-center gap-2 text-[#B4571F]">
@@ -605,27 +644,18 @@ export default function ReportPage() {
                       <Lock className="w-4 h-4" />
                     </div>
                     <h3 className="text-base font-serif font-semibold text-[#14171F]">
-                      {!isPaid && activeDomain.live ? `Unlock ${activeDomain.label.toLowerCase()} analysis` : `${activeDomain.label} — coming soon`}
+                      Unlock {activeDomain.label.toLowerCase()} analysis
                     </h3>
                     <p className="text-xs text-[#78715F] mt-1.5 max-w-sm leading-relaxed">
-                      {!isPaid && activeDomain.live
-                        ? 'Unlocking this also unlocks the lifestyle, gemstone, and mantra remedies for every planet.'
-                        : 'This report is being calibrated and will launch soon.'}
+                      Unlocking this also unlocks the lifestyle, gemstone, and mantra remedies for every planet.
                     </p>
-                    {!isPaid && activeDomain.live ? (
-                      <div className="mt-4 w-full max-w-xs">
-                        <DomainReportPayment
-                          userName={userData.name}
-                          reportData={{ ...userData, careerReport: careerData, financeReport: financeData }}
-                          onSuccess={handlePaymentSuccess}
-                        />
-                      </div>
-                    ) : (
-                      <div className="mt-4 bg-[#B4571F]/10 text-[#B4571F] font-semibold py-2.5 px-5 rounded-xl text-xs border border-[#B4571F]/20 flex items-center gap-2 cursor-not-allowed">
-                        <Sparkles className="w-4 h-4" />
-                        <span>Launching soon</span>
-                      </div>
-                    )}
+                    <div className="mt-4 w-full max-w-xs">
+                      <DomainReportPayment
+                        userName={userData.name}
+                        reportData={{ ...userData, careerReport: careerData, financeReport: financeData, marriageReport: marriageData, healthReport: healthData }}
+                        onSuccess={handlePaymentSuccess}
+                      />
+                    </div>
                   </div>
                 </div>
               )}

@@ -156,10 +156,23 @@ export default function Home() {
       return;
     }
 
+    const trimmedName = (formData.name || '').trim();
+    if (!trimmedName) {
+      alert('Please enter your full name before generating the report.');
+      return;
+    }
+
+    if (!formData.dob) {
+      alert('Please select your date of birth before generating the report.');
+      return;
+    }
+
     submitCooldownRef.current = now;
     setIsSubmitting(true);
 
-    const safeTime = formData.time || DEFAULT_TIME_VALUE;
+    const safeTime = formData.time && /^\d{2}:\d{2}$/.test(formData.time)
+      ? formData.time
+      : DEFAULT_TIME_VALUE;
     const latitude = formData.lat !== null ? formData.lat : 28.6139;
     const longitude = formData.lon !== null ? formData.lon : 77.2090;
 
@@ -181,6 +194,7 @@ export default function Home() {
 
       const fullUserData = {
         ...formData,
+        name: trimmedName,
         time: safeTime,
         lat: latitude,
         lon: longitude,

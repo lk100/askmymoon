@@ -6,8 +6,6 @@ import { getAllDoshaAnalysis, getActiveDoshaAnalysis } from '@/data/Doshaanalysi
 import Link from 'next/link';
 import { getCareerReport } from '@/data/careerRemedies';
 import { getFinanceReport } from '@/data/financeRemedies';
-import { getMarriageReport } from '@/data/marriageRemedies';
-import { getHealthReport } from '@/data/healthRemedies';
 import {
   ArrowLeft,
   Printer,
@@ -63,8 +61,8 @@ const ELEMENT_EMOJIS = { Fire: '🔥', Earth: '🌍', Air: '💨', Water: '💧'
 const LIFE_DOMAINS = [
   { key: 'career', label: 'Career & Profession', icon: Briefcase, live: true },
   { key: 'finances', label: 'Finances & Wealth', icon: Coins, live: true },
-  { key: 'marriage', label: 'Marriage & Relationships', icon: Heart, live: true },
-  { key: 'health', label: 'Health & Vitality', icon: Flame, live: true },
+  { key: 'marriage', label: 'Marriage & Relationships', icon: Heart, live: false },
+  { key: 'health', label: 'Health & Vitality', icon: Flame, live: false },
 ];
 
 /* Small reusable eyebrow label — the recurring "structural device"
@@ -99,6 +97,30 @@ function SectionHeading({ icon: Icon, eyebrow, title, subtitle, tone = 'marigold
         <h2 className="text-[16px] sm:text-[19px] font-serif font-semibold text-[#14171F] tracking-tight leading-snug">{title}</h2>
         {subtitle && <p className="text-[11px] sm:text-xs text-[#78715F] mt-0.5">{subtitle}</p>}
       </div>
+    </div>
+  );
+}
+
+/* Two-way toggle: Planetary | Domain. Sits above the shared card. */
+function ViewToggle({ activeView, onChange }) {
+  return (
+    <div className="grid grid-cols-2 gap-1 p-1 rounded-xl bg-[#FAF8F4] border border-[#E7E2D8]">
+      {[
+        { key: 'planetary', label: 'Planetary' },
+        { key: 'domain', label: 'Domain' },
+      ].map((tab) => (
+        <button
+          key={tab.key}
+          type="button"
+          onClick={() => onChange(tab.key)}
+          className={`py-2 rounded-lg text-xs sm:text-[13px] font-semibold transition-colors duration-150 ${activeView === tab.key
+              ? 'bg-[#14171F] text-white shadow-sm'
+              : 'text-[#6B6455] hover:text-[#14171F]'
+            }`}
+        >
+          {tab.label}
+        </button>
+      ))}
     </div>
   );
 }
@@ -166,50 +188,13 @@ function DomainPlacementsPdf({ placements }) {
   );
 }
 
-/* Static, always-visible summary of what the full report unlocks.
-   Moved out of the payment modal so it's shown right on the page,
-   directly above the email/phone capture button. */
-function FullReportIncludes() {
-  return (
-    <div className="w-full max-w-sm mt-4">
-      <h3 className="font-serif text-[15px] sm:text-[16px] font-semibold uppercase tracking-[-0.02em] text-[#14171F] leading-[1.25] text-center">
-        Unlock career, finance,
-        <span className="block">health & marriage analysis</span>
-      </h3>
-
-      <div className="mt-3 rounded-[16px] border border-[#E7E2D8] bg-[#F4F0EA] p-3">
-        <p className="mb-2 text-[9px] font-bold uppercase tracking-[0.14em] text-[#B4571F] text-center">
-          Full report includes
-        </p>
-        <div className="grid grid-cols-2 gap-2 text-[11px] font-medium text-[#14171F]">
-          <div className="rounded-xl border border-[#E7E2D8] bg-[#FAF8F4] px-2 py-2.5 text-center leading-tight">Career remedies</div>
-          <div className="rounded-xl border border-[#E7E2D8] bg-[#FAF8F4] px-2 py-2.5 text-center leading-tight">Finance remedies</div>
-          <div className="rounded-xl border border-[#E7E2D8] bg-[#FAF8F4] px-2 py-2.5 text-center leading-tight">Health remedies</div>
-          <div className="rounded-xl border border-[#E7E2D8] bg-[#FAF8F4] px-2 py-2.5 text-center leading-tight">Marriage remedies</div>
-        </div>
-      </div>
-    </div>
-  );
-}
-
 export default function ReportPage() {
   const [userData, setUserData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [selectedPlanet, setSelectedPlanet] = useState('Sun');
   const [selectedDomain, setSelectedDomain] = useState('career');
+  const [activeView, setActiveView] = useState('planetary'); // 'planetary' | 'domain'
   const [isPaid, setIsPaid] = useState(false);
-  const [isDownloading, setIsDownloading] = useState(false);
-
-  const handleDownloadPdf = async () => {
-    if (isDownloading) return;
-
-    setIsDownloading(true);
-    try {
-      await savePDF();
-    } finally {
-      setIsDownloading(false);
-    }
-  };
 
   useEffect(() => {
     if (typeof window !== 'undefined') {
@@ -222,8 +207,28 @@ export default function ReportPage() {
         const availablePlanets = merged.planetPositions ? Object.keys(merged.planetPositions) : [];
         if (availablePlanets.length > 0) setSelectedPlanet(availablePlanets[0]);
       } else {
-        setUserData(null);
-        setIsPaid(false);
+        setUserData({
+          name: "Love Khanna",
+          dob: "2003-07-13",
+          time: "11:39 AM",
+          place: "Moradabad, UP",
+          ascendant: "Virgo",
+          rulerHouse: 10,
+          moonSign: "Sagittarius",
+          mahadasha: "Mercury",
+          planetPositions: {
+            Sun: { sign: "Gemini", house: 10 },
+            Moon: { sign: "Sagittarius", house: 4 },
+            Mars: { sign: "Aries", house: 8 },
+            Mercury: { sign: "Gemini", house: 10 },
+            Jupiter: { sign: "Cancer", house: 11 },
+            Venus: { sign: "Taurus", house: 9 },
+            Saturn: { sign: "Aquarius", house: 6 },
+            Rahu: { sign: "Taurus", house: 9 },
+            Ketu: { sign: "Scorpio", house: 3 }
+          }
+        });
+        setSelectedPlanet('Sun');
       }
       setLoading(false);
     }
@@ -231,49 +236,17 @@ export default function ReportPage() {
 
   const careerData = useMemo(() => {
     if (!userData?.planetPositions || !userData?.ascendant) {
-      return {
-        placements: [],
-        tenthHouseSign: null,
-        tenthHouseTheme: null,
-        tenthHouseExpansion: null,
-        tenthLord: null,
-        tenthLordPlacement: null,
-        tenthLordPlacementRemedy: null,
-        tenthLordNature: null,
-        tenthLordRemedy: null,
-      };
+      return { placements: [], tenthLord: null, tenthLordNature: null, tenthLordRemedy: null };
     }
     return getCareerReport(userData.planetPositions, userData.ascendant, [6, 10, 11]);
   }, [userData]);
 
   const financeData = useMemo(() => {
     if (!userData?.planetPositions || !userData?.ascendant) {
-      return {
-        placements: [],
-        secondHouseSign: null,
-        secondHouseTheme: null,
-        secondHouseExpansion: null,
-        secondLord: null,
-        secondLordPlacement: null,
-        secondLordPlacementRemedy: null,
-        secondLordNature: null,
-        secondLordRemedy: null,
-      };
+      return { placements: [], secondLord: null, secondLordNature: null, secondLordRemedy: null };
     }
     return getFinanceReport(userData.planetPositions, userData.ascendant, [5, 6, 9, 10, 11]);
   }, [userData]);
-
-  const marriageData = useMemo(() => (
-    userData?.planetPositions && userData?.ascendant
-      ? getMarriageReport(userData.planetPositions, userData.ascendant)
-      : { placements: [], seventhHouseSign: null, seventhHouseTheme: null, seventhLord: null, seventhLordPlacement: null, seventhLordPlacementRemedy: null }
-  ), [userData]);
-
-  const healthData = useMemo(() => (
-    userData?.planetPositions && userData?.ascendant
-      ? getHealthReport(userData.planetPositions, userData.ascendant)
-      : { placements: [], sixthHouseSign: null, sixthHouseTheme: null, sixthLord: null, sixthLordPlacement: null, sixthLordPlacementRemedy: null }
-  ), [userData]);
 
   if (loading) {
     return (
@@ -345,14 +318,14 @@ export default function ReportPage() {
   const activeDomain = LIFE_DOMAINS.find((d) => d.key === selectedDomain) || LIFE_DOMAINS[0];
   const ActiveDomainIcon = activeDomain.icon;
 
-  const domainData = { career: careerData, finances: financeData, marriage: marriageData, health: healthData }[selectedDomain];
-  const domainConfig = {
-    career: { signLabel: '10th house sign', sign: careerData.tenthHouseSign, theme: careerData.tenthHouseTheme, expansion: careerData.tenthHouseExpansion, lordLabel: '10th lord', lord: careerData.tenthLord, placement: careerData.tenthLordPlacement, placementRemedy: careerData.tenthLordPlacementRemedy },
-    finances: { signLabel: '2nd house sign', sign: financeData.secondHouseSign, theme: financeData.secondHouseTheme, expansion: financeData.secondHouseExpansion, lordLabel: '2nd lord', lord: financeData.secondLord, placement: financeData.secondLordPlacement, placementRemedy: financeData.secondLordPlacementRemedy },
-    marriage: { signLabel: '7th house sign', sign: marriageData.seventhHouseSign, theme: marriageData.seventhHouseTheme, lordLabel: '7th lord', lord: marriageData.seventhLord, placement: marriageData.seventhLordPlacement, placementRemedy: marriageData.seventhLordPlacementRemedy },
-    health: { signLabel: '6th house sign', sign: healthData.sixthHouseSign, theme: healthData.sixthHouseTheme, lordLabel: '6th lord', lord: healthData.sixthLord, placement: healthData.sixthLordPlacement, placementRemedy: healthData.sixthLordPlacementRemedy },
-  }[selectedDomain];
-  const activeEmptyMessage = `No additional ${activeDomain.label.toLowerCase()} placements found for this chart.`;
+  // Data + copy for whichever live domain is currently selected (career or finances)
+  const activeLiveDomainData = selectedDomain === 'finances' ? financeData : careerData;
+  const activeLordLabel = selectedDomain === 'finances' ? '2nd lord' : '10th lord';
+  const activeLord = selectedDomain === 'finances' ? financeData.secondLord : careerData.tenthLord;
+  const activeLordRemedy = selectedDomain === 'finances' ? financeData.secondLordRemedy : careerData.tenthLordRemedy;
+  const activeEmptyMessage = selectedDomain === 'finances'
+    ? 'No additional financial placements found for this chart.'
+    : 'No additional career placements found for this chart.';
 
   const handlePaymentSuccess = (paymentResult) => {
     const updatedUserData = {
@@ -392,7 +365,8 @@ export default function ReportPage() {
       <main className="max-w-4xl mx-auto px-3.5 sm:px-6 pt-5 sm:pt-10 space-y-3.5 sm:space-y-5">
 
         {/* Identity */}
-        <section className="bg-white border border-[#E7E2D8] rounded-2xl p-4 sm:p-7 md:p-9">
+        <section className="relative bg-white border border-[#E7E2D8] rounded-2xl p-4 sm:p-7 md:p-9 overflow-hidden">
+          
           <div className="flex flex-col md:flex-row justify-between md:items-end gap-3 sm:gap-6 pb-4 sm:pb-6">
             <div>
               <Eyebrow tone="marigold">Personal chart index</Eyebrow>
@@ -452,257 +426,222 @@ export default function ReportPage() {
           </div>
         </section>
 
-        {/* Planetary Diagnostics */}
+        {/* ===================== Toggle: Planetary | Domain ===================== */}
+        <ViewToggle activeView={activeView} onChange={setActiveView} />
+
+        {/* ===================== Shared card: swaps content by activeView ===================== */}
         <section className="bg-white border border-[#E7E2D8] rounded-2xl p-4 sm:p-7 md:p-9 space-y-6">
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-5 border-b border-[#E7E2D8]">
-            <SectionHeading icon={BookOpen} eyebrow="Index of nine" title="Planetary remedies" subtitle="Select a planet for a tailored reading" tone="marigold" />
 
-            <div className="relative w-full sm:min-w-[170px] sm:w-auto">
-              <select
-                value={selectedPlanet}
-                onChange={(e) => setSelectedPlanet(e.target.value)}
-                className="w-full appearance-none bg-[#FAF8F4] border border-[#E7E2D8] rounded-lg px-3.5 py-2.5 text-xs font-semibold text-[#14171F] focus:outline-none focus:ring-2 focus:ring-[#B4571F]/25 hover:border-[#B4571F]/40 cursor-pointer pr-9 transition-colors duration-150"
-              >
-                {availablePlanets.map((planet) => (
-                  <option key={planet} value={planet}>{planet} placement</option>
-                ))}
-              </select>
-              <ChevronDown className="w-3.5 h-3.5 text-[#B4571F] absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none" />
-            </div>
-          </div>
+          {activeView === 'planetary' ? (
+            <>
+              {/* ---- PLANETARY REMEDIES ---- */}
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-5 border-b border-[#E7E2D8]">
+                <SectionHeading icon={BookOpen} eyebrow="Index of nine" title="Planetary remedies" subtitle="Select a planet for a tailored reading" tone="marigold" />
 
-          <div className="flex flex-wrap items-center gap-2">
-            <span className="px-2.5 py-1 sm:px-3 sm:py-1.5 bg-[#14171F] text-white font-semibold text-[10px] sm:text-[11px] rounded-lg">
-              {selectedPlanet}
-            </span>
-            <span className={`px-2.5 py-1 sm:px-3 sm:py-1.5 font-semibold text-[11px] rounded-lg border ${activeFunctionalNature.toLowerCase().includes('benefic')
-              ? 'bg-[#3D6B4F]/10 text-[#3D6B4F] border-[#3D6B4F]/25'
-              : 'bg-[#9C3B3B]/10 text-[#9C3B3B] border-[#9C3B3B]/25'
-              }`}>
-              {activeFunctionalNature}
-            </span>
-            <span className="px-2.5 py-1 sm:px-3 sm:py-1.5 bg-[#362D6B]/10 text-[#362D6B] font-semibold text-[11px] rounded-lg border border-[#362D6B]/20">
-              {activePlanetPos.sign}
-            </span>
-            <span className="px-2.5 py-1 sm:px-3 sm:py-1.5 bg-[#362D6B]/10 text-[#362D6B] font-semibold text-[11px] rounded-lg border border-[#362D6B]/20">
-              House {activePlanetPos.house}
-            </span>
-          </div>
-
-          {activeExplanation?.dignityText && (
-            <p className="text-[13px] font-medium text-[#B4571F] bg-[#B4571F]/[0.06] p-3.5 rounded-xl border border-[#B4571F]/15 leading-relaxed">
-              {activeExplanation.dignityText}
-            </p>
-          )}
-
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-2.5 sm:gap-3">
-            <div className="p-4 sm:p-5 rounded-xl bg-[#FAF8F4] border border-[#E7E2D8] space-y-2">
-              <Eyebrow tone="rose">Core problem & affliction</Eyebrow>
-              <p className="text-[13px] text-[#3A362C] leading-relaxed">{activePlanetData.coreProblem}</p>
-            </div>
-            <div className="p-4 sm:p-5 rounded-xl bg-[#FAF8F4] border border-[#E7E2D8] space-y-2">
-              <Eyebrow tone="indigo">Fast & quick donation remedies</Eyebrow>
-              <p className="text-[13px] text-[#3A362C] leading-relaxed">{activePlanetData.quickRemedy}</p>
-            </div>
-            <div className="p-4 sm:p-5 rounded-xl bg-[#FAF8F4] border border-[#E7E2D8] space-y-2">
-              <Eyebrow tone="sage">Practical lifestyle habits</Eyebrow>
-              <p className="text-[13px] text-[#3A362C] leading-relaxed">{activePlanetData.practicalRemedy}</p>
-            </div>
-            <div className="p-4 sm:p-5 rounded-xl bg-[#FAF8F4] border border-[#E7E2D8] space-y-2">
-              <Eyebrow tone="marigold">Gemstone & core solution</Eyebrow>
-              <p className="text-[13px] text-[#3A362C] leading-relaxed">{activePlanetData.coreRemedy}</p>
-            </div>
-          </div>
-
-          <div className="p-4 rounded-xl bg-[#14171F] flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
-            <div>
-              <Eyebrow tone="marigold">Vedic sound frequency (mantra)</Eyebrow>
-              <span className="text-sm font-serif font-medium text-white leading-relaxed">{activePlanetData.mantraRemedy}</span>
-            </div>
-            <span className="px-3 py-1 bg-white/10 font-semibold text-[11px] text-white rounded-lg shrink-0">
-              108 recitations
-            </span>
-          </div>
-        </section>
-
-        {/* Dosha Diagnostics */}
-        <section className="bg-white border border-[#E7E2D8] rounded-2xl p-4 sm:p-7 md:p-9 space-y-5">
-          <div className="flex items-center gap-2.5 sm:gap-3.5">
-            <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-lg sm:rounded-xl bg-[#362D6B]/10 text-[#362D6B] flex items-center justify-center shrink-0">
-              <Compass className="w-4 h-4 sm:w-[18px] sm:h-[18px]" />
-            </div>
-            <div className="min-w-0">
-              <div className="flex items-center gap-2">
-                <Eyebrow tone="indigo">Automated balance checks</Eyebrow>
-                <span className="px-2 py-0.5 bg-[#3D6B4F]/10 text-[#3D6B4F] text-[9.5px] sm:text-[10px] font-bold rounded-full -mt-1">FREE</span>
-              </div>
-              <h2 className="text-[16px] sm:text-[19px] font-serif font-semibold text-[#14171F] tracking-tight leading-snug -mt-0.5 sm:-mt-1">Special dosha diagnostics</h2>
-              <p className="text-[11px] sm:text-xs text-[#78715F] mt-0.5">For {ascendantSign} Lagna</p>
-            </div>
-          </div>
-
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5 sm:gap-3">
-            {orderedDoshaAnalysis.map((dosha) => {
-              const isPresent = dosha.present;
-              const isUnknown = dosha.severity === 'unknown';
-              return (
-                <div key={dosha.key} className="p-4 rounded-xl border border-[#E7E2D8] bg-[#FAF8F4]">
-                  <div className="flex items-start gap-3">
-                    {isPresent ? (
-                      <AlertCircle className="w-4 h-4 text-[#B4571F] shrink-0 mt-0.5" />
-                    ) : (
-                      <CheckCircle2 className={`w-4 h-4 shrink-0 mt-0.5 ${isUnknown ? 'text-[#9A9482]' : 'text-[#3D6B4F]'}`} />
-                    )}
-                    <div className="min-w-0">
-                      <div className="flex flex-wrap items-center gap-2">
-                        <h4 className="font-serif font-semibold text-[#14171F] text-sm">{dosha.name}</h4>
-                        <span className={`px-2 py-0.5 rounded-full text-[10px] font-bold uppercase ${isPresent ? 'bg-[#B4571F]/10 text-[#B4571F]'
-                          : isUnknown ? 'bg-[#E7E2D8] text-[#78715F]'
-                            : 'bg-[#3D6B4F]/10 text-[#3D6B4F]'
-                          }`}>
-                          {isPresent ? dosha.severity : isUnknown ? 'Unknown' : 'Clear'}
-                        </span>
-                      </div>
-                      <p className="text-xs text-[#6B6455] mt-1.5 leading-relaxed">{dosha.description}</p>
-                      {dosha.remedies && (
-                        <div className="mt-3 space-y-1.5 text-xs text-[#3A362C] leading-relaxed">
-                          <p><span className="font-semibold text-[#362D6B]">Practical:</span> {dosha.remedies.practical}</p>
-                          <p><span className="font-semibold text-[#362D6B]">Spiritual:</span> {dosha.remedies.spiritual}</p>
-                          <p><span className="font-semibold text-[#362D6B]">Mantra:</span> {dosha.remedies.mantra}</p>
-                          <p><span className="font-semibold text-[#362D6B]">Puja:</span> {dosha.remedies.puja}</p>
-                        </div>
-                      )}
-                    </div>
-                  </div>
+                <div className="relative w-full sm:min-w-[170px] sm:w-auto">
+                  <select
+                    value={selectedPlanet}
+                    onChange={(e) => setSelectedPlanet(e.target.value)}
+                    className="w-full appearance-none bg-[#FAF8F4] border border-[#E7E2D8] rounded-lg px-3.5 py-2.5 text-xs font-semibold text-[#14171F] focus:outline-none focus:ring-2 focus:ring-[#B4571F]/25 hover:border-[#B4571F]/40 cursor-pointer pr-9 transition-colors duration-150"
+                  >
+                    {availablePlanets.map((planet) => (
+                      <option key={planet} value={planet}>{planet} placement</option>
+                    ))}
+                  </select>
+                  <ChevronDown className="w-3.5 h-3.5 text-[#B4571F] absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none" />
                 </div>
-              );
-            })}
-          </div>
-        </section>
-
-        {/* ===================== Deep Life Domain Analysis ===================== */}
-        <section className="bg-white border border-[#E7E2D8] rounded-2xl p-4 sm:p-7 md:p-9 space-y-6">
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-5 border-b border-[#E7E2D8]">
-            <SectionHeading icon={Compass} eyebrow="₹99 per report" title="Deep life domain analysis" subtitle="Pick a domain for a full remedial reading" tone="indigo" />
-
-            <div className="relative w-full sm:min-w-[210px] sm:w-auto">
-              <select
-                value={selectedDomain}
-                onChange={(e) => setSelectedDomain(e.target.value)}
-                className="w-full appearance-none bg-[#FAF8F4] border border-[#E7E2D8] rounded-lg px-3.5 py-2.5 text-xs font-semibold text-[#14171F] focus:outline-none focus:ring-2 focus:ring-[#362D6B]/25 hover:border-[#362D6B]/40 cursor-pointer pr-9 transition-colors duration-150"
-              >
-                {LIFE_DOMAINS.map((domain) => (
-                  <option key={domain.key} value={domain.key}>
-                    {domain.label}{domain.live ? '' : ' (Coming soon)'}
-                  </option>
-                ))}
-              </select>
-              <ChevronDown className="w-3.5 h-3.5 text-[#362D6B] absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none" />
-            </div>
-          </div>
-
-          {/* ---- CAREER / FINANCES: live data ---- */}
-          {activeDomain.live && isPaid && (
-            <div className="space-y-4">
-              <div className="flex flex-wrap items-center justify-between gap-3 rounded-xl border border-[#3D6B4F]/25 bg-[#3D6B4F]/[0.06] p-4">
-                <div>
-                  <span className="mt-1 text-xs text-[#3D6B4F]">Your complete report is ready to download.</span>
-                </div>
-                <button
-                  type="button"
-                  onClick={handleDownloadPdf}
-                  disabled={isDownloading}
-                  className={`inline-flex items-center justify-center gap-2 rounded-lg bg-[#3D6B4F] px-4 py-2.5 text-xs font-semibold text-white transition-all duration-200 ease-out ${isDownloading ? 'cursor-not-allowed opacity-90 scale-[0.99] shadow-inner' : 'hover:bg-[#2A4C38] active:scale-[0.98]'} `}
-                >
-                  {isDownloading ? (
-                    <>
-                      <Loader2 className="h-3.5 w-3.5 animate-spin" />
-                      <span className="animate-pulse">Preparing PDF...</span>
-                    </>
-                  ) : (
-                    <>
-                      <Printer className="h-3.5 w-3.5" />
-                      Download full PDF
-                    </>
-                  )}
-                </button>
               </div>
 
-              {domainConfig.theme && (
-                <div className="p-4 sm:p-5 rounded-xl bg-[#FAF8F4] border border-[#E7E2D8] space-y-2">
-                  <Eyebrow tone="marigold">{domainConfig.signLabel} — {domainConfig.sign}</Eyebrow>
-                  <p className="text-[13px] text-[#3A362C] leading-relaxed">{domainConfig.theme}</p>
-                  {domainConfig.expansion && (
-                    <>
-                      <p className="text-[13px] text-[#3A362C] leading-relaxed"><span className="font-semibold">Strengths: </span>{domainConfig.expansion?.strengths}</p>
-                      <p className="text-[13px] text-[#3A362C] leading-relaxed"><span className="font-semibold">Watch-out: </span>{domainConfig.expansion?.watchOut}</p>
-                      <p className="text-[13px] text-[#3A362C] leading-relaxed"><span className="font-semibold">Best direction: </span>{domainConfig.expansion?.direction}</p>
-                    </>
-                  )}
-                  <p className="text-[13px] text-[#3A362C] leading-relaxed"><span className="font-semibold">{domainConfig.lordLabel} placement: </span>{domainConfig.lord} in house {domainConfig.placement}</p>
-                  <p className="text-[13px] text-[#3A362C] leading-relaxed"><span className="font-semibold">Placement theme: </span>{domainConfig.placementRemedy?.theme}</p>
-                  <p className="text-[13px] text-[#3A362C] leading-relaxed"><span className="font-semibold">Remedy: </span>{domainConfig.placementRemedy?.remedy || domainConfig.placementRemedy}</p>
-                  {domainConfig.placementRemedy?.action && (
-                    <p className="text-[13px] text-[#3A362C] leading-relaxed"><span className="font-semibold">Action: </span>{domainConfig.placementRemedy?.action}</p>
-                  )}
-                  {domainConfig.placementRemedy?.watchOut && (
-                    <p className="text-[13px] text-[#3A362C] leading-relaxed"><span className="font-semibold">Avoid: </span>{domainConfig.placementRemedy?.watchOut}</p>
-                  )}
-                </div>
+              <div className="flex flex-wrap items-center gap-2">
+                <span className="px-2.5 py-1 sm:px-3 sm:py-1.5 bg-[#14171F] text-white font-semibold text-[10px] sm:text-[11px] rounded-lg">
+                  {selectedPlanet}
+                </span>
+                <span className={`px-2.5 py-1 sm:px-3 sm:py-1.5 font-semibold text-[11px] rounded-lg border ${activeFunctionalNature.toLowerCase().includes('benefic')
+                  ? 'bg-[#3D6B4F]/10 text-[#3D6B4F] border-[#3D6B4F]/25'
+                  : 'bg-[#9C3B3B]/10 text-[#9C3B3B] border-[#9C3B3B]/25'
+                  }`}>
+                  {activeFunctionalNature}
+                </span>
+                <span className="px-2.5 py-1 sm:px-3 sm:py-1.5 bg-[#362D6B]/10 text-[#362D6B] font-semibold text-[11px] rounded-lg border border-[#362D6B]/20">
+                  {activePlanetPos.sign}
+                </span>
+                <span className="px-2.5 py-1 sm:px-3 sm:py-1.5 bg-[#362D6B]/10 text-[#362D6B] font-semibold text-[11px] rounded-lg border border-[#362D6B]/20">
+                  House {activePlanetPos.house}
+                </span>
+              </div>
+
+              {activeExplanation?.dignityText && (
+                <p className="text-[13px] font-medium text-[#B4571F] bg-[#B4571F]/[0.06] p-3.5 rounded-xl border border-[#B4571F]/15 leading-relaxed">
+                  {activeExplanation.dignityText}
+                </p>
               )}
 
-              <DomainPlacements placements={domainData.placements} emptyMessage={activeEmptyMessage} />
-            </div>
-          )}
+              {/* Free: Core problem + Donation remedies stay visible always */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-2.5 sm:gap-3">
+                <div className="p-4 sm:p-5 rounded-xl bg-[#FAF8F4] border border-[#E7E2D8] space-y-2">
+                  <Eyebrow tone="rose">Core problem & affliction</Eyebrow>
+                  <p className="text-[13px] text-[#3A362C] leading-relaxed">{activePlanetData.coreProblem}</p>
+                </div>
+                <div className="p-4 sm:p-5 rounded-xl bg-[#FAF8F4] border border-[#E7E2D8] space-y-2">
+                  <Eyebrow tone="indigo">Fast & quick donation remedies</Eyebrow>
+                  <p className="text-[13px] text-[#3A362C] leading-relaxed">{activePlanetData.quickRemedy}</p>
+                </div>
+              </div>
 
-          {/* ---- MARRIAGE / HEALTH (or unpaid CAREER/FINANCES): locked ---- */}
-          {(!isPaid || !activeDomain.live) && (
-            <div className="relative rounded-xl border border-[#E7E2D8] bg-[#FAF8F4]">
-              {!isPaid && activeDomain.live ? (
-                <div className="flex flex-col items-center py-8 px-4 text-center">
-                  <div className="w-10 h-10 rounded-xl bg-[#14171F] text-white flex items-center justify-center mb-3">
-                    <Lock className="w-4 h-4" />
+              {/* Locked: Practical lifestyle + Gemstone — unlocked by the same isPaid flag as domain analysis */}
+              {isPaid ? (
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-2.5 sm:gap-3">
+                  <div className="p-4 sm:p-5 rounded-xl bg-[#FAF8F4] border border-[#E7E2D8] space-y-2">
+                    <Eyebrow tone="sage">Practical lifestyle habits</Eyebrow>
+                    <p className="text-[13px] text-[#3A362C] leading-relaxed">{activePlanetData.practicalRemedy}</p>
                   </div>
-
-                  {/* Full report contents shown directly on the page now —
-                      the payment modal below only asks for email + phone. */}
-                  <FullReportIncludes />
-
-                  <div className="mt-4 w-full max-w-xs">
-                    <DomainReportPayment
-                      userName={userData.name}
-                      reportData={{ ...userData, careerReport: careerData, financeReport: financeData, marriageReport: marriageData, healthReport: healthData }}
-                      onSuccess={handlePaymentSuccess}
-                    />
+                  <div className="p-4 sm:p-5 rounded-xl bg-[#FAF8F4] border border-[#E7E2D8] space-y-2">
+                    <Eyebrow tone="marigold">Gemstone & core solution</Eyebrow>
+                    <p className="text-[13px] text-[#3A362C] leading-relaxed">{activePlanetData.coreRemedy}</p>
                   </div>
                 </div>
               ) : (
-                <div className="flex flex-col items-center py-8 px-4 text-center">
-                  <div className="w-10 h-10 rounded-xl bg-[#14171F] text-white flex items-center justify-center mb-3">
-                    <Lock className="w-4 h-4" />
+                <div className="relative min-h-[180px] rounded-xl overflow-hidden border border-[#E7E2D8] bg-[#FAF8F4]">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-2.5 sm:gap-3 p-4 sm:p-5 blur-sm select-none pointer-events-none opacity-40">
+                    <div className="p-4 sm:p-5 rounded-xl bg-white border border-[#E7E2D8] space-y-2">
+                      <Eyebrow tone="sage">Practical lifestyle habits</Eyebrow>
+                      <p className="text-[13px] text-[#3A362C] leading-relaxed">{activePlanetData.practicalRemedy}</p>
+                    </div>
+                    <div className="p-4 sm:p-5 rounded-xl bg-white border border-[#E7E2D8] space-y-2">
+                      <Eyebrow tone="marigold">Gemstone & core solution</Eyebrow>
+                      <p className="text-[13px] text-[#3A362C] leading-relaxed">{activePlanetData.coreRemedy}</p>
+                    </div>
                   </div>
-                  <h3 className="text-base font-serif font-semibold text-[#14171F]">
-                    {activeDomain.label} — coming soon
-                  </h3>
-                  <p className="text-xs text-[#78715F] mt-1.5 max-w-sm leading-relaxed">
-                    This report is being calibrated and will launch soon.
-                  </p>
-                  <div className="mt-4 bg-[#B4571F]/10 text-[#B4571F] font-semibold py-2.5 px-5 rounded-xl text-xs border border-[#B4571F]/20 flex items-center gap-2 cursor-not-allowed">
-                    <Sparkles className="w-4 h-4" />
-                    <span>Launching soon</span>
+                  <div className="absolute inset-0 z-10 flex flex-col items-center justify-center p-4 text-center bg-white/85 backdrop-blur-sm">
+                    <div className="w-9 h-9 rounded-xl bg-[#14171F] text-white flex items-center justify-center mb-2.5">
+                      <Lock className="w-4 h-4" />
+                    </div>
+                    <h3 className="text-sm font-serif font-semibold text-[#14171F]">Unlock lifestyle & gemstone remedies</h3>
+                    <p className="text-xs text-[#78715F] mt-1 max-w-xs leading-relaxed">
+                      Unlocking your career or finance report also unlocks these for every planet.
+                    </p>
+                    <button
+                      type="button"
+                      onClick={() => setActiveView('domain')}
+                      className="mt-3 bg-[#B4571F] hover:bg-[#9A4A19] text-white font-semibold py-2 px-4 rounded-lg text-xs transition-colors duration-150"
+                    >
+                      Go to domain unlock
+                    </button>
                   </div>
                 </div>
               )}
-            </div>
+
+              {/* Locked: Mantra — same gate */}
+             
+            </>
+          ) : (
+            <>
+              {/* ---- DEEP LIFE DOMAIN ANALYSIS ---- */}
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-5 border-b border-[#E7E2D8]">
+                <SectionHeading icon={Compass} eyebrow="₹99 per report" title="Deep life domain analysis" subtitle="Pick a domain for a full remedial reading" tone="indigo" />
+
+                <div className="relative w-full sm:min-w-[210px] sm:w-auto">
+                  <select
+                    value={selectedDomain}
+                    onChange={(e) => setSelectedDomain(e.target.value)}
+                    className="w-full appearance-none bg-[#FAF8F4] border border-[#E7E2D8] rounded-lg px-3.5 py-2.5 text-xs font-semibold text-[#14171F] focus:outline-none focus:ring-2 focus:ring-[#362D6B]/25 hover:border-[#362D6B]/40 cursor-pointer pr-9 transition-colors duration-150"
+                  >
+                    {LIFE_DOMAINS.map((domain) => (
+                      <option key={domain.key} value={domain.key}>
+                        {domain.label}{domain.live ? '' : ' (Coming soon)'}
+                      </option>
+                    ))}
+                  </select>
+                  <ChevronDown className="w-3.5 h-3.5 text-[#362D6B] absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none" />
+                </div>
+              </div>
+
+              {/* ---- CAREER / FINANCES: live data ---- */}
+              {activeDomain.live && isPaid && (
+                <div className="space-y-4">
+                  <div className="flex flex-wrap items-center justify-between gap-3 rounded-xl border border-[#3D6B4F]/25 bg-[#3D6B4F]/[0.06] p-4">
+                    <div>
+                      <span className="mt-1 text-xs text-[#3D6B4F]">Your complete report is ready to download.</span>
+                    </div>
+                    <button
+                      type="button"
+                      onClick={savePDF}
+                      className="inline-flex items-center gap-2 rounded-lg bg-[#3D6B4F] px-4 py-2.5 text-xs font-semibold text-white transition hover:bg-[#2A4C38]"
+                    >
+                      <Printer className="h-3.5 w-3.5" />
+                      Download full PDF
+                    </button>
+                  </div>
+
+                  {activeLordRemedy && (
+                    <div className="p-4 sm:p-5 rounded-xl bg-[#FAF8F4] border border-[#E7E2D8] space-y-2">
+                      <Eyebrow tone="marigold">{activeLordLabel} — {activeLord}</Eyebrow>
+                      <p className="text-[13px] text-[#3A362C] leading-relaxed">{activeLordRemedy.theme}</p>
+                      <p className="text-[13px] text-[#3A362C] leading-relaxed"><span className="font-semibold">Core problem: </span>{activeLordRemedy.coreProblem}</p>
+                      <p className="text-[13px] text-[#3A362C] leading-relaxed"><span className="font-semibold">Practical: </span>{activeLordRemedy.practicalRemedy}</p>
+                      <p className="text-[13px] text-[#3A362C] leading-relaxed"><span className="font-semibold">Mantra: </span>{activeLordRemedy.mantraRemedy}</p>
+                    </div>
+                  )}
+
+                  <DomainPlacements placements={activeLiveDomainData.placements} emptyMessage={activeEmptyMessage} />
+                </div>
+              )}
+
+              {/* ---- MARRIAGE / HEALTH (or unpaid CAREER/FINANCES): locked ---- */}
+              {(!isPaid || !activeDomain.live) && (
+                <div className="relative min-h-[260px] rounded-xl overflow-hidden border border-[#E7E2D8] bg-[#FAF8F4]">
+                  <div className="p-5 blur-sm select-none pointer-events-none opacity-40 space-y-2">
+                    <div className="flex items-center gap-2 text-[#B4571F]">
+                      <ActiveDomainIcon className="w-4 h-4" />
+                      <h3 className="font-serif font-semibold text-[#14171F] text-sm">{activeDomain.label}</h3>
+                    </div>
+                    <p className="text-xs text-[#78715F] leading-relaxed">
+                      Detailed {activeDomain.label.toLowerCase()} remedies based on your relevant house placements and lords.
+                    </p>
+                  </div>
+
+                  <div className="absolute inset-0 z-10 flex flex-col items-center justify-center overflow-y-auto p-4 text-center bg-white/85 backdrop-blur-sm">
+                    <div className="w-10 h-10 rounded-xl bg-[#14171F] text-white flex items-center justify-center mb-3">
+                      <Lock className="w-4 h-4" />
+                    </div>
+                    <h3 className="text-base font-serif font-semibold text-[#14171F]">
+                      {!isPaid && activeDomain.live ? `Unlock ${activeDomain.label.toLowerCase()} analysis` : `${activeDomain.label} — coming soon`}
+                    </h3>
+                    <p className="text-xs text-[#78715F] mt-1.5 max-w-sm leading-relaxed">
+                      {!isPaid && activeDomain.live
+                        ? 'Unlocking this also unlocks the lifestyle, gemstone, and mantra remedies for every planet.'
+                        : 'This report is being calibrated and will launch soon.'}
+                    </p>
+                    {!isPaid && activeDomain.live ? (
+                      <div className="mt-4 w-full max-w-xs">
+                        <DomainReportPayment
+                          userName={userData.name}
+                          reportData={{ ...userData, careerReport: careerData, financeReport: financeData }}
+                          onSuccess={handlePaymentSuccess}
+                        />
+                      </div>
+                    ) : (
+                      <div className="mt-4 bg-[#B4571F]/10 text-[#B4571F] font-semibold py-2.5 px-5 rounded-xl text-xs border border-[#B4571F]/20 flex items-center gap-2 cursor-not-allowed">
+                        <Sparkles className="w-4 h-4" />
+                        <span>Launching soon</span>
+                      </div>
+                    )}
+                  </div>
+                </div>
+              )}
+            </>
           )}
         </section>
+
+        {/* Dosha Diagnostics */}
+     
       </main>
 
       {/* ============ HIDDEN PDF-ONLY CONTENT ============
             Never visible on screen. html2canvas renders this off-DOM-flow
             when savePDF() runs. Contains only free content:
             Identity + Ascendant + all planets Sun→Ketu + Dosha, plus
-            Career and Finance analysis if paid. */}
+            unlocked Career and Finance analysis if paid. */}
       <div
         id="pdf-content"
         style={{ display: 'none' }}
@@ -769,6 +708,38 @@ export default function ReportPage() {
           </div>
         </div>
 
+        {isPaid && (
+          <div className="mb-6">
+            <h2 className="text-lg font-serif font-semibold mb-3">Unlocked Career Analysis</h2>
+            {careerData.tenthLordRemedy && (
+              <div className="pdf-block mb-4 p-4 rounded-xl border border-[#E7E2D8]">
+                <Eyebrow tone="marigold">10th Lord: {careerData.tenthLord}</Eyebrow>
+                <p className="text-[11px] mt-2 leading-relaxed">{careerData.tenthLordRemedy.theme}</p>
+                <p className="text-[11px] mt-1 leading-relaxed"><b>Core Problem:</b> {careerData.tenthLordRemedy.coreProblem}</p>
+                <p className="text-[11px] mt-1 leading-relaxed"><b>Practical:</b> {careerData.tenthLordRemedy.practicalRemedy}</p>
+                <p className="text-[11px] mt-1 leading-relaxed"><b>Mantra:</b> {careerData.tenthLordRemedy.mantraRemedy}</p>
+              </div>
+            )}
+            <DomainPlacementsPdf placements={careerData.placements} />
+          </div>
+        )}
+
+        {isPaid && (
+          <div className="mb-6">
+            <h2 className="text-lg font-serif font-semibold mb-3">Unlocked Finance Analysis</h2>
+            {financeData.secondLordRemedy && (
+              <div className="pdf-block mb-4 p-4 rounded-xl border border-[#E7E2D8]">
+                <Eyebrow tone="marigold">2nd Lord: {financeData.secondLord}</Eyebrow>
+                <p className="text-[11px] mt-2 leading-relaxed">{financeData.secondLordRemedy.theme}</p>
+                <p className="text-[11px] mt-1 leading-relaxed"><b>Core Problem:</b> {financeData.secondLordRemedy.coreProblem}</p>
+                <p className="text-[11px] mt-1 leading-relaxed"><b>Practical:</b> {financeData.secondLordRemedy.practicalRemedy}</p>
+                <p className="text-[11px] mt-1 leading-relaxed"><b>Mantra:</b> {financeData.secondLordRemedy.mantraRemedy}</p>
+              </div>
+            )}
+            <DomainPlacementsPdf placements={financeData.placements} />
+          </div>
+        )}
+
         <div className="mb-2">
           <h2 className="text-lg font-serif font-semibold mb-2">Special Dosha Diagnostics</h2>
           <div className="grid grid-cols-2 gap-6">
@@ -793,90 +764,6 @@ export default function ReportPage() {
             ))}
           </div>
         </div>
-
-        {isPaid && (
-          <div className="mb-6">
-            <h2 className="text-lg font-serif font-semibold mb-3">Career Analysis</h2>
-            {careerData.tenthHouseTheme && (
-              <div className="pdf-block mb-4 p-4 rounded-xl border border-[#E7E2D8]">
-                <Eyebrow tone="marigold">10th house sign: {careerData.tenthHouseSign}</Eyebrow>
-                <p className="text-[11px] mt-2 leading-relaxed">{careerData.tenthHouseTheme}</p>
-                <p className="text-[11px] mt-1 leading-relaxed"><b>Career strengths:</b> {careerData.tenthHouseExpansion?.strengths}</p>
-                <p className="text-[11px] mt-1 leading-relaxed"><b>Watch-out:</b> {careerData.tenthHouseExpansion?.watchOut}</p>
-                <p className="text-[11px] mt-1 leading-relaxed"><b>Best direction:</b> {careerData.tenthHouseExpansion?.direction}</p>
-                <p className="text-[11px] mt-1 leading-relaxed"><b>10th Lord placement:</b> {careerData.tenthLord} in house {careerData.tenthLordPlacement}</p>
-                <p className="text-[11px] mt-1 leading-relaxed"><b>Placement theme:</b> {careerData.tenthLordPlacementRemedy?.theme}</p>
-                <p className="text-[11px] mt-1 leading-relaxed"><b>Remedy:</b> {careerData.tenthLordPlacementRemedy?.remedy}</p>
-                <p className="text-[11px] mt-1 leading-relaxed"><b>Action:</b> {careerData.tenthLordPlacementRemedy?.action}</p>
-                <p className="text-[11px] mt-1 leading-relaxed"><b>Avoid:</b> {careerData.tenthLordPlacementRemedy?.watchOut}</p>
-              </div>
-            )}
-            <DomainPlacementsPdf placements={careerData.placements} />
-          </div>
-        )}
-
-        {isPaid && (
-          <div className="mb-6">
-            <h2 className="text-lg font-serif font-semibold mb-3">Finance Analysis</h2>
-            {financeData.secondHouseTheme && (
-              <div className="pdf-block mb-4 p-4 rounded-xl border border-[#E7E2D8]">
-                <Eyebrow tone="marigold">2nd house sign: {financeData.secondHouseSign}</Eyebrow>
-                <p className="text-[11px] mt-2 leading-relaxed">{financeData.secondHouseTheme}</p>
-                <p className="text-[11px] mt-1 leading-relaxed"><b>Financial strengths:</b> {financeData.secondHouseExpansion?.strengths}</p>
-                <p className="text-[11px] mt-1 leading-relaxed"><b>Watch-out:</b> {financeData.secondHouseExpansion?.watchOut}</p>
-                <p className="text-[11px] mt-1 leading-relaxed"><b>Best direction:</b> {financeData.secondHouseExpansion?.direction}</p>
-                <p className="text-[11px] mt-1 leading-relaxed"><b>2nd lord placement:</b> {financeData.secondLord} in house {financeData.secondLordPlacement}</p>
-                <p className="text-[11px] mt-1 leading-relaxed"><b>Placement theme:</b> {financeData.secondLordPlacementRemedy?.theme}</p>
-                <p className="text-[11px] mt-1 leading-relaxed"><b>Remedy:</b> {financeData.secondLordPlacementRemedy?.remedy}</p>
-                <p className="text-[11px] mt-1 leading-relaxed"><b>Action:</b> {financeData.secondLordPlacementRemedy?.action}</p>
-                <p className="text-[11px] mt-1 leading-relaxed"><b>Avoid:</b> {financeData.secondLordPlacementRemedy?.watchOut}</p>
-              </div>
-            )}
-            <DomainPlacementsPdf placements={financeData.placements} />
-          </div>
-        )}
-
-        {isPaid && (
-          <div className="mb-6">
-            <h2 className="text-lg font-serif font-semibold mb-3">Marriage & Relationship Analysis</h2>
-            {marriageData.seventhHouseTheme && (
-              <div className="pdf-block mb-4 p-4 rounded-xl border border-[#E7E2D8]">
-                <Eyebrow tone="marigold">7th house sign: {marriageData.seventhHouseSign}</Eyebrow>
-                <p className="text-[11px] mt-2 leading-relaxed">{marriageData.seventhHouseTheme}</p>
-                <p className="text-[11px] mt-1 leading-relaxed"><b>Relationship strengths:</b> {marriageData.seventhHouseExpansion?.strengths}</p>
-                <p className="text-[11px] mt-1 leading-relaxed"><b>Watch-out:</b> {marriageData.seventhHouseExpansion?.watchOut}</p>
-                <p className="text-[11px] mt-1 leading-relaxed"><b>Best direction:</b> {marriageData.seventhHouseExpansion?.direction}</p>
-                <p className="text-[11px] mt-1 leading-relaxed"><b>7th lord placement:</b> {marriageData.seventhLord} in house {marriageData.seventhLordPlacement}</p>
-                <p className="text-[11px] mt-1 leading-relaxed"><b>Placement theme:</b> {marriageData.seventhLordPlacementRemedy?.theme}</p>
-                <p className="text-[11px] mt-1 leading-relaxed"><b>Remedy:</b> {marriageData.seventhLordPlacementRemedy?.remedy}</p>
-                <p className="text-[11px] mt-1 leading-relaxed"><b>Action:</b> {marriageData.seventhLordPlacementRemedy?.action}</p>
-                <p className="text-[11px] mt-1 leading-relaxed"><b>Avoid:</b> {marriageData.seventhLordPlacementRemedy?.watchOut}</p>
-              </div>
-            )}
-            <DomainPlacementsPdf placements={marriageData.placements} />
-          </div>
-        )}
-
-        {isPaid && (
-          <div className="mb-6">
-            <h2 className="text-lg font-serif font-semibold mb-3">Health & Vitality Analysis</h2>
-            {healthData.sixthHouseTheme && (
-              <div className="pdf-block mb-4 p-4 rounded-xl border border-[#E7E2D8]">
-                <Eyebrow tone="marigold">6th house sign: {healthData.sixthHouseSign}</Eyebrow>
-                <p className="text-[11px] mt-2 leading-relaxed">{healthData.sixthHouseTheme}</p>
-                <p className="text-[11px] mt-1 leading-relaxed"><b>Health strengths:</b> {healthData.sixthHouseExpansion?.strengths}</p>
-                <p className="text-[11px] mt-1 leading-relaxed"><b>Watch-out:</b> {healthData.sixthHouseExpansion?.watchOut}</p>
-                <p className="text-[11px] mt-1 leading-relaxed"><b>Best direction:</b> {healthData.sixthHouseExpansion?.direction}</p>
-                <p className="text-[11px] mt-1 leading-relaxed"><b>6th lord placement:</b> {healthData.sixthLord} in house {healthData.sixthLordPlacement}</p>
-                <p className="text-[11px] mt-1 leading-relaxed"><b>Placement theme:</b> {healthData.sixthLordPlacementRemedy?.theme}</p>
-                <p className="text-[11px] mt-1 leading-relaxed"><b>Remedy:</b> {healthData.sixthLordPlacementRemedy?.remedy}</p>
-                <p className="text-[11px] mt-1 leading-relaxed"><b>Action:</b> {healthData.sixthLordPlacementRemedy?.action}</p>
-                <p className="text-[11px] mt-1 leading-relaxed"><b>Avoid:</b> {healthData.sixthLordPlacementRemedy?.watchOut}</p>
-              </div>
-            )}
-            <DomainPlacementsPdf placements={healthData.placements} />
-          </div>
-        )}
       </div>
       <Footer />
     </div>

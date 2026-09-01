@@ -1,3 +1,4 @@
+import Link from 'next/link';
 import InfoPage from '../components/InfoPage';
 
 export const metadata = {
@@ -30,6 +31,15 @@ export default function AboutPage() {
       <section>
         <h2 className="text-xl sm:text-2xl font-bold text-slate-900">A thoughtful starting point</h2>
         <p className="mt-2">The platform offers structured insights for reflection and personal practice. It is not a replacement for professional medical, financial, legal, or mental-health advice, and important life decisions should always be made with appropriate expert support.</p>
+      </section>
+
+      <section className="rounded-2xl border border-amber-900/10 bg-[#FAF6F0] p-5 sm:p-6">
+        <h2 className="text-xl sm:text-2xl font-bold text-slate-900">Continue exploring</h2>
+        <div className="mt-4 flex flex-wrap gap-3 text-sm font-medium">
+          <Link href="/blogs" className="rounded-full bg-amber-800 px-4 py-2 text-white hover:bg-amber-900">Read the blog</Link>
+          <Link href="/consultation" className="rounded-full border border-amber-900/15 bg-white px-4 py-2 text-slate-700 hover:border-amber-700 hover:text-amber-900">Book consultation</Link>
+          <Link href="/#birth-form" className="rounded-full border border-amber-900/15 bg-white px-4 py-2 text-slate-700 hover:border-amber-700 hover:text-amber-900">Generate report</Link>
+        </div>
       </section>
     </InfoPage>
   );

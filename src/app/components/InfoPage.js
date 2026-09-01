@@ -1,20 +1,11 @@
 import Link from 'next/link';
-import BrandLogo from './BrandLogo';
 import Footer from './Footer';
+import Navbar from './Navbar';
 
 export default function InfoPage({ eyebrow, title, intro, children }) {
   return (
     <div className="min-h-screen bg-[#FDFBF7] text-slate-800 font-sans antialiased">
-      <header className="border-b border-amber-900/10 bg-[#FAF6F0]">
-        <div className="max-w-5xl mx-auto px-4 sm:px-6 h-20 flex items-center justify-between gap-4">
-          <Link href="/" aria-label="AskMyMoon home">
-            <BrandLogo />
-          </Link>
-          <Link href="/" className="text-xs sm:text-sm font-semibold text-amber-900 hover:text-orange-700 transition-colors">
-            Back to Home
-          </Link>
-        </div>
-      </header>
+      <Navbar ctaLabel="Generate Report" ctaHref="/#birth-form" />
 
       <main className="max-w-4xl mx-auto px-4 sm:px-6 py-10 sm:py-16">
         <article className="bg-white border border-amber-900/15 rounded-3xl p-6 sm:p-10 md:p-12 shadow-sm">

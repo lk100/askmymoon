@@ -46,6 +46,24 @@ export default function Footer() {
                     {/* Legal nav */}
                     <nav className="flex flex-wrap items-center justify-center gap-x-4 gap-y-2">
                         <Link
+                            href="/blogs"
+                            className="text-xs font-medium text-slate-500 hover:text-amber-800 transition-colors duration-150"
+                        >
+                            Blog
+                        </Link>
+                        <Link
+                            href="/consultation"
+                            className="text-xs font-medium text-slate-500 hover:text-amber-800 transition-colors duration-150"
+                        >
+                            Consultation
+                        </Link>
+                        <Link
+                            href="/about"
+                            className="text-xs font-medium text-slate-500 hover:text-amber-800 transition-colors duration-150"
+                        >
+                            About
+                        </Link>
+                        <Link
                             href="/terms"
                             className="text-xs font-medium text-slate-500 hover:text-amber-800 transition-colors duration-150"
                         >
@@ -56,12 +74,6 @@ export default function Footer() {
                             className="text-xs font-medium text-slate-500 hover:text-amber-800 transition-colors duration-150"
                         >
                             Privacy Policy
-                        </Link>
-                        <Link
-                            href="/about"
-                            className="text-xs font-medium text-slate-500 hover:text-amber-800 transition-colors duration-150"
-                        >
-                            About
                         </Link>
                     </nav>
 

@@ -20,6 +20,7 @@ import Navbar from './components/Navbar';
 import { fromZonedTime } from 'date-fns-tz';
 
 const heroPills = ['Instant Remedies', 'Career', 'Finances', 'Marriage', 'Health'];
+const DEFAULT_TIME_VALUE = '08:00';
 
 const parseTimeInputValue = (value) => {
   if (!value) {
@@ -64,7 +65,7 @@ export default function Home() {
   const [formData, setFormData] = useState({
     name: '',
     dob: '',
-    time: '',
+    time: DEFAULT_TIME_VALUE,
     place: '',
     lat: null,
     lon: null,
@@ -158,6 +159,7 @@ export default function Home() {
     submitCooldownRef.current = now;
     setIsSubmitting(true);
 
+    const safeTime = formData.time || DEFAULT_TIME_VALUE;
     const latitude = formData.lat !== null ? formData.lat : 28.6139;
     const longitude = formData.lon !== null ? formData.lon : 77.2090;
 
@@ -165,7 +167,7 @@ export default function Home() {
 
     try {
       const dateObj = fromZonedTime(
-        `${formData.dob}T${formData.time}:00`,
+        `${formData.dob}T${safeTime}:00`,
         detectedTimeZone
       );
 
@@ -179,6 +181,7 @@ export default function Home() {
 
       const fullUserData = {
         ...formData,
+        time: safeTime,
         lat: latitude,
         lon: longitude,
         timeZone: detectedTimeZone,
@@ -325,15 +328,16 @@ export default function Home() {
                 />
               </div>
 
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                <div>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 min-w-0">
+                <div className="min-w-0 w-full">
                   <label className="block text-[11px] sm:text-xs font-bold uppercase tracking-wider text-slate-700 mb-1">
                     Date of Birth
                   </label>
                   <input
                     type="date"
                     required
-                    className="w-full bg-[#FAF6F0] border border-amber-900/15 rounded-xl px-3 py-2.5 sm:py-3 text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-amber-700/20 focus:border-amber-800 transition-all"
+                    style={{ minWidth: 0, width: '100%' }}
+                    className="w-full max-w-full min-w-0 bg-[#FAF6F0] border border-amber-900/15 rounded-xl px-3 py-2.5 sm:py-3 text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-amber-700/20 focus:border-amber-800 transition-all"
                     value={formData.dob}
                     onChange={(e) => setFormData({ ...formData, dob: e.target.value })}
                   />

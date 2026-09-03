@@ -102,7 +102,7 @@ export default function DomainReportPayment({ onSuccess }) {
       setStatus({ type: 'error', message: 'Payment is not configured yet.' });
       return;
     }
-
+F
     setIsPaying(true);
     setStatus({ type: '', message: '' });
 

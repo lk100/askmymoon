@@ -110,12 +110,12 @@ export function getFunctionalNature(planet, ascendantSign) {
 
 // OUTSIDE THE BOX: Strictly Planet + Sign + House expression & behavioral energy
 const DIGNITY_BLURB = {
-  Exalted: (p, s, h) => `${p} here expresses its highest peak capability . The core energy radiates with utmost clarity, confidence, and unobstructed potential.`,
-  'Own Sign': (p, s, h) => `${p} in own house expresses a deeply stable, authentic, and self-assured nature. The behavioral energy is entirely comfortable and self-sustained.`,
-  Friend: (p, s, h) => `${p} friendly expresses an amicable, receptive tone, adapting easily to its environment with steady enthusiasm.`,
-  Neutral: (p, s, h) => `${p} neutrally expresses an independent, self-reliant tone, relying purely on its intrinsic nature and house context to shape its actions.`,
-  Enemy: (p, s, h) => `${p} uncomfortably expresses underlying tension or hesitation. Its typical expression encounters resistance, creating defensive or strained behavior.`,
-  Debilitated: (p, s, h) => `${p} in its debilitated sign ${s} (${h ? `${h} House` : ''}) expresses scattered, vulnerable, or blocked energy. Its expression feels undermined, often seeking external support or conscious redirection.`,
+  Exalted: (p) => `${p} expresses its strongest and clearest potential.`,
+  'Own Sign': (p) => `${p} feels stable, natural, and self-assured here.`,
+  Friend: (p) => `${p} adapts easily and expresses steady support here.`,
+  Neutral: (p) => `${p} acts independently, shaped by its house placement.`,
+  Enemy: (p) => `${p} faces tension, creating guarded or strained behavior.`,
+  Debilitated: (p, s) => `${p} feels blocked or vulnerable in ${s}, needing conscious redirection.`,
 };
 
 // INSIDE THE BOX: Strictly BPHS Functional Nature — what the planet is actively causing/delivering

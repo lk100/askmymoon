@@ -398,3 +398,14 @@ export function getPrimaryBottleneck(ascendantSign, rulerHouse) {
 export function getLifelineRemedy(ascendantSign, rulerHouse) {
   return LIFELINE_REMEDIES[ascendantSign]?.[rulerHouse] || null;
 }
+
+export function getLifelineRemedyTeaser(ascendantSign, rulerHouse) {
+  const remedy = getLifelineRemedy(ascendantSign, rulerHouse);
+  if (!remedy) return null;
+
+  const firstAction = remedy
+    .split(/\s+(?:and|before|when)\s+|[;,]|\s+—\s+/i)[0]
+    .trim()
+    .replace(/[.!?]+$/, '');
+  return `${firstAction}.`;
+}

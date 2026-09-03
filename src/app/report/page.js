@@ -28,7 +28,7 @@ import {
   Sun as SunIcon,
 } from 'lucide-react';
 
-import { ASCENDANT_REMEDIES, getPrimaryBottleneck, getLifelineRemedy } from '@/data/ascendantRemedies';
+import { ASCENDANT_REMEDIES, getPrimaryBottleneck, getLifelineRemedyTeaser } from '@/data/ascendantRemedies';
 import { PLANETARY_REMEDIES } from '@/data/planetaryRemedies';
 import { getPlanetExplanation, getFunctionalNature } from '@/data/planetaryData';
 import Footer from '../components/Footer';
@@ -288,8 +288,8 @@ export default function ReportPage() {
   const bottleneckProblem = typeof getPrimaryBottleneck === 'function'
     ? getPrimaryBottleneck(ascendantSign, rulerHouse) : null;
 
-  const lifelineRemedy = typeof getLifelineRemedy === 'function'
-    ? getLifelineRemedy(ascendantSign, rulerHouse) : null;
+  const lifelineRemedy = typeof getLifelineRemedyTeaser === 'function'
+    ? getLifelineRemedyTeaser(ascendantSign, rulerHouse) : null;
 
   const availablePlanets = userData.planetPositions
     ? Object.keys(userData.planetPositions)
@@ -453,7 +453,7 @@ export default function ReportPage() {
 
           <div className="grid grid-cols-3 gap-2.5 sm:gap-3">
             <div className="min-w-0 p-2.5 sm:p-4 rounded-xl bg-[#FAF8F4] border border-[#E7E2D8]">
-              <Eyebrow>Ascendant</Eyebrow>
+              <Eyebrow>Rising</Eyebrow>
               <span className="block whitespace-nowrap text-[12px] sm:inline sm:text-base font-serif font-medium">{ascendantSign}</span>
               <span className="block whitespace-nowrap text-[11px] sm:inline sm:text-xs text-[#B4571F] sm:ml-2">{getElementLabel(ascendantSign)}</span>
             </div>
@@ -533,22 +533,18 @@ export default function ReportPage() {
                 </span>
               </div>
 
-              {activeExplanation?.dignityText && (
-                <p className="text-[13px] font-medium text-[#B4571F] bg-[#B4571F]/[0.06] p-3.5 rounded-xl border border-[#B4571F]/15 leading-relaxed">
-                  {activeExplanation.dignityText}
-                </p>
-              )}
-
-              {/* Free: Core problem + Donation remedies stay visible always */}
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-2.5 sm:gap-3">
+              {/* Free users see only the core problem; paid users see the full remedy set. */}
+              <div className={`${isPaid ? 'grid-cols-1 md:grid-cols-2' : 'grid-cols-1'} grid gap-2.5 sm:gap-3`}>
                 <div className="p-4 sm:p-5 rounded-xl bg-[#FAF8F4] border border-[#E7E2D8] space-y-2">
                   <Eyebrow tone="rose">Core problem & affliction</Eyebrow>
                   <p className="text-[13px] text-[#3A362C] leading-relaxed">{activePlanetData.coreProblem}</p>
                 </div>
-                <div className="p-4 sm:p-5 rounded-xl bg-[#FAF8F4] border border-[#E7E2D8] space-y-2">
-                  <Eyebrow tone="indigo">Fast & quick donation remedies</Eyebrow>
-                  <p className="text-[13px] text-[#3A362C] leading-relaxed">{activePlanetData.quickRemedy}</p>
-                </div>
+                {isPaid && (
+                  <div className="p-4 sm:p-5 rounded-xl bg-[#FAF8F4] border border-[#E7E2D8] space-y-2">
+                    <Eyebrow tone="indigo">Fast & quick donation remedies</Eyebrow>
+                    <p className="text-[13px] text-[#3A362C] leading-relaxed">{activePlanetData.quickRemedy}</p>
+                  </div>
+                )}
               </div>
 
               {/* Locked: Practical lifestyle + Gemstone — unlocked by the same isPaid flag as domain analysis */}
@@ -564,31 +560,21 @@ export default function ReportPage() {
                   </div>
                 </div>
               ) : (
-                <div className="relative min-h-[180px] rounded-xl overflow-hidden border border-[#E7E2D8] bg-[#FAF8F4]">
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-2.5 sm:gap-3 p-4 sm:p-5 blur-sm select-none pointer-events-none opacity-40">
-                    <div className="p-4 sm:p-5 rounded-xl bg-white border border-[#E7E2D8] space-y-2">
-                      <Eyebrow tone="sage">Practical lifestyle habits</Eyebrow>
-                      <p className="text-[13px] text-[#3A362C] leading-relaxed">{activePlanetData.practicalRemedy}</p>
-                    </div>
-                    <div className="p-4 sm:p-5 rounded-xl bg-white border border-[#E7E2D8] space-y-2">
-                      <Eyebrow tone="marigold">Gemstone & core solution</Eyebrow>
-                      <p className="text-[13px] text-[#3A362C] leading-relaxed">{activePlanetData.coreRemedy}</p>
-                    </div>
-                  </div>
+                <div className="relative h-[150px] rounded-xl overflow-hidden border border-[#E7E2D8] bg-[#FAF8F4]">
                   <div className="absolute inset-0 z-10 flex flex-col items-center justify-center p-4 text-center bg-white/85 backdrop-blur-sm">
-                    <div className="w-9 h-9 rounded-xl bg-[#14171F] text-white flex items-center justify-center mb-2.5">
+                    <div className="w-8 h-8 rounded-lg bg-[#14171F] text-white flex items-center justify-center mb-1.5">
                       <Lock className="w-4 h-4" />
                     </div>
-                    <h3 className="text-sm font-serif font-semibold text-[#14171F]">Unlock lifestyle & gemstone remedies</h3>
-                    <p className="text-xs text-[#78715F] mt-1 max-w-xs leading-relaxed">
+                    <h3 className="text-[13px] font-serif font-semibold text-[#14171F]">Unlock lifestyle & gemstone remedies</h3>
+                    <p className="text-[11px] text-[#78715F] mt-0.5 max-w-xs leading-relaxed">
                       Unlocking your career or finance report also unlocks these for every planet.
                     </p>
                     <button
                       type="button"
                       onClick={() => setActiveView('domain')}
-                      className="mt-3 bg-[#B4571F] hover:bg-[#9A4A19] text-white font-semibold py-2 px-4 rounded-lg text-xs transition-colors duration-150"
+                      className="mt-2 bg-[#B4571F] hover:bg-[#9A4A19] text-white font-semibold py-1.5 px-4 rounded-lg text-[11px] transition-colors duration-150"
                     >
-                      Go to domain unlock
+                      Unlock now @49 only
                     </button>
                   </div>
                 </div>

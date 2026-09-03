@@ -2,7 +2,6 @@
 
 import { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
-import { useRouter } from 'next/navigation';
 import {
   ChevronDown,
   CheckCircle2,
@@ -69,8 +68,6 @@ const buildTimeFromParts = (hour, minute, meridiem) => {
 };
 
 export default function Home() {
-  const router = useRouter();
-
   const [formData, setFormData] = useState({
     name: '',
     dob: '',
@@ -275,7 +272,7 @@ export default function Home() {
         localStorage.setItem('astro_user_data', JSON.stringify(fullUserData));
       }
 
-      router.push('/report');
+      window.location.assign('/report');
     } catch (error) {
       console.error("Failed to calculate chart on submit:", error);
       alert("There was an error calculating your birth chart. Please check your inputs.");

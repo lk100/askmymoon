@@ -199,7 +199,6 @@ export default function ReportPage() {
   const [isPaid, setIsPaid] = useState(false);
   const [isDownloading, setIsDownloading] = useState(false);
   const [downloadError, setDownloadError] = useState('');
-  const [showBrowserPrompt, setShowBrowserPrompt] = useState(false);
 
   useEffect(() => {
     if (typeof window !== 'undefined') {
@@ -214,10 +213,6 @@ export default function ReportPage() {
       }
       setLoading(false);
     }
-  }, []);
-
-  useEffect(() => {
-    setShowBrowserPrompt(/Instagram|FBAN|FBAV|FB_IAB|FBIOS|FB4A/i.test(navigator.userAgent));
   }, []);
 
   const careerData = useMemo(() => {
@@ -379,31 +374,6 @@ export default function ReportPage() {
 
   return (
     <div className="min-h-screen bg-[#FAF8F4] text-[#14171F] font-sans antialiased pb-20">
-      {showBrowserPrompt && (
-        <div className="border-b border-amber-700/20 bg-amber-50 px-3 py-3 sm:px-6" role="status">
-          <aside
-            aria-labelledby="report-browser-prompt-title"
-            className="mx-auto flex max-w-4xl items-start gap-3"
-          >
-            <div className="min-w-0 flex-1">
-              <h2 id="report-browser-prompt-title" className="text-xs font-bold text-amber-900 sm:text-sm">
-                Open in your external browser for the best experience
-              </h2>
-              <p className="mt-1 text-[11px] leading-relaxed text-slate-600 sm:text-xs">
-                You are viewing AskMyMoon inside Instagram. Open this page in your external browser for reliable payment and PDF downloads.
-              </p>
-            </div>
-              <button
-                type="button"
-                onClick={() => setShowBrowserPrompt(false)}
-                aria-label="Close browser notice"
-                className="shrink-0 rounded-md p-1 text-amber-900 transition hover:bg-amber-200"
-              >
-                <X className="h-4 w-4" />
-              </button>
-          </aside>
-        </div>
-      )}
       {isDownloading && (
         <div className="fixed inset-0 z-[100] flex items-center justify-center bg-slate-950/60 px-4 backdrop-blur-sm" role="dialog" aria-modal="true" aria-labelledby="download-progress-title">
           <div className="w-full max-w-xs rounded-2xl border border-[#E7E2D8] bg-white p-6 text-center shadow-2xl">
@@ -443,7 +413,14 @@ export default function ReportPage() {
           </Link>
 
           <BrandLogo />
-          <div className="w-4" aria-hidden="true" />
+
+          <button
+            onClick={handleDownload}
+            className="flex items-center gap-2 bg-[#14171F] hover:bg-[#2A2E38] active:scale-[0.97] text-white text-[11px] sm:text-xs font-semibold px-3.5 sm:px-4 py-2 rounded-lg transition-all duration-150"
+          >
+            <Printer className="w-3.5 h-3.5" />
+            <span className="hidden sm:inline">Save PDF</span>
+          </button>
         </div>
       </header>
 
@@ -556,13 +533,19 @@ export default function ReportPage() {
                 </span>
               </div>
 
-              {/* Free users see only the core problem; paid users see the full remedy set. */}
-              <div className={`${isPaid ? 'grid-cols-1 md:grid-cols-2' : 'grid-cols-1'} grid gap-2.5 sm:gap-3`}>
+              {activeExplanation?.dignityText && (
+                <p className="text-[13px] font-medium text-[#B4571F] bg-[#B4571F]/[0.06] p-3.5 rounded-xl border border-[#B4571F]/15 leading-relaxed">
+                  {activeExplanation.dignityText}
+                </p>
+              )}
+
+              {/* Free: Core problem + donation remedy teaser */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-2.5 sm:gap-3">
                 <div className="p-4 sm:p-5 rounded-xl bg-[#FAF8F4] border border-[#E7E2D8] space-y-2">
                   <Eyebrow tone="rose">Core problem & affliction</Eyebrow>
                   <p className="text-[13px] text-[#3A362C] leading-relaxed">{activePlanetData.coreProblem}</p>
                 </div>
-                {isPaid && (
+                {!isPaid && (
                   <div className="p-4 sm:p-5 rounded-xl bg-[#FAF8F4] border border-[#E7E2D8] space-y-2">
                     <Eyebrow tone="indigo">Fast & quick donation remedies</Eyebrow>
                     <p className="text-[13px] text-[#3A362C] leading-relaxed">{activePlanetData.quickRemedy}</p>
@@ -583,19 +566,29 @@ export default function ReportPage() {
                   </div>
                 </div>
               ) : (
-                <div className="relative h-[150px] rounded-xl overflow-hidden border border-[#E7E2D8] bg-[#FAF8F4]">
+                <div className="relative min-h-[180px] rounded-xl overflow-hidden border border-[#E7E2D8] bg-[#FAF8F4]">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-2.5 sm:gap-3 p-4 sm:p-5 blur-sm select-none pointer-events-none opacity-40">
+                    <div className="p-4 sm:p-5 rounded-xl bg-white border border-[#E7E2D8] space-y-2">
+                      <Eyebrow tone="sage">Practical lifestyle habits</Eyebrow>
+                      <p className="text-[13px] text-[#3A362C] leading-relaxed">{activePlanetData.practicalRemedy}</p>
+                    </div>
+                    <div className="p-4 sm:p-5 rounded-xl bg-white border border-[#E7E2D8] space-y-2">
+                      <Eyebrow tone="marigold">Gemstone & core solution</Eyebrow>
+                      <p className="text-[13px] text-[#3A362C] leading-relaxed">{activePlanetData.coreRemedy}</p>
+                    </div>
+                  </div>
                   <div className="absolute inset-0 z-10 flex flex-col items-center justify-center p-4 text-center bg-white/85 backdrop-blur-sm">
-                    <div className="w-8 h-8 rounded-lg bg-[#14171F] text-white flex items-center justify-center mb-1.5">
+                    <div className="w-9 h-9 rounded-xl bg-[#14171F] text-white flex items-center justify-center mb-2.5">
                       <Lock className="w-4 h-4" />
                     </div>
-                    <h3 className="text-[13px] font-serif font-semibold text-[#14171F]">Unlock lifestyle & gemstone remedies</h3>
-                    <p className="text-[11px] text-[#78715F] mt-0.5 max-w-xs leading-relaxed">
+                    <h3 className="text-sm font-serif font-semibold text-[#14171F]">Unlock lifestyle & gemstone remedies</h3>
+                    <p className="text-xs text-[#78715F] mt-1 max-w-xs leading-relaxed">
                       Unlocking your career or finance report also unlocks these for every planet.
                     </p>
                     <button
                       type="button"
                       onClick={() => setActiveView('domain')}
-                      className="mt-2 bg-[#B4571F] hover:bg-[#9A4A19] text-white font-semibold py-1.5 px-4 rounded-lg text-[11px] transition-colors duration-150"
+                      className="mt-3 bg-[#B4571F] hover:bg-[#9A4A19] text-white font-semibold py-2 px-4 rounded-lg text-xs transition-colors duration-150"
                     >
                       Unlock now @49 only
                     </button>
@@ -800,38 +793,6 @@ export default function ReportPage() {
               </div>
             )}
             <DomainPlacementsPdf placements={financeData.placements} />
-          </div>
-        )}
-
-        {isPaid && (
-          <div className="mb-6">
-            <h2 className="text-lg font-serif font-semibold mb-3">Unlocked Marriage Analysis</h2>
-            {marriageData.seventhLordRemedy && (
-              <div className="pdf-block mb-4 p-4 rounded-xl border border-[#E7E2D8]">
-                <Eyebrow tone="marigold">7th Lord: {marriageData.seventhLord}</Eyebrow>
-                <p className="text-[11px] mt-2 leading-relaxed">{marriageData.seventhLordRemedy.theme}</p>
-                <p className="text-[11px] mt-1 leading-relaxed"><b>Core Problem:</b> {marriageData.seventhLordRemedy.coreProblem}</p>
-                <p className="text-[11px] mt-1 leading-relaxed"><b>Practical:</b> {marriageData.seventhLordRemedy.practicalRemedy}</p>
-                <p className="text-[11px] mt-1 leading-relaxed"><b>Mantra:</b> {marriageData.seventhLordRemedy.mantraRemedy}</p>
-              </div>
-            )}
-            <DomainPlacementsPdf placements={marriageData.placements} />
-          </div>
-        )}
-
-        {isPaid && (
-          <div className="mb-6">
-            <h2 className="text-lg font-serif font-semibold mb-3">Unlocked Health Analysis</h2>
-            {healthData.sixthLordRemedy && (
-              <div className="pdf-block mb-4 p-4 rounded-xl border border-[#E7E2D8]">
-                <Eyebrow tone="marigold">6th Lord: {healthData.sixthLord}</Eyebrow>
-                <p className="text-[11px] mt-2 leading-relaxed">{healthData.sixthLordRemedy.theme}</p>
-                <p className="text-[11px] mt-1 leading-relaxed"><b>Core Problem:</b> {healthData.sixthLordRemedy.coreProblem}</p>
-                <p className="text-[11px] mt-1 leading-relaxed"><b>Practical:</b> {healthData.sixthLordRemedy.practicalRemedy}</p>
-                <p className="text-[11px] mt-1 leading-relaxed"><b>Mantra:</b> {healthData.sixthLordRemedy.mantraRemedy}</p>
-              </div>
-            )}
-            <DomainPlacementsPdf placements={healthData.placements} />
           </div>
         )}
 

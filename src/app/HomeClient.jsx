@@ -302,7 +302,7 @@ export default function Home() {
     },
     {
       q: "Is this completely free?",
-      a: "Yes! You can currently generate your complete personalized remedy report for free with no credit card or subscription required."
+      a: "You can generate a free preview with your core planetary insights. The complete personalized remedy report is available to unlock for ₹49."
     }
   ];
 
@@ -313,7 +313,7 @@ export default function Home() {
         <div className="max-w-6xl mx-auto px-3 sm:px-6 h-8 sm:h-9 flex items-center justify-between gap-2 sm:gap-3">
           <span className="truncate">Support: 10:00 AM – 6:00 PM (IST)</span>
           <div className="hidden sm:flex shrink-0 gap-4">
-            <span className="font-semibold text-emerald-700">100% Free Access</span>
+            <span className="font-semibold text-emerald-700">Free Preview</span>
             <span>•</span>
             <span>Instant PDF Download</span>
           </div>
@@ -331,16 +331,9 @@ export default function Home() {
                 Open in your external browser for the best experience
               </h2>
               <p className="mt-1 text-[11px] leading-relaxed text-slate-600 sm:text-xs">
-                You are viewing Astro Remedies inside Instagram. Open this page in your external browser for reliable payment and PDF downloads.
+                You are viewing AskMyMoon inside Instagram. Open this page in your external browser for reliable payment and PDF downloads.
               </p>
-              <button
-                type="button"
-                onClick={handleOpenInBrowser}
-                className="mt-2 inline-flex items-center gap-2 rounded-lg bg-amber-800 px-3 py-2 text-[11px] font-semibold text-white transition hover:bg-amber-900"
-              >
-                Open in browser
-                <ArrowRight className="h-3.5 w-3.5" />
-              </button>
+          
             </div>
             <button type="button" onClick={() => setShowBrowserPrompt(false)} aria-label="Close browser notice" className="shrink-0 rounded-md p-1 text-amber-900 transition hover:bg-amber-200">
               <X className="h-4 w-4" />
@@ -413,10 +406,10 @@ export default function Home() {
                   <h2 className="text-base sm:text-xl font-extrabold text-slate-900 leading-tight">Get your</h2>
                   <p className="text-[10px] sm:text-xs text-slate-500 leading-relaxed">remedy file immediately</p>
                 </div>
-                <div className="bg-emerald-50 px-2.5 sm:px-3 py-1.5 rounded-lg border border-emerald-200 flex items-center gap-1.5 text-emerald-800 font-bold text-[11px] sm:text-xs uppercase shrink-0">
-                  <Gift className="w-3.5 h-3.5" />
-                  <span className="leading-tight sm:hidden">Free</span>
-                  <span className="hidden leading-tight sm:inline">Free Access</span>
+                <div className="bg-emerald-50 px-2 sm:px-3 py-1 sm:py-1.5 rounded-lg border border-emerald-200 flex items-center gap-1 text-emerald-800 font-bold text-[9px] sm:text-xs uppercase shrink-0">
+                  <Gift className="w-3 h-3 sm:w-3.5 sm:h-3.5" />
+                  <span className="leading-tight sm:hidden">Free Preview</span>
+                  <span className="hidden leading-tight sm:inline">Free Preview</span>
                 </div>
               </div>
             </div>
@@ -565,7 +558,7 @@ export default function Home() {
                     </>
                   ) : (
                     <>
-                      <span className="text-xs sm:text-sm">Generate Free Astro Report</span>
+                      <span className="text-xs sm:text-sm">Generate Report</span>
                       <ArrowRight className="w-4 h-4" />
                     </>
                   )}

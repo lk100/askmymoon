@@ -451,21 +451,21 @@ export default function ReportPage() {
           {/* orbit rule — signature divider */}
           <div className="h-px w-full bg-gradient-to-r from-[#B4571F]/50 via-[#E7E2D8] to-[#362D6B]/50 mb-4 sm:mb-6" />
 
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-2.5 sm:gap-3">
-            <div className="p-3.5 sm:p-4 rounded-xl bg-[#FAF8F4] border border-[#E7E2D8]">
+          <div className="grid grid-cols-3 gap-2.5 sm:gap-3">
+            <div className="min-w-0 p-2.5 sm:p-4 rounded-xl bg-[#FAF8F4] border border-[#E7E2D8]">
               <Eyebrow>Ascendant</Eyebrow>
-              <span className="text-[15px] sm:text-base font-serif font-medium">{ascendantSign}</span>
-              <span className="text-[11px] sm:text-xs text-[#B4571F] ml-2">{getElementLabel(ascendantSign)}</span>
+              <span className="block whitespace-nowrap text-[12px] sm:inline sm:text-base font-serif font-medium">{ascendantSign}</span>
+              <span className="block whitespace-nowrap text-[11px] sm:inline sm:text-xs text-[#B4571F] sm:ml-2">{getElementLabel(ascendantSign)}</span>
             </div>
-            <div className="p-3.5 sm:p-4 rounded-xl bg-[#FAF8F4] border border-[#E7E2D8]">
-              <Eyebrow>Moon sign</Eyebrow>
-              <span className="text-[15px] sm:text-base font-serif font-medium">{moonSign}</span>
-              {moonSign !== 'Not calculated' && <span className="text-[11px] sm:text-xs text-[#B4571F] ml-2">{getElementLabel(moonSign)}</span>}
+            <div className="min-w-0 p-2.5 sm:p-4 rounded-xl bg-[#FAF8F4] border border-[#E7E2D8]">
+              <Eyebrow>Moon </Eyebrow>
+              <span className="block whitespace-nowrap text-[12px] sm:inline sm:text-base font-serif font-medium">{moonSign}</span>
+              {moonSign !== 'Not calculated' && <span className="block whitespace-nowrap text-[11px] sm:inline sm:text-xs text-[#B4571F] sm:ml-2">{getElementLabel(moonSign)}</span>}
             </div>
-            <div className="p-3.5 sm:p-4 rounded-xl bg-[#FAF8F4] border border-[#E7E2D8]">
-              <Eyebrow>Sun sign</Eyebrow>
-              <span className="text-[15px] sm:text-base font-serif font-medium">{sunSign}</span>
-              {sunSign !== 'Not calculated' && <span className="text-[11px] sm:text-xs text-[#B4571F] ml-2">{getElementLabel(sunSign)}</span>}
+            <div className="min-w-0 p-2.5 sm:p-4 rounded-xl bg-[#FAF8F4] border border-[#E7E2D8]">
+              <Eyebrow>Sun </Eyebrow>
+              <span className="block whitespace-nowrap text-[12px] sm:inline sm:text-base font-serif font-medium">{sunSign}</span>
+              {sunSign !== 'Not calculated' && <span className="block whitespace-nowrap text-[11px] sm:inline sm:text-xs text-[#B4571F] sm:ml-2">{getElementLabel(sunSign)}</span>}
             </div>
           </div>
         </section>

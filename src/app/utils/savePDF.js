@@ -81,18 +81,6 @@ export async function savePDF() {
 
   const fileName = "AskMyMoon_Report.pdf";
   const pdfBlob = pdf.output("blob");
-  const pdfFile = new File([pdfBlob], fileName, { type: "application/pdf" });
-
-  // Mobile WebViews often ignore the download attribute, but can still offer
-  // a native share sheet where the user can save the PDF to Files or Drive.
-  if (typeof navigator !== "undefined" && navigator.canShare?.({ files: [pdfFile] })) {
-    await navigator.share({
-      files: [pdfFile],
-      title: fileName,
-    });
-    return;
-  }
-
   const pdfUrl = URL.createObjectURL(pdfBlob);
   const downloadLink = document.createElement("a");
   downloadLink.href = pdfUrl;

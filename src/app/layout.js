@@ -1,4 +1,7 @@
 import './globals.css';
+import Script from 'next/script';
+
+const googleAnalyticsId = process.env.NEXT_PUBLIC_GA_ID;
 
 export const metadata = {
   metadataBase: new URL('https://www.askmymoon.com'),
@@ -42,6 +45,23 @@ export const viewport = {
 export default function RootLayout({ children }) {
   return (
     <html lang="en">
+      {googleAnalyticsId && (
+        <>
+          <Script
+            async
+            src={`https://www.googletagmanager.com/gtag/js?id=${googleAnalyticsId}`}
+            strategy="afterInteractive"
+          />
+          <Script id="ga4-init" strategy="afterInteractive">
+            {`
+              window.dataLayer = window.dataLayer || [];
+              function gtag(){dataLayer.push(arguments);}
+              gtag('js', new Date());
+              gtag('config', '${googleAnalyticsId}');
+            `}
+          </Script>
+        </>
+      )}
       <body
         className="bg-slate-950 text-slate-100 antialiased overflow-x-hidden"
         suppressHydrationWarning={true}

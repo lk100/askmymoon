@@ -7,20 +7,20 @@ const googleAnalyticsId = process.env.NEXT_PUBLIC_GA_ID;
 export const metadata = {
   metadataBase: new URL('https://www.askmymoon.com'),
   title: {
-    default: 'AskMyMoon | Online Vedic Astrology & Remedy Tool',
+    default: 'AskMyMoon | Free Vedic Astrology Remedy Tool & Kundli Guidance',
     template: '%s | AskMyMoon',
   },
-  description: 'Instant personalized astrology remedies, birth chart reports, and spiritual tools for Kundali and dosha analysis.',
+  description: 'Instant Vedic astrology remedy tool for birth charts, dosha analysis, mantras, and personalized spiritual guidance.',
   keywords: [
     'AskMyMoon',
-    'online Vedic astrology platform',
-    'instant astrology report',
-    'birth chart remedy tool',
-    'astrology software',
-    'Kundali remedy tool',
-    'dosha analysis tool',
-    'mantra generator',
-    'personalized spiritual guidance',
+    'astrology remedy tool',
+    'spiritual remedy tool',
+    'free Vedic astrology remedies',
+    'kundli guidance tool',
+    'astrology report',
+    'dosha analysis',
+    'Vedic remedies',
+    'personalized astrology report'
   ],
   authors: [{ name: 'AskMyMoon' }],
   creator: 'AskMyMoon',
@@ -30,14 +30,14 @@ export const metadata = {
   openGraph: {
     type: 'website',
     siteName: 'AskMyMoon',
-    title: 'AskMyMoon | Online Vedic Astrology & Remedy Tool',
-    description: 'Instant personalized astrology remedies, birth chart reports, and spiritual tools for Kundali and dosha analysis.',
+    title: 'AskMyMoon | Free Vedic Astrology Remedy Tool & Kundli Guidance',
+    description: 'Instant Vedic astrology remedy tool for birth charts, dosha analysis, mantras, and personalized spiritual guidance.',
     url: 'https://www.askmymoon.com',
   },
   twitter: {
     card: 'summary',
-    title: 'AskMyMoon | Online Vedic Astrology & Remedy Tool',
-    description: 'Instant personalized astrology remedies, birth chart reports, and spiritual tools for Kundali and dosha analysis.',
+    title: 'AskMyMoon | Free Vedic Astrology Remedy Tool & Kundli Guidance',
+    description: 'Instant Vedic astrology remedy tool for birth charts, dosha analysis, mantras, and personalized spiritual guidance.',
   },
   robots: {
     index: true,
@@ -50,8 +50,6 @@ export const viewport = {
   initialScale: 1,
   maximumScale: 1,
 };
-
-// src/app/layout.js
 
 export default function RootLayout({ children }) {
   return (
@@ -77,6 +75,13 @@ export default function RootLayout({ children }) {
         className="bg-slate-950 text-slate-100 antialiased overflow-x-hidden"
         suppressHydrationWarning={true}
       >
+        {/* Overrides standard framework fallback text for Googlebot */}
+        <noscript>
+          <div style={{ padding: '20px', textAlign: 'center' }}>
+            <h1>AskMyMoon - Online Vedic Astrology & Spiritual Remedy Tool</h1>
+            <p>Generate instant astrology reports, birth chart remedies, dosha analysis, and spiritual guidance.</p>
+          </div>
+        </noscript>
         {children}
         <Analytics />
       </body>

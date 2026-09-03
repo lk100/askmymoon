@@ -106,16 +106,16 @@ export default function Home() {
     const userAgent = navigator.userAgent;
 
     if (/Android/i.test(userAgent)) {
-      window.location.href = `intent://${currentUrl.replace(/^https?:\/\//, '')}#Intent;scheme=https;end`;
+      const browserIntent = `intent://${currentUrl.replace(/^https?:\/\//, '')}#Intent;action=android.intent.action.VIEW;scheme=https;category=android.intent.category.BROWSABLE;end`;
+      window.location.assign(browserIntent);
       return;
     }
 
-    if (/iPhone|iPad|iPod/i.test(userAgent)) {
-      window.open(currentUrl, '_blank', 'noopener,noreferrer');
-      return;
-    }
-
-    window.open(currentUrl, '_blank', 'noopener,noreferrer');
+    const externalLink = document.createElement('a');
+    externalLink.href = currentUrl;
+    externalLink.target = '_blank';
+    externalLink.rel = 'noopener noreferrer';
+    externalLink.click();
   };
 
   useEffect(() => {

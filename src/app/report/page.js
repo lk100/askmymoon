@@ -773,6 +773,38 @@ export default function ReportPage() {
           </div>
         )}
 
+        {isPaid && (
+          <div className="mb-6">
+            <h2 className="text-lg font-serif font-semibold mb-3">Unlocked Marriage Analysis</h2>
+            {marriageData.seventhLordRemedy && (
+              <div className="pdf-block mb-4 p-4 rounded-xl border border-[#E7E2D8]">
+                <Eyebrow tone="marigold">7th Lord: {marriageData.seventhLord}</Eyebrow>
+                <p className="text-[11px] mt-2 leading-relaxed">{marriageData.seventhLordRemedy.theme}</p>
+                <p className="text-[11px] mt-1 leading-relaxed"><b>Core Problem:</b> {marriageData.seventhLordRemedy.coreProblem}</p>
+                <p className="text-[11px] mt-1 leading-relaxed"><b>Practical:</b> {marriageData.seventhLordRemedy.practicalRemedy}</p>
+                <p className="text-[11px] mt-1 leading-relaxed"><b>Mantra:</b> {marriageData.seventhLordRemedy.mantraRemedy}</p>
+              </div>
+            )}
+            <DomainPlacementsPdf placements={marriageData.placements} />
+          </div>
+        )}
+
+        {isPaid && (
+          <div className="mb-6">
+            <h2 className="text-lg font-serif font-semibold mb-3">Unlocked Health Analysis</h2>
+            {healthData.sixthLordRemedy && (
+              <div className="pdf-block mb-4 p-4 rounded-xl border border-[#E7E2D8]">
+                <Eyebrow tone="marigold">6th Lord: {healthData.sixthLord}</Eyebrow>
+                <p className="text-[11px] mt-2 leading-relaxed">{healthData.sixthLordRemedy.theme}</p>
+                <p className="text-[11px] mt-1 leading-relaxed"><b>Core Problem:</b> {healthData.sixthLordRemedy.coreProblem}</p>
+                <p className="text-[11px] mt-1 leading-relaxed"><b>Practical:</b> {healthData.sixthLordRemedy.practicalRemedy}</p>
+                <p className="text-[11px] mt-1 leading-relaxed"><b>Mantra:</b> {healthData.sixthLordRemedy.mantraRemedy}</p>
+              </div>
+            )}
+            <DomainPlacementsPdf placements={healthData.placements} />
+          </div>
+        )}
+
         <div className="mb-2">
           <h2 className="text-lg font-serif font-semibold mb-2">Special Dosha Diagnostics</h2>
           <div className="grid grid-cols-2 gap-6">

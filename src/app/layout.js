@@ -1,5 +1,6 @@
 import './globals.css';
 import Script from 'next/script';
+import { Analytics } from '@vercel/analytics/next';
 
 const googleAnalyticsId = process.env.NEXT_PUBLIC_GA_ID;
 
@@ -67,6 +68,7 @@ export default function RootLayout({ children }) {
         suppressHydrationWarning={true}
       >
         {children}
+        <Analytics />
       </body>
     </html>
   );

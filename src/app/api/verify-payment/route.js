@@ -48,21 +48,27 @@ export async function POST(request) {
       paymentId,
       orderId,
       signature,
+      email,
       userEmail,
       userName,
+      phone,
       userPhone,
       amount,
       currency,
     } = payload || {};
 
-    const safeEmail = isValidEmail(userEmail) ? userEmail.trim() : 'not-provided@astro-remedies.com';
-    const safePhone = isNonEmptyString(userPhone) ? userPhone.trim() : '0000000000';
+    const submittedEmail = email || userEmail;
+    const submittedPhone = phone || userPhone;
+    const safeEmail = isValidEmail(submittedEmail) ? submittedEmail.trim() : null;
+    const safePhone = isNonEmptyString(submittedPhone) ? submittedPhone.trim() : null;
     const safeName = isNonEmptyString(userName) ? userName.trim() : 'Customer';
 
     if (
       !isNonEmptyString(paymentId) ||
       !isNonEmptyString(orderId) ||
       !isNonEmptyString(signature) ||
+      !safeEmail ||
+      !safePhone ||
       !Number.isInteger(amount) ||
       !Object.hasOwn(ALLOWED_PRICES, currency) ||
       amount !== ALLOWED_PRICES[currency]
@@ -89,6 +95,7 @@ export async function POST(request) {
     const paidAmount = amount / 100;
     const { error: insertError } = await supabase.from('paid_reports').upsert({
       payment_id: paymentId,
+      order_id: orderId,
       email: safeEmail,
       phone: safePhone,
       name: safeName,

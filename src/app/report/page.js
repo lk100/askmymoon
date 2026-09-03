@@ -197,6 +197,8 @@ export default function ReportPage() {
   const [selectedDomain, setSelectedDomain] = useState('career');
   const [activeView, setActiveView] = useState('planetary'); // 'planetary' | 'domain'
   const [isPaid, setIsPaid] = useState(false);
+  const [isDownloading, setIsDownloading] = useState(false);
+  const [downloadError, setDownloadError] = useState('');
 
   useEffect(() => {
     if (typeof window !== 'undefined') {
@@ -378,8 +380,53 @@ export default function ReportPage() {
     setIsPaid(true);
   };
 
+  const handleDownload = async () => {
+    if (isDownloading) return;
+
+    setDownloadError('');
+    setIsDownloading(true);
+    try {
+      await savePDF();
+      setIsDownloading(false);
+    } catch (error) {
+      console.error('Report download failed:', error);
+      setDownloadError('The report could not be saved here. Please use your browser\'s share or save option.');
+      setIsDownloading(false);
+    }
+  };
+
   return (
     <div className="min-h-screen bg-[#FAF8F4] text-[#14171F] font-sans antialiased pb-20">
+      {isDownloading && (
+        <div className="fixed inset-0 z-[100] flex items-center justify-center bg-slate-950/60 px-4 backdrop-blur-sm" role="dialog" aria-modal="true" aria-labelledby="download-progress-title">
+          <div className="w-full max-w-xs rounded-2xl border border-[#E7E2D8] bg-white p-6 text-center shadow-2xl">
+            <Loader2 className="mx-auto h-9 w-9 animate-spin text-[#B4571F]" />
+            <h2 id="download-progress-title" className="mt-4 text-base font-serif font-semibold text-[#14171F]">
+              Preparing your report
+            </h2>
+            <p className="mt-2 text-xs leading-relaxed text-[#78715F]">
+              Please wait. Your PDF is being generated and saved to your device.
+            </p>
+            <div className="mt-4 h-1.5 overflow-hidden rounded-full bg-[#E7E2D8]">
+              <div className="h-full w-1/2 animate-pulse rounded-full bg-[#B4571F]" />
+            </div>
+          </div>
+        </div>
+      )}
+
+      {downloadError && !isDownloading && (
+        <div className="fixed inset-x-4 top-5 z-[101] mx-auto max-w-md rounded-xl border border-[#9C3B3B]/25 bg-white p-4 text-center shadow-xl" role="alert">
+          <p className="text-xs leading-relaxed text-[#9C3B3B]">{downloadError}</p>
+          <button
+            type="button"
+            onClick={() => setDownloadError('')}
+            className="mt-3 rounded-lg bg-[#14171F] px-3 py-2 text-xs font-semibold text-white"
+          >
+            Close
+          </button>
+        </div>
+      )}
+
       {/* ============ HEADER ============ */}
       <header className="border-b border-[#E7E2D8] bg-[#FAF8F4]/90 backdrop-blur-md sticky top-0 z-40">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between gap-3">
@@ -391,7 +438,7 @@ export default function ReportPage() {
           <BrandLogo />
 
           <button
-            onClick={savePDF}
+            onClick={handleDownload}
             className="flex items-center gap-2 bg-[#14171F] hover:bg-[#2A2E38] active:scale-[0.97] text-white text-[11px] sm:text-xs font-semibold px-3.5 sm:px-4 py-2 rounded-lg transition-all duration-150"
           >
             <Printer className="w-3.5 h-3.5" />
@@ -604,7 +651,7 @@ export default function ReportPage() {
                     </div>
                     <button
                       type="button"
-                      onClick={savePDF}
+                      onClick={handleDownload}
                       className="inline-flex items-center gap-2 rounded-lg bg-[#3D6B4F] px-4 py-2.5 text-xs font-semibold text-white transition hover:bg-[#2A4C38]"
                     >
                       <Printer className="h-3.5 w-3.5" />

@@ -200,6 +200,7 @@ export default function ReportPage() {
   const [isDownloading, setIsDownloading] = useState(false);
   const [downloadError, setDownloadError] = useState('');
   const [showBrowserPrompt, setShowBrowserPrompt] = useState(false);
+  const [browserLinkCopied, setBrowserLinkCopied] = useState(false);
 
   useEffect(() => {
     if (typeof window !== 'undefined') {
@@ -219,6 +220,15 @@ export default function ReportPage() {
   useEffect(() => {
     setShowBrowserPrompt(/Instagram|FBAN|FBAV|FB_IAB|FBIOS|FB4A/i.test(navigator.userAgent));
   }, []);
+
+  const handleCopyBrowserLink = async () => {
+    try {
+      await navigator.clipboard.writeText(window.location.href);
+      setBrowserLinkCopied(true);
+    } catch (error) {
+      console.error('Could not copy report link:', error);
+    }
+  };
 
   const careerData = useMemo(() => {
     if (!userData?.planetPositions || !userData?.ascendant) {
@@ -380,28 +390,32 @@ export default function ReportPage() {
   return (
     <div className="min-h-screen bg-[#FAF8F4] text-[#14171F] font-sans antialiased pb-20">
       {showBrowserPrompt && (
-        <div className="border-b border-amber-700/20 bg-amber-50 px-3 py-3 sm:px-6" role="status">
-          <aside
-            aria-labelledby="report-browser-prompt-title"
-            className="mx-auto flex max-w-4xl items-start gap-3"
-          >
-            <div className="min-w-0 flex-1">
-              <h2 id="report-browser-prompt-title" className="text-xs font-bold text-amber-900 sm:text-sm">
-                Open this report in Safari or Chrome
+        <div className="border-b border-amber-700/20 bg-amber-50 px-3 py-4 sm:px-6" role="status">
+          <div className="mx-auto max-w-4xl">
+            <div className="flex items-start justify-between gap-3">
+              <h2 className="text-sm font-bold text-amber-900 sm:text-base">
+                Open in Chrome or Safari for the best experience
               </h2>
-              <p className="mt-1 text-[11px] leading-relaxed text-slate-600 sm:text-xs">
-                For reliable payment and PDF downloading, use your external browser instead of Instagram.
-              </p>
+              <button
+                type="button"
+                onClick={() => setShowBrowserPrompt(false)}
+                aria-label="Close browser notice"
+                className="shrink-0 rounded-md p-1 text-amber-900 transition hover:bg-amber-200"
+              >
+                <X className="h-5 w-5" />
+              </button>
             </div>
+            <p className="mt-1 text-xs leading-relaxed text-slate-600 sm:text-sm">
+              You are viewing your report inside Instagram. Open it in an external browser before paying or downloading your report.
+            </p>
             <button
               type="button"
-              onClick={() => setShowBrowserPrompt(false)}
-              aria-label="Close browser notice"
-              className="shrink-0 rounded-md p-1 text-amber-900 transition hover:bg-amber-200"
+              onClick={handleCopyBrowserLink}
+              className="mt-3 rounded-xl bg-amber-800 px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-amber-900"
             >
-              <X className="h-4 w-4" />
+              {browserLinkCopied ? 'Link copied' : 'Copy link to open in browser'}
             </button>
-          </aside>
+          </div>
         </div>
       )}
       {isDownloading && (

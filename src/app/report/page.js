@@ -199,6 +199,7 @@ export default function ReportPage() {
   const [isPaid, setIsPaid] = useState(false);
   const [isDownloading, setIsDownloading] = useState(false);
   const [downloadError, setDownloadError] = useState('');
+  const [showBrowserPrompt, setShowBrowserPrompt] = useState(false);
 
   useEffect(() => {
     if (typeof window !== 'undefined') {
@@ -213,6 +214,10 @@ export default function ReportPage() {
       }
       setLoading(false);
     }
+  }, []);
+
+  useEffect(() => {
+    setShowBrowserPrompt(/Instagram|FBAN|FBAV|FB_IAB|FBIOS|FB4A/i.test(navigator.userAgent));
   }, []);
 
   const careerData = useMemo(() => {
@@ -374,6 +379,31 @@ export default function ReportPage() {
 
   return (
     <div className="min-h-screen bg-[#FAF8F4] text-[#14171F] font-sans antialiased pb-20">
+      {showBrowserPrompt && (
+        <div className="border-b border-amber-700/20 bg-amber-50 px-3 py-3 sm:px-6" role="status">
+          <aside
+            aria-labelledby="report-browser-prompt-title"
+            className="mx-auto flex max-w-4xl items-start gap-3"
+          >
+            <div className="min-w-0 flex-1">
+              <h2 id="report-browser-prompt-title" className="text-xs font-bold text-amber-900 sm:text-sm">
+                Open this report in Safari or Chrome
+              </h2>
+              <p className="mt-1 text-[11px] leading-relaxed text-slate-600 sm:text-xs">
+                For reliable payment and PDF downloading, use your external browser instead of Instagram.
+              </p>
+            </div>
+            <button
+              type="button"
+              onClick={() => setShowBrowserPrompt(false)}
+              aria-label="Close browser notice"
+              className="shrink-0 rounded-md p-1 text-amber-900 transition hover:bg-amber-200"
+            >
+              <X className="h-4 w-4" />
+            </button>
+          </aside>
+        </div>
+      )}
       {isDownloading && (
         <div className="fixed inset-0 z-[100] flex items-center justify-center bg-slate-950/60 px-4 backdrop-blur-sm" role="dialog" aria-modal="true" aria-labelledby="download-progress-title">
           <div className="w-full max-w-xs rounded-2xl border border-[#E7E2D8] bg-white p-6 text-center shadow-2xl">

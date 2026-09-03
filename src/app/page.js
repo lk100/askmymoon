@@ -89,7 +89,6 @@ export default function Home() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [hasSelectedLocation, setHasSelectedLocation] = useState(false);
   const [showBrowserPrompt, setShowBrowserPrompt] = useState(false);
-  const [linkCopied, setLinkCopied] = useState(false);
   const dropdownRef = useRef(null);
   const submitCooldownRef = useRef(0);
   const SUBMIT_COOLDOWN_MS = 3000;
@@ -102,14 +101,22 @@ export default function Home() {
     return () => window.clearTimeout(timer);
   }, []);
 
-  const handleCopyPageLink = async () => {
-    try {
-      await navigator.clipboard.writeText(window.location.href);
-      setLinkCopied(true);
-      setTimeout(() => setLinkCopied(false), 2500);
-    } catch (error) {
-      window.prompt('Copy this link and open it in Chrome or Safari:', window.location.href);
+  const handleOpenInBrowser = () => {
+    const currentUrl = window.location.href;
+    const encodedUrl = encodeURIComponent(currentUrl);
+    const userAgent = navigator.userAgent;
+
+    if (/Android/i.test(userAgent)) {
+      window.location.href = `intent://${currentUrl.replace(/^https?:\/\//, '')}#Intent;scheme=https;package=com.android.chrome;end`;
+      return;
     }
+
+    if (/iPhone|iPad|iPod/i.test(userAgent)) {
+      window.location.href = `googlechrome://navigate?url=${encodedUrl}`;
+      return;
+    }
+
+    window.open(currentUrl, '_blank', 'noopener,noreferrer');
   };
 
   useEffect(() => {
@@ -293,18 +300,15 @@ export default function Home() {
             <div className="min-w-0 flex-1">
               <p className="text-xs sm:text-sm font-bold text-amber-900">Open in Chrome or Safari for the best experience</p>
               <p className="mt-1 text-[11px] sm:text-xs leading-relaxed text-slate-600">
-                You are viewing Astro Remedies inside Instagram. Tap the browser menu and choose
-                <span className="font-semibold text-slate-900"> Open in Chrome </span>
-                or
-                <span className="font-semibold text-slate-900"> Open in Safari </span>
-                before generating and downloading your report.
+                You are viewing Astro Remedies inside Instagram. Use the button below to open this page in Chrome.
+                For Safari, tap the browser menu and choose <span className="font-semibold text-slate-900">Open in Safari</span>.
               </p>
               <button
                 type="button"
-                onClick={handleCopyPageLink}
+                onClick={handleOpenInBrowser}
                 className="mt-2 rounded-lg bg-amber-800 px-3 py-2 text-[11px] font-semibold text-white transition hover:bg-amber-900"
               >
-                {linkCopied ? 'Link copied' : 'Copy link to open in browser'}
+                Open in Chrome
               </button>
             </div>
             <button

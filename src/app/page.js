@@ -294,43 +294,30 @@ export default function Home() {
       </div>
 
       {showBrowserPrompt && (
-        <div className="fixed inset-0 z-[100] flex items-center justify-center bg-slate-950/55 px-4 py-6" role="presentation">
+        <div className="border-b border-amber-700/20 bg-amber-50 px-3 py-3 sm:px-6" role="status">
           <aside
-            role="dialog"
-            aria-modal="true"
             aria-labelledby="browser-prompt-title"
-            className="relative w-full max-w-sm rounded-2xl border border-amber-900/15 bg-[#FDFBF7] p-5 shadow-2xl sm:p-6"
+            className="mx-auto flex max-w-6xl items-start gap-3"
           >
-            <button
-              type="button"
-              onClick={() => setShowBrowserPrompt(false)}
-              aria-label="Close browser prompt"
-              className="absolute right-3 top-3 rounded-md p-1.5 text-slate-500 transition hover:bg-amber-100 hover:text-amber-900"
-            >
-              <X className="h-5 w-5" />
-            </button>
-            <div className="pr-7">
-              <div className="mb-3 flex h-11 w-11 items-center justify-center rounded-xl bg-amber-100 text-amber-900">
-                <ArrowRight className="h-5 w-5" />
-              </div>
-              <h2 id="browser-prompt-title" className="text-lg font-extrabold text-slate-900">
-                Open in your browser
+            <div className="min-w-0 flex-1">
+              <h2 id="browser-prompt-title" className="text-xs font-bold text-amber-900 sm:text-sm">
+                Open in your external browser for the best experience
               </h2>
-              <p className="mt-2 text-sm leading-relaxed text-slate-600">
-                For reliable payment and PDF downloads, open Astro Remedies in your external browser.
+              <p className="mt-1 text-[11px] leading-relaxed text-slate-600 sm:text-xs">
+                You are viewing Astro Remedies inside Instagram. Open this page in your external browser for reliable payment and PDF downloads.
               </p>
+              <button
+                type="button"
+                onClick={handleOpenInBrowser}
+                className="mt-2 inline-flex items-center gap-2 rounded-lg bg-amber-800 px-3 py-2 text-[11px] font-semibold text-white transition hover:bg-amber-900"
+              >
+                Open in browser
+                <ArrowRight className="h-3.5 w-3.5" />
+              </button>
             </div>
-            <button
-              type="button"
-              onClick={handleOpenInBrowser}
-              className="mt-5 flex w-full items-center justify-center gap-2 rounded-xl bg-amber-800 px-4 py-3 text-sm font-bold text-white transition hover:bg-amber-900 active:scale-[0.99]"
-            >
-              Open in browser
-              <ArrowRight className="h-4 w-4" />
+            <button type="button" onClick={() => setShowBrowserPrompt(false)} aria-label="Close browser notice" className="shrink-0 rounded-md p-1 text-amber-900 transition hover:bg-amber-200">
+              <X className="h-4 w-4" />
             </button>
-            <p className="mt-3 text-center text-[11px] leading-relaxed text-slate-500">
-              If nothing happens, tap the <span className="font-semibold">…</span> menu above and choose <span className="font-semibold">Open in browser</span>.
-            </p>
           </aside>
         </div>
       )}

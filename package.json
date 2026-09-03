@@ -12,6 +12,7 @@
   "dependencies": {
     "@supabase/supabase-js": "^2.109.0",
     "@vercel/analytics": "^2.0.1",
+    "@vercel/speed-insights": "^2.0.0",
     "astronomy-engine": "^2.1.19",
     "date-fns": "^4.4.0",
     "date-fns-tz": "^3.2.0",

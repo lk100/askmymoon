@@ -9,8 +9,7 @@ const navLinks = [
   { href: '/blogs', label: 'Blog' },
   { href: '/consultation', label: 'Consultation' },
   { href: '/about', label: 'About' },
-  { href: '/terms', label: 'Terms' },
-  { href: '/privacy', label: 'Privacy' },
+
 ];
 
 export default function Navbar({

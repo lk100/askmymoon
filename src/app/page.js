@@ -11,7 +11,8 @@ import {
   MapPin,
   Loader2,
   Gift,
-  Compass
+  Compass,
+  X,
 } from 'lucide-react';
 import { calculateChart } from '@/lib/astrology';
 import Footer from './components/Footer';
@@ -87,9 +88,29 @@ export default function Home() {
   const [showDropdown, setShowDropdown] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [hasSelectedLocation, setHasSelectedLocation] = useState(false);
+  const [showBrowserPrompt, setShowBrowserPrompt] = useState(false);
+  const [linkCopied, setLinkCopied] = useState(false);
   const dropdownRef = useRef(null);
   const submitCooldownRef = useRef(0);
   const SUBMIT_COOLDOWN_MS = 3000;
+
+  useEffect(() => {
+    const timer = window.setTimeout(() => {
+      setShowBrowserPrompt(/Instagram|FBAN|FBAV|FB_IAB|FBIOS|FB4A/i.test(navigator.userAgent));
+    }, 0);
+
+    return () => window.clearTimeout(timer);
+  }, []);
+
+  const handleCopyPageLink = async () => {
+    try {
+      await navigator.clipboard.writeText(window.location.href);
+      setLinkCopied(true);
+      setTimeout(() => setLinkCopied(false), 2500);
+    } catch (error) {
+      window.prompt('Copy this link and open it in Chrome or Safari:', window.location.href);
+    }
+  };
 
   useEffect(() => {
     if (placeQuery.trim().length < 3 || hasSelectedLocation) {
@@ -265,6 +286,38 @@ export default function Home() {
           </div>
         </div>
       </div>
+
+      {showBrowserPrompt && (
+        <aside role="alert" className="border-b border-amber-700/20 bg-amber-50 px-3 sm:px-6 py-3">
+          <div className="max-w-6xl mx-auto flex items-start gap-3">
+            <div className="min-w-0 flex-1">
+              <p className="text-xs sm:text-sm font-bold text-amber-900">Open in Chrome or Safari for the best experience</p>
+              <p className="mt-1 text-[11px] sm:text-xs leading-relaxed text-slate-600">
+                You are viewing Astro Remedies inside Instagram. Tap the browser menu and choose
+                <span className="font-semibold text-slate-900"> Open in Chrome </span>
+                or
+                <span className="font-semibold text-slate-900"> Open in Safari </span>
+                before generating and downloading your report.
+              </p>
+              <button
+                type="button"
+                onClick={handleCopyPageLink}
+                className="mt-2 rounded-lg bg-amber-800 px-3 py-2 text-[11px] font-semibold text-white transition hover:bg-amber-900"
+              >
+                {linkCopied ? 'Link copied' : 'Copy link to open in browser'}
+              </button>
+            </div>
+            <button
+              type="button"
+              onClick={() => setShowBrowserPrompt(false)}
+              aria-label="Dismiss browser notice"
+              className="shrink-0 rounded-md p-1 text-amber-900 transition hover:bg-amber-200"
+            >
+              <X className="h-4 w-4" />
+            </button>
+          </div>
+        </aside>
+      )}
 
       <Navbar ctaLabel="Blog" ctaHref="/blogs" />
 

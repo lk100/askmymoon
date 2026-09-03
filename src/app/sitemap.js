@@ -2,7 +2,15 @@ import { blogPosts } from '@/data/blogPosts';
 
 export default function sitemap() {
   const siteUrl = 'https://www.askmymoon.com';
-  const staticRoutes = ['', '/about', '/blogs', '/privacy', '/terms'];
+  const staticRoutes = [
+    '',
+    '/about',
+    '/blogs',
+    '/checkout',
+    '/consultation',
+    '/privacy',
+    '/terms',
+  ];
 
   const blogRoutes = blogPosts.map((post) => `/blogs/${post.slug}`);
 

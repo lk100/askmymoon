@@ -69,6 +69,17 @@ export default function HomePage() {
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }}
       />
+      
+      {/* SSR Content Header for Search Crawlers */}
+      <div className="sr-only">
+        <h1>AskMyMoon | Online Vedic Astrology & Spiritual Remedy Tool</h1>
+        <h2>Instant Personalised Astrology Remedies, Kundali & Dosha Guidance</h2>
+        <p>
+          AskMyMoon provides automated chart analysis, birth chart remedy generation, 
+          mantras, and practical spiritual guidance for daily balance and decision making.
+        </p>
+      </div>
+
       <HomeClient />
     </>
   );

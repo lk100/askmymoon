@@ -17,6 +17,8 @@ alter table public.paid_reports
 alter table public.paid_reports
   add column if not exists order_id text;
 
+notify pgrst, 'reload schema';
+
 alter table public.paid_reports
   alter column report_data drop not null;
 

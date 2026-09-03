@@ -93,7 +93,7 @@ export async function POST(request) {
     );
     const createdAt = new Date().toISOString();
     const paidAmount = amount / 100;
-    const { error: insertError } = await supabase.from('paid_reports').upsert({
+    const reportRow = {
       payment_id: paymentId,
       order_id: orderId,
       email: safeEmail,
@@ -103,7 +103,13 @@ export async function POST(request) {
       currency,
       report_data: {},
       created_at: createdAt,
-    }, { onConflict: 'payment_id' });
+    };
+    let { error: insertError } = await supabase.from('paid_reports').upsert(reportRow, { onConflict: 'payment_id' });
+
+    if (insertError?.code === 'PGRST204' && insertError.message.includes("'order_id' column")) {
+      const { order_id: unusedOrderId, ...legacyReportRow } = reportRow;
+      ({ error: insertError } = await supabase.from('paid_reports').upsert(legacyReportRow, { onConflict: 'payment_id' }));
+    }
 
     if (insertError) {
       console.error('Supabase paid_reports insert failed:', insertError);

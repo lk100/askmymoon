@@ -2,9 +2,24 @@ import Link from 'next/link';
 import Footer from './Footer';
 import Navbar from './Navbar';
 
-export default function InfoPage({ eyebrow, title, intro, children }) {
+export default function InfoPage({ eyebrow, title, intro, canonicalPath, children }) {
+  const pageUrl = `https://www.askmymoon.com${canonicalPath}`;
+  const structuredData = {
+    '@context': 'https://schema.org',
+    '@type': 'WebPage',
+    name: title,
+    description: intro,
+    url: pageUrl,
+    isPartOf: { '@id': 'https://www.askmymoon.com/#website' },
+    about: { '@id': 'https://www.askmymoon.com/#organization' },
+  };
+
   return (
     <div className="min-h-screen bg-[#FDFBF7] text-slate-800 font-sans antialiased">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }}
+      />
       <Navbar ctaLabel="Generate Report" ctaHref="/#birth-form" />
 
       <main className="max-w-4xl mx-auto px-4 sm:px-6 py-10 sm:py-16">

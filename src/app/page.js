@@ -90,6 +90,8 @@ export default function Home() {
   const [hasSelectedLocation, setHasSelectedLocation] = useState(false);
   const [showBrowserPrompt, setShowBrowserPrompt] = useState(false);
   const dropdownRef = useRef(null);
+  const locationCacheRef = useRef(new Map());
+  const locationRequestRef = useRef(null);
   const submitCooldownRef = useRef(0);
   const SUBMIT_COOLDOWN_MS = 3000;
 
@@ -120,26 +122,47 @@ export default function Home() {
 
   useEffect(() => {
     if (placeQuery.trim().length < 3 || hasSelectedLocation) {
+      locationRequestRef.current?.abort();
       return;
     }
 
     const timer = setTimeout(async () => {
+      const query = placeQuery.trim();
+      const normalizedQuery = query.toLowerCase();
+      const cachedSuggestions = locationCacheRef.current.get(normalizedQuery);
+
+      if (cachedSuggestions) {
+        setSuggestions(cachedSuggestions);
+        setShowDropdown(cachedSuggestions.length > 0);
+        return;
+      }
+
+      locationRequestRef.current?.abort();
+      const controller = new AbortController();
+      locationRequestRef.current = controller;
       setIsSearchingLocation(true);
       try {
-        const response = await fetch(`/api/location-search?q=${encodeURIComponent(placeQuery)}`);
+        const response = await fetch(`/api/location-search?q=${encodeURIComponent(query)}`, {
+          signal: controller.signal,
+        });
         const data = await response.json();
+        locationCacheRef.current.set(normalizedQuery, data);
         setSuggestions(data);
         setShowDropdown(data.length > 0);
       } catch (error) {
+        if (error.name === 'AbortError') return;
         console.error("Geocoding fetch error:", error);
         setSuggestions([]);
         setShowDropdown(false);
       } finally {
-        setIsSearchingLocation(false);
+        if (!controller.signal.aborted) setIsSearchingLocation(false);
       }
     }, 350);
 
-    return () => clearTimeout(timer);
+    return () => {
+      clearTimeout(timer);
+      locationRequestRef.current?.abort();
+    };
   }, [placeQuery, hasSelectedLocation]);
 
   useEffect(() => {
@@ -207,12 +230,17 @@ export default function Home() {
       return;
     }
 
+    if (formData.lat === null || formData.lon === null || !hasSelectedLocation) {
+      alert('Please choose your place of birth from the location suggestions so we can use accurate coordinates.');
+      return;
+    }
+
     submitCooldownRef.current = now;
     setIsSubmitting(true);
 
     const safeTime = formData.time;
-    const latitude = formData.lat !== null ? formData.lat : 28.6139;
-    const longitude = formData.lon !== null ? formData.lon : 77.2090;
+    const latitude = formData.lat;
+    const longitude = formData.lon;
 
     const detectedTimeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
 
@@ -278,8 +306,43 @@ export default function Home() {
     }
   ];
 
+  const structuredData = {
+    '@context': 'https://schema.org',
+    '@graph': [
+      {
+        '@type': 'Organization',
+        '@id': 'https://www.askmymoon.com/#organization',
+        name: 'AskMyMoon',
+        url: 'https://www.askmymoon.com',
+        description: 'Online Vedic astrology platform offering instant astrology reports, birth chart remedies, dosha analysis, and personalized spiritual guidance.',
+        knowsAbout: [
+          'Online Vedic astrology platform',
+          'Instant astrology report',
+          'Birth chart remedy tool',
+          'Astrology software',
+          'Kundali remedy tool',
+          'Dosha analysis tool',
+          'Mantra generator',
+          'Personalized spiritual guidance',
+        ],
+      },
+      {
+        '@type': 'WebSite',
+        '@id': 'https://www.askmymoon.com/#website',
+        name: 'AskMyMoon',
+        url: 'https://www.askmymoon.com',
+        description: 'Instant personalized astrology remedies, birth chart reports, and spiritual tools for Kundali and dosha analysis.',
+        publisher: { '@id': 'https://www.askmymoon.com/#organization' },
+      },
+    ],
+  };
+
   return (
     <div className="min-h-screen w-full max-w-full overflow-x-hidden bg-[#FDFBF7] text-slate-800 font-sans antialiased">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }}
+      />
 
       {/* Top Utility Bar */}
       <div className="border-b border-amber-900/10 bg-[#FAF6F0] text-[10px] sm:text-xs text-slate-600">
@@ -322,7 +385,7 @@ export default function Home() {
         </div>
       )}
 
-      <Navbar ctaLabel="Blog" ctaHref="/blogs" />
+      <Navbar />
 
       {/* Hero Section */}
       <section className="max-w-6xl mx-auto px-3 sm:px-6 pt-3 sm:pt-4 pb-8 sm:pb-12"  >
@@ -336,7 +399,7 @@ export default function Home() {
             </div>
 
             <h1 className="text-[22px] sm:text-2.5xl md:text-3xl lg:text-[2.7rem] font-black text-slate-900 leading-[1.15] tracking-tight">
-              India's First Instant <span className="text-amber-800">  <br></br>Spiritual remedies tool </span>
+              Instant Vedic Astrology <span className="text-amber-800"><br />& Remedy Tools</span>
             </h1>
 
             <p className="text-slate-600 text-sm sm:text-base md:text-lg leading-relaxed">
@@ -560,7 +623,7 @@ export default function Home() {
         <div className="bg-[#FAF6F0] border border-amber-900/15 rounded-2xl sm:rounded-3xl p-4 sm:p-8 md:p-10 shadow-sm">
           <div className="mb-5 sm:mb-8">
             <h2 className="text-lg sm:text-2xl md:text-3xl font-extrabold text-amber-900 mb-2 leading-tight">
-              What Astro Remedies 3.5 Offers
+              Birth Chart Remedy Tool & Astrology Software
             </h2>
             <div className="w-10 sm:w-12 h-1 bg-amber-700 rounded-full mb-2.5 sm:mb-3"></div>
             <p className="text-slate-600 text-xs sm:text-sm md:text-base max-w-3xl leading-relaxed">

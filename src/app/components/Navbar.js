@@ -2,6 +2,7 @@
 
 import Link from 'next/link';
 import { useState } from 'react';
+import { Menu, X } from 'lucide-react';
 import BrandLogo from './BrandLogo';
 
 const navLinks = [
@@ -20,17 +21,18 @@ export default function Navbar({
   const [isOpen, setIsOpen] = useState(false);
 
   return (
-    <header className={`border-b border-amber-900/10 bg-[#FAF6F0] ${className}`}>
-      <div className="mx-auto max-w-6xl px-3 py-3 sm:px-6 sm:py-4">
-        <div className="flex items-center justify-between gap-3">
+    <header className={`border-b border-amber-900/10 bg-[#FAF6F0]/95 ${className}`}>
+      <div className="mx-auto max-w-6xl px-3 sm:px-6">
+        <div className="flex min-h-16 items-center justify-between gap-4 sm:min-h-[72px]">
           <Link href="/" aria-label="AskMyMoon home" className="flex items-center">
             <BrandLogo />
           </Link>
 
-          <nav className="hidden items-center gap-5 text-sm font-medium text-slate-700 md:flex">
+          <nav className="hidden items-center gap-6 text-[13px] font-semibold text-slate-600 md:flex">
             {navLinks.map((link) => (
-              <Link key={link.href} href={link.href} className="transition-colors hover:text-amber-800">
+              <Link key={link.href} href={link.href} className="relative py-2 transition-colors hover:text-amber-800">
                 {link.label}
+                <span className="absolute inset-x-0 bottom-0 h-0.5 origin-left scale-x-0 rounded-full bg-amber-800 transition-transform hover:scale-x-100" />
               </Link>
             ))}
           </nav>
@@ -49,25 +51,21 @@ export default function Navbar({
             aria-label="Toggle navigation menu"
             aria-expanded={isOpen}
             onClick={() => setIsOpen((prev) => !prev)}
-            className="inline-flex h-10 w-10 items-center justify-center rounded-full border border-amber-900/15 bg-white text-slate-800 shadow-sm transition hover:border-amber-700 md:hidden"
+            className="inline-flex h-10 w-10 items-center justify-center rounded-xl border border-amber-900/15 bg-white text-slate-800 shadow-sm transition hover:border-amber-700 md:hidden"
           >
-            <span className="sr-only">Open menu</span>
-            <div className="flex flex-col gap-1.5">
-              <span className={`block h-0.5 w-5 rounded-full bg-slate-800 transition ${isOpen ? 'translate-y-2 rotate-45' : ''}`} />
-              <span className={`block h-0.5 w-5 rounded-full bg-slate-800 transition ${isOpen ? 'opacity-0' : 'opacity-100'}`} />
-              <span className={`block h-0.5 w-5 rounded-full bg-slate-800 transition ${isOpen ? '-translate-y-2 -rotate-45' : ''}`} />
-            </div>
+            <span className="sr-only">{isOpen ? 'Close menu' : 'Open menu'}</span>
+            {isOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
           </button>
         </div>
 
         {isOpen && (
-          <nav className="mt-3 space-y-2 rounded-2xl border border-amber-900/10 bg-white p-3 shadow-sm md:hidden">
+          <nav className="border-t border-amber-900/10 py-3 md:hidden">
             {navLinks.map((link) => (
               <Link
                 key={link.href}
                 href={link.href}
                 onClick={() => setIsOpen(false)}
-                className="block rounded-xl px-3 py-2 text-sm font-medium text-slate-700 transition hover:bg-amber-50 hover:text-amber-800"
+                className="block rounded-lg px-3 py-2.5 text-sm font-semibold text-slate-700 transition hover:bg-amber-50 hover:text-amber-800"
               >
                 {link.label}
               </Link>
@@ -75,7 +73,7 @@ export default function Navbar({
             <Link
               href={ctaHref}
               onClick={() => setIsOpen(false)}
-              className="mt-2 inline-flex w-full items-center justify-center rounded-full bg-amber-800 px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-amber-900"
+              className="mt-2 inline-flex w-full items-center justify-center rounded-xl bg-amber-800 px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-amber-900"
             >
               {ctaLabel}
             </Link>

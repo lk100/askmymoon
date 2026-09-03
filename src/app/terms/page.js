@@ -11,6 +11,7 @@ export default function TermsPage() {
       eyebrow="Legal"
       title="Terms and Conditions"
       intro="These terms explain the basic conditions for using AskMyMoon and its personalised astrology reports."
+      canonicalPath="/terms"
     >
       <section>
         <h2 className="text-xl sm:text-2xl font-bold text-slate-900">Using the service</h2>

@@ -210,29 +210,6 @@ export default function ReportPage() {
         setIsPaid(parsed.paymentStatus === 'verified');
         const availablePlanets = merged.planetPositions ? Object.keys(merged.planetPositions) : [];
         if (availablePlanets.length > 0) setSelectedPlanet(availablePlanets[0]);
-      } else {
-        setUserData({
-          name: "Love Khanna",
-          dob: "2003-07-13",
-          time: "11:39 AM",
-          place: "Moradabad, UP",
-          ascendant: "Virgo",
-          rulerHouse: 10,
-          moonSign: "Sagittarius",
-          mahadasha: "Mercury",
-          planetPositions: {
-            Sun: { sign: "Gemini", house: 10 },
-            Moon: { sign: "Sagittarius", house: 4 },
-            Mars: { sign: "Aries", house: 8 },
-            Mercury: { sign: "Gemini", house: 10 },
-            Jupiter: { sign: "Cancer", house: 11 },
-            Venus: { sign: "Taurus", house: 9 },
-            Saturn: { sign: "Aquarius", house: 6 },
-            Rahu: { sign: "Taurus", house: 9 },
-            Ketu: { sign: "Scorpio", house: 3 }
-          }
-        });
-        setSelectedPlanet('Sun');
       }
       setLoading(false);
     }

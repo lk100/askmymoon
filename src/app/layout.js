@@ -7,11 +7,21 @@ const googleAnalyticsId = process.env.NEXT_PUBLIC_GA_ID;
 export const metadata = {
   metadataBase: new URL('https://www.askmymoon.com'),
   title: {
-    default: 'AskMyMoon | Free Vedic Astrology Remedies & Kundli Guidance',
+    default: 'AskMyMoon | Online Vedic Astrology & Remedy Tool',
     template: '%s | AskMyMoon',
   },
-  description: 'Get trusted Vedic astrology remedies, kundli guidance, and dosha analysis with an instant astrology report designed to help improve life decisions and daily balance.',
-  keywords: ['AskMyMoon', 'free Vedic astrology remedies', 'kundli guidance', 'astrology report', 'dosha analysis', 'Vedic remedies', 'personalized astrology report'],
+  description: 'Instant personalized astrology remedies, birth chart reports, and spiritual tools for Kundali and dosha analysis.',
+  keywords: [
+    'AskMyMoon',
+    'online Vedic astrology platform',
+    'instant astrology report',
+    'birth chart remedy tool',
+    'astrology software',
+    'Kundali remedy tool',
+    'dosha analysis tool',
+    'mantra generator',
+    'personalized spiritual guidance',
+  ],
   authors: [{ name: 'AskMyMoon' }],
   creator: 'AskMyMoon',
   alternates: {
@@ -20,14 +30,14 @@ export const metadata = {
   openGraph: {
     type: 'website',
     siteName: 'AskMyMoon',
-    title: 'AskMyMoon | Free Vedic Astrology Remedies & Kundli Guidance',
-    description: 'Discover trusted Vedic astrology remedies, kundli guidance, and dosha analysis in a fast, free astrology report.',
+    title: 'AskMyMoon | Online Vedic Astrology & Remedy Tool',
+    description: 'Instant personalized astrology remedies, birth chart reports, and spiritual tools for Kundali and dosha analysis.',
     url: 'https://www.askmymoon.com',
   },
   twitter: {
     card: 'summary',
-    title: 'AskMyMoon | Free Vedic Astrology Remedies & Kundli Guidance',
-    description: 'Discover trusted Vedic astrology remedies, kundli guidance, and dosha analysis in a fast, free astrology report.',
+    title: 'AskMyMoon | Online Vedic Astrology & Remedy Tool',
+    description: 'Instant personalized astrology remedies, birth chart reports, and spiritual tools for Kundali and dosha analysis.',
   },
   robots: {
     index: true,

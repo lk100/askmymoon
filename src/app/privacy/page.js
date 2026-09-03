@@ -11,6 +11,7 @@ export default function PrivacyPage() {
       eyebrow="Privacy"
       title="Privacy Policy"
       intro="AskMyMoon is designed to collect only the information needed to generate and deliver a personalised report."
+      canonicalPath="/privacy"
     >
       <section>
         <h2 className="text-xl sm:text-2xl font-bold text-slate-900">Information you provide</h2>

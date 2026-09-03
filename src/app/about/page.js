@@ -12,6 +12,7 @@ export default function AboutPage() {
       eyebrow="Our vision"
       title="Making personalised remedies simple for everyone"
       intro="AskMyMoon is India’s first instant remedial tool built to make practical astrological guidance accessible without expensive consultations or searching across multiple platforms."
+      canonicalPath="/about"
     >
       <section>
         <h2 className="text-xl sm:text-2xl font-bold text-slate-900">One place for clear guidance</h2>

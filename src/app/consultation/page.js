@@ -74,9 +74,22 @@ export const metadata = {
 export default function ConsultationPage() {
   const featuredCards = consultations.filter((card) => card.featured);
   const regularCards = consultations.filter((card) => !card.featured);
+  const structuredData = {
+    '@context': 'https://schema.org',
+    '@type': 'WebPage',
+    name: 'AskMyMoon Astrology Consultation',
+    description: metadata.description,
+    url: 'https://www.askmymoon.com/consultation',
+    isPartOf: { '@id': 'https://www.askmymoon.com/#website' },
+    about: { '@id': 'https://www.askmymoon.com/#organization' },
+  };
 
   return (
     <div className="min-h-screen bg-[#FDFBF7] text-slate-800">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }}
+      />
       <Navbar ctaLabel="Get My Report" ctaHref="/#birth-form" />
 
       <main className="mx-auto max-w-6xl px-4 py-10 sm:px-6 lg:py-16">

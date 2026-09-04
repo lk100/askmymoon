@@ -349,27 +349,27 @@ export default function Home() {
           <div className="md:col-span-6 space-y-4 sm:space-y-6 min-w-0">
             <div className="relative inline-flex max-w-full items-center gap-1.5 sm:gap-2 px-2.5 sm:px-3 py-1 bg-amber-100/70 border border-amber-200 text-amber-900 text-[10px] sm:text-xs font-semibold rounded-md">
               <Sparkles className="w-3 h-3 sm:w-3.5 sm:h-3.5 text-amber-700 shrink-0" />
-              <span className="truncate">New Launch • Instant Remedy Generation @49</span>
+              <span className="truncate">Free preview • Full personalized report ₹49</span>
             </div>
 
-            <h1 className="text-[22px] sm:text-2.5xl md:text-3xl lg:text-[2.7rem] font-black text-slate-900 leading-[1.15] tracking-tight">
-              Instant Vedic Astrology <span className="text-amber-800"><br />& Remedy Tools</span>
+            <h1 className="text-[20px] sm:text-2.5xl md:text-3xl lg:text-[2.7rem] font-black text-slate-900 leading-[1.15] tracking-tight">
+              Your Birth Chart. <span className="text-amber-800"><br />Your Personal Guidance.</span>
             </h1>
 
             <p className="text-slate-600 text-sm sm:text-base md:text-lg leading-relaxed">
-              Discover trusted Vedic remedies, kundli guidance, and dosha analysis designed to bring clarity to your career, marriage, finance, and everyday life.
+              Get personalized insights for your career, relationships, finances, health, and everyday decisions from your birth details.
             </p>
 
             {/* Feature Bullets */}
             <div className="space-y-2.5 sm:space-y-3 pt-1 sm:pt-2">
               <div className="flex items-start sm:items-center gap-2.5 sm:gap-3 text-xs sm:text-sm font-semibold text-slate-700 leading-relaxed">
                 <CheckCircle2 className="w-4 h-4 sm:w-5 sm:h-5 text-amber-700 shrink-0 mt-0.5 sm:mt-0" />
-                <span>Instant detailed Kundli remedies and planet-wise guidance</span>
+                <span>See your core planetary insights in a free preview</span>
               </div>
 
               <div className="flex items-start sm:items-center gap-2.5 sm:gap-3 text-xs sm:text-sm font-semibold text-slate-700 leading-relaxed">
                 <CheckCircle2 className="w-4 h-4 sm:w-5 sm:h-5 text-amber-700 shrink-0 mt-0.5 sm:mt-0" />
-                <span>Downloadable astrology report with dosha analysis in under 12 seconds</span>
+                <span>Unlock the complete remedy report instantly</span>
               </div>
             </div>
 
@@ -397,11 +397,11 @@ export default function Home() {
 
           {/* Right Column: Direct Birth Form Card */}
           <div id="birth-form" className="w-full max-w-full min-w-0 md:col-span-5 md:col-start-8 bg-white border border-amber-900/15 rounded-2xl sm:rounded-3xl p-4 sm:p-6 md:p-8 shadow-sm">
-            <div className="relative mb-4 sm:mb-6 pb-3 sm:pb-4 border-b border-amber-900/10">
+            <div className="relative mb-3 sm:mb-5 pb-3 sm:pb-4 border-b border-amber-900/10">
               <div className="flex flex-row items-center justify-between gap-3">
                 <div>
-                  <h2 className="text-base sm:text-xl font-extrabold text-slate-900 leading-tight">Get your</h2>
-                  <p className="text-[10px] sm:text-xs text-slate-500 leading-relaxed">remedy file immediately</p>
+                  <h2 className="text-base sm:text-xl font-extrabold text-slate-900 leading-tight">Free Preview</h2>
+                  <p className="text-[10px] sm:text-xs text-slate-500 leading-relaxed">Personalized chart insights</p>
                 </div>
                 <div className="bg-emerald-50 px-2 sm:px-3 py-1 sm:py-1.5 rounded-lg border border-emerald-200 flex items-center gap-1 text-emerald-800 font-bold text-[9px] sm:text-xs uppercase shrink-0">
                   <Gift className="w-3 h-3 sm:w-3.5 sm:h-3.5" />
@@ -411,7 +411,7 @@ export default function Home() {
               </div>
             </div>
 
-            <form onSubmit={handleFormSubmit} className="space-y-3.5 sm:space-y-4">
+            <form onSubmit={handleFormSubmit} className="space-y-3 sm:space-y-4">
               <div>
                 <label className="block text-[11px] sm:text-xs font-bold uppercase tracking-wider text-slate-700 mb-1">
                   Full Name
@@ -555,7 +555,7 @@ export default function Home() {
                     </>
                   ) : (
                     <>
-                      <span className="text-xs sm:text-sm">Generate Report</span>
+                      <span className="text-xs sm:text-sm">Get My Free Preview</span>
                       <ArrowRight className="w-4 h-4" />
                     </>
                   )}
@@ -564,7 +564,7 @@ export default function Home() {
 
               <div className="flex items-center justify-center gap-1.5 text-[10px] sm:text-[11px] font-medium text-slate-500 pt-1 text-center">
                 <CheckCircle2 className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-emerald-600 shrink-0" />
-                <span>No credit card required • Instant PDF output</span>
+                <span>No payment required • Instant results • Full report ₹49</span>
               </div>
             </form>
           </div>

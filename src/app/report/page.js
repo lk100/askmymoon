@@ -674,26 +674,26 @@ export default function ReportPage({ initialReportToken = null }) {
               {/* ---- CAREER / FINANCES: live data ---- */}
               {isPaid && (
                 <div className="space-y-4">
-                  <div className="flex flex-wrap items-center justify-between gap-3 rounded-xl border border-[#3D6B4F]/25 bg-[#3D6B4F]/[0.06] p-4">
+                  <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 rounded-xl border border-[#3D6B4F]/25 bg-[#3D6B4F]/[0.06] p-4">
                     <div>
-                      <span className="mt-1 text-xs text-[#3D6B4F]">Your complete report is ready to download.</span>
+                      <span className="mt-1 text-[11px] sm:text-xs text-[#3D6B4F]">Your complete report is ready to download.</span>
                     </div>
-                    <div className="flex flex-wrap items-center gap-2">
+                    <div className="flex flex-nowrap items-center gap-1 sm:gap-2">
                       <button
                         type="button"
                         onClick={handleCopyLink}
                         disabled={!reportToken}
-                        className="inline-flex items-center gap-2 rounded-lg border border-[#3D6B4F]/30 bg-white px-4 py-2.5 text-xs font-semibold text-[#3D6B4F] transition hover:bg-[#3D6B4F]/10 disabled:cursor-not-allowed disabled:opacity-50"
+                        className="inline-flex shrink-0 items-center gap-1 whitespace-nowrap rounded-lg border border-[#3D6B4F]/30 bg-white px-2 py-2 text-[10px] font-semibold text-[#3D6B4F] transition hover:bg-[#3D6B4F]/10 disabled:cursor-not-allowed disabled:opacity-50 sm:gap-2 sm:px-4 sm:py-2.5 sm:text-xs"
                       >
-                        <Copy className="h-3.5 w-3.5" />
+                        <Copy className="h-3 w-3 sm:h-3.5 sm:w-3.5" />
                         {copyStatus || 'Copy link'}
                       </button>
                       <button
                         type="button"
                         onClick={handleDownload}
-                        className="inline-flex items-center gap-2 rounded-lg bg-[#3D6B4F] px-4 py-2.5 text-xs font-semibold text-white transition hover:bg-[#2A4C38]"
+                        className="inline-flex shrink-0 items-center gap-1 whitespace-nowrap rounded-lg bg-[#3D6B4F] px-2 py-2 text-[10px] font-semibold text-white transition hover:bg-[#2A4C38] sm:gap-2 sm:px-4 sm:py-2.5 sm:text-xs"
                       >
-                        <Printer className="h-3.5 w-3.5" />
+                        <Printer className="h-3 w-3 sm:h-3.5 sm:w-3.5" />
                         Download full PDF
                       </button>
                     </div>

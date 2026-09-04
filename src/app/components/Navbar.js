@@ -7,6 +7,7 @@ import BrandLogo from './BrandLogo';
 
 const navLinks = [
   { href: '/', label: 'Home' },
+  { href: '/numerology', label: 'Numerology' },
   { href: '/blogs', label: 'Blog' },
   { href: '/consultation', label: 'Consultation' },
   { href: '/about', label: 'About' },

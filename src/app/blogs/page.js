@@ -2,6 +2,7 @@ import Link from 'next/link';
 import { blogPosts, blogCategories } from '@/data/blogPosts';
 import BlogCategoryExplorer from './BlogCategoryExplorer';
 import Navbar from '../components/Navbar';
+import Footer from '../components/Footer';
 
 export const metadata = {
   title: 'Astrology Blog & Remedies Guides',
@@ -35,21 +36,30 @@ export default function BlogIndexPage() {
       />
       <Navbar ctaLabel="Generate Report" ctaHref="/#birth-form" />
 
-      <main className="mx-auto max-w-6xl px-4 py-8 sm:px-6 lg:py-16">
-        <div className="max-w-3xl">
-          <p className="text-[11px] font-bold uppercase tracking-[0.16em] text-orange-600 sm:text-xs sm:tracking-[0.2em]">
-            Astrology insights
-          </p>
-          <h1 className="mt-2 text-2xl font-black leading-tight tracking-tight text-slate-900 sm:mt-3 sm:text-3xl lg:text-5xl">
-            Practical remedies and chart-based guidance for everyday life
-          </h1>
-          <p className="mt-3 text-sm leading-relaxed text-slate-600 sm:mt-4 sm:text-lg">
-            Explore beginner-friendly astrology resources designed to improve clarity around love, career, health, marriage timing, and spiritual balance.
-          </p>
-        </div>
+      <main className="mx-auto max-w-6xl px-4 py-8 sm:px-6 sm:py-10 lg:py-14">
+        <section className="border-b border-slate-300 pb-8 sm:pb-10">
+          <div className="flex items-end justify-between gap-6">
+            <div>
+              <p className="text-[10px] font-bold uppercase tracking-[0.24em] text-violet-500 sm:text-[11px]">AskMyMoon astrology journal</p>
+              <h1 className="mt-3 max-w-3xl font-serif text-4xl leading-[0.98] tracking-tight text-slate-900 sm:text-6xl lg:text-7xl">
+                Ancient wisdom,
+                <span className="block italic text-violet-600">real-life meaning.</span>
+              </h1>
+            </div>
+            <div className="hidden max-w-[180px] text-right sm:block">
+              <span className="font-serif text-5xl leading-none text-slate-900">{blogPosts.length}</span>
+              <p className="mt-1 text-[10px] uppercase tracking-[0.2em] text-violet-400">articles to explore</p>
+            </div>
+          </div>
+          <div className="mt-6 flex items-center justify-between gap-4 sm:hidden">
+            <span className="text-xs text-slate-500">Chart-based guidance for real life.</span>
+            <span className="font-serif text-3xl text-slate-900">{blogPosts.length}</span>
+          </div>
+        </section>
 
         <BlogCategoryExplorer blogPosts={blogPosts} blogCategories={blogCategories} />
       </main>
+      <Footer />
     </div>
   );
 }

@@ -68,11 +68,19 @@ export default function BlogCategoryExplorer({ blogPosts, blogCategories }) {
         </div>
       ) : (
         <div className="mt-8 grid gap-4 sm:gap-6 md:grid-cols-2 xl:grid-cols-3">
-          {filteredPosts.map((post) => (
+          {filteredPosts.map((post, index) => (
             <article
               key={post.slug}
-              className="rounded-2xl border border-amber-900/10 bg-white p-4 shadow-sm transition-transform duration-200 sm:rounded-3xl sm:p-5 sm:hover:-translate-y-1"
+              className={`${index === 0 ? 'md:col-span-2 xl:col-span-3' : ''} rounded-2xl border border-amber-900/10 bg-white p-4 shadow-sm transition-transform duration-200 sm:rounded-3xl sm:p-5 sm:hover:-translate-y-1`}
             >
+              {index === 0 && (
+                <div className="relative mb-5 h-32 overflow-hidden rounded-xl bg-[#11081e] sm:h-44">
+                  <img src={post.heroImage} alt="" className="absolute inset-0 h-full w-full object-cover opacity-20 mix-blend-screen" />
+                  <div className="absolute left-1/2 top-1/2 h-24 w-24 -translate-x-1/2 -translate-y-1/2 rounded-full bg-violet-500/80 shadow-[0_0_55px_18px_rgba(139,92,246,0.28)]" />
+                  <div className="absolute left-1/2 top-1/2 h-40 w-40 -translate-x-1/2 -translate-y-1/2 rounded-full border border-violet-300/20" />
+                  <span className="absolute left-4 top-4 text-[10px] font-semibold uppercase tracking-[0.18em] text-violet-200">Featured reading</span>
+                </div>
+              )}
               <div className="flex items-center justify-between gap-3 text-[10px] font-semibold uppercase tracking-[0.1em] text-slate-500 sm:text-[11px] sm:tracking-[0.12em]">
                 <span>{post.category}</span>
                 <span>{post.readingTime}</span>

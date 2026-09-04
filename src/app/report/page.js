@@ -31,7 +31,7 @@ import {
 
 import { ASCENDANT_REMEDIES, getPrimaryBottleneck, getLifelineRemedyTeaser } from '@/data/ascendantRemedies';
 import { PLANETARY_REMEDIES } from '@/data/planetaryRemedies';
-import { getPlanetExplanation, getFunctionalNature } from '@/data/planetaryData';
+import { getPlanetExplanation, getFunctionalNature, getPlanetLifeAreas } from '@/data/planetaryData';
 import Footer from '../components/Footer';
 import BrandLogo from '../components/BrandLogo';
 import DomainReportPayment from '../components/DomainReportPayment';
@@ -345,6 +345,9 @@ export default function ReportPage({ initialReportToken = null }) {
   const activeExplanation = typeof getPlanetExplanation === 'function'
     ? getPlanetExplanation(selectedPlanet, activePlanetPos.sign, ascendantSign, activePlanetPos.house) : null;
 
+  const activePlanetLifeAreas = typeof getPlanetLifeAreas === 'function'
+    ? getPlanetLifeAreas(selectedPlanet, ascendantSign, activePlanetPos.house) : '';
+
   const activeDomain = LIFE_DOMAINS.find((d) => d.key === selectedDomain) || LIFE_DOMAINS[0];
   const ActiveDomainIcon = activeDomain.icon;
 
@@ -371,6 +374,10 @@ export default function ReportPage({ initialReportToken = null }) {
     selectedDomain === 'marriage' ? marriageData.seventhLordRemedy :
     selectedDomain === 'health' ? healthData.sixthLordRemedy :
     careerData.tenthLordRemedy;
+
+  const activeDomainProblem = activeLordRemedy?.coreProblem
+    || activeLiveDomainData.placements.find((placement) => placement.coreProblem)?.coreProblem
+    || null;
 
   const activeEmptyMessage = selectedDomain === 'finances'
     ? 'No additional financial placements found for this chart.'
@@ -522,20 +529,15 @@ export default function ReportPage({ initialReportToken = null }) {
 
         {/* Core Conflict / Lifeline */}
         <section className="bg-white border border-[#E7E2D8] rounded-2xl p-4 sm:p-7 md:p-9 space-y-5">
-          <SectionHeading icon={AlertCircle} eyebrow="Diagnosis" title="Core conflict & lifeline" tone="marigold" />
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-2.5 sm:gap-3">
+          <SectionHeading icon={AlertCircle} eyebrow="Diagnosis" title="Core conflict & Guidance" tone="marigold" />
+          <div>
             <div className="p-5 rounded-xl bg-[#FAF8F4] border border-[#E7E2D8] space-y-2">
               <Eyebrow tone="rose">Primary bottleneck</Eyebrow>
               <p className="text-[13px] text-[#3A362C] leading-relaxed">
                 {bottleneckProblem || `Challenges related to ${ascendantSign} placements.`}
               </p>
             </div>
-            <div className="p-5 rounded-xl bg-[#FAF8F4] border border-[#E7E2D8] space-y-2">
-              <Eyebrow tone="sage">Lifeline reading</Eyebrow>
-              <p className="text-[13px] text-[#3A362C] leading-relaxed">
-                {lifelineRemedy || `General alignment guidance for ${ascendantSign} placements.`}
-              </p>
-            </div>
+           
           </div>
         </section>
 
@@ -583,9 +585,9 @@ export default function ReportPage({ initialReportToken = null }) {
                 </span>
               </div>
 
-              {activeExplanation?.dignityText && (
-                <p className="text-[13px] font-medium text-[#B4571F] bg-[#B4571F]/[0.06] p-3.5 rounded-xl border border-[#B4571F]/15 leading-relaxed">
-                  {activeExplanation.dignityText}
+              {activePlanetLifeAreas && (
+                <p className="text-[11px] sm:text-[13px] font-medium text-[#B4571F] bg-[#B4571F]/[0.06] p-3.5 rounded-xl border border-[#B4571F]/15 leading-relaxed">
+                  {activePlanetLifeAreas}
                 </p>
               )}
 
@@ -616,8 +618,8 @@ export default function ReportPage({ initialReportToken = null }) {
                   </div>
                 </div>
               ) : (
-                <div className="relative min-h-[180px] rounded-xl overflow-hidden border border-[#E7E2D8] bg-[#FAF8F4]">
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-2.5 sm:gap-3 p-4 sm:p-5 blur-sm select-none pointer-events-none opacity-40">
+                <div className="relative h-[220px] rounded-xl overflow-hidden border border-[#E7E2D8] bg-[#FAF8F4]">
+                  <div className="absolute inset-0 grid grid-cols-1 md:grid-cols-2 gap-2.5 sm:gap-3 p-4 sm:p-5 blur-sm select-none pointer-events-none opacity-40">
                     <div className="p-4 sm:p-5 rounded-xl bg-white border border-[#E7E2D8] space-y-2">
                       <Eyebrow tone="sage">Practical lifestyle habits</Eyebrow>
                       <p className="text-[13px] text-[#3A362C] leading-relaxed">{activePlanetData.practicalRemedy}</p>
@@ -627,21 +629,23 @@ export default function ReportPage({ initialReportToken = null }) {
                       <p className="text-[13px] text-[#3A362C] leading-relaxed">{activePlanetData.coreRemedy}</p>
                     </div>
                   </div>
-                  <div className="absolute inset-0 z-10 flex flex-col items-center justify-center p-4 text-center bg-white/85 backdrop-blur-sm">
-                    <div className="w-9 h-9 rounded-xl bg-[#14171F] text-white flex items-center justify-center mb-2.5">
+                  <div className="absolute inset-0 z-10 flex flex-col items-center justify-center overflow-y-auto p-4 text-center bg-white/85 backdrop-blur-sm">
+                    <div className="w-10 h-10 rounded-xl bg-[#14171F] text-white flex items-center justify-center mb-3">
                       <Lock className="w-4 h-4" />
                     </div>
-                    <h3 className="text-sm font-serif font-semibold text-[#14171F]">Unlock lifestyle & gemstone remedies</h3>
-                    <p className="text-xs text-[#78715F] mt-1 max-w-xs leading-relaxed">
-                      Unlocking your career or finance report also unlocks these for every planet.
+                    <h3 className="text-base font-serif font-semibold text-[#14171F]">
+                      Unlock Remedies
+                    </h3>
+                    <p className="text-xs text-[#78715F] mt-1.5 max-w-sm leading-relaxed">
+                      Get your career, finances, health and marriage problems and solutions in the full report.
                     </p>
-                    <button
-                      type="button"
-                      onClick={() => setActiveView('domain')}
-                      className="mt-3 bg-[#B4571F] hover:bg-[#9A4A19] text-white font-semibold py-2 px-4 rounded-lg text-xs transition-colors duration-150"
-                    >
-                      Unlock now @49 only
-                    </button>
+                    <div className="mt-4 w-full max-w-xs">
+                      <DomainReportPayment
+                        userName={userData.name}
+                        reportData={{ ...userData, careerReport: careerData, financeReport: financeData, marriageReport: marriageData, healthReport: healthData }}
+                        onSuccess={handlePaymentSuccess}
+                      />
+                    </div>
                   </div>
                 </div>
               )}
@@ -653,7 +657,7 @@ export default function ReportPage({ initialReportToken = null }) {
             <>
               {/* ---- DEEP LIFE DOMAIN ANALYSIS ---- */}
               <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-5 border-b border-[#E7E2D8]">
-                <SectionHeading icon={Compass} eyebrow="₹99 per report" title="Deep life domain analysis" subtitle="Pick a domain for a full remedial reading" tone="indigo" />
+                <SectionHeading icon={Compass} eyebrow="₹49 per report" title="Deep life domain analysis" subtitle="Pick a domain for a " tone="indigo" />
 
                 <div className="relative w-full sm:min-w-[210px] sm:w-auto">
                   <select
@@ -713,10 +717,17 @@ export default function ReportPage({ initialReportToken = null }) {
                 </div>
               )}
 
+              {!isPaid && activeDomainProblem && (
+                <div className="p-4 sm:p-5 rounded-xl bg-[#FAF8F4] border border-[#E7E2D8] space-y-2">
+                  <Eyebrow tone="rose">Problem identified</Eyebrow>
+                  <p className="text-[13px] text-[#3A362C] leading-relaxed">{activeDomainProblem}</p>
+                </div>
+              )}
+
               {/* ---- Paid domain content is fully unlocked once payment is verified ---- */}
               {!isPaid && (
-                <div className="relative min-h-[260px] rounded-xl overflow-hidden border border-[#E7E2D8] bg-[#FAF8F4]">
-                  <div className="p-5 blur-sm select-none pointer-events-none opacity-40 space-y-2">
+                <div className="relative h-[220px] rounded-xl overflow-hidden border border-[#E7E2D8] bg-[#FAF8F4]">
+                  <div className="absolute inset-0 p-5 blur-sm select-none pointer-events-none opacity-40 space-y-2">
                     <div className="flex items-center gap-2 text-[#B4571F]">
                       <ActiveDomainIcon className="w-4 h-4" />
                       <h3 className="font-serif font-semibold text-[#14171F] text-sm">{activeDomain.label}</h3>
@@ -731,10 +742,10 @@ export default function ReportPage({ initialReportToken = null }) {
                       <Lock className="w-4 h-4" />
                     </div>
                     <h3 className="text-base font-serif font-semibold text-[#14171F]">
-                      Unlock {activeDomain.label.toLowerCase()} analysis
+                      Unlock Remedies
                     </h3>
                     <p className="text-xs text-[#78715F] mt-1.5 max-w-sm leading-relaxed">
-                      Unlocking this also unlocks the lifestyle, gemstone, and mantra remedies for every planet.
+                      Get your career, finances, health and marriage problems and solutions in the full report.
                     </p>
                     <div className="mt-4 w-full max-w-xs">
                       <DomainReportPayment
@@ -782,7 +793,7 @@ export default function ReportPage({ initialReportToken = null }) {
               <p className="text-xs leading-relaxed">{bottleneckProblem || `Challenges related to ${ascendantSign} placements.`}</p>
             </div>
             <div className="p-3 rounded-xl border border-[#E7E2D8] bg-[#FAF8F4]">
-              <Eyebrow tone="sage">Lifeline Position Reading</Eyebrow>
+              <Eyebrow tone="sage">Lifeline  Reading</Eyebrow>
               <p className="text-xs leading-relaxed">{lifelineRemedy || `General alignment guidance for ${ascendantSign} placements.`}</p>
             </div>
           </div>

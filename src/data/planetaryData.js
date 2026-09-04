@@ -108,6 +108,59 @@ export function getFunctionalNature(planet, ascendantSign) {
   return FUNCTIONAL_NATURE_BY_ASCENDANT[ascendantSign]?.[planet] || 'neutral';
 }
 
+const HOUSE_LIFE_AREAS = {
+  1: 'identity, body, self-expression',
+  2: 'wealth, family, speech, values',
+  3: 'courage, communication, skills, siblings',
+  4: 'home, emotional foundations, mother, property',
+  5: 'education, creativity, children, romance, intelligence',
+  6: 'health, daily work, service, debts, obstacles',
+  7: 'marriage, partnerships, clients, public dealings',
+  8: 'transformation, shared resources, inheritance, hidden matters',
+  9: 'higher learning, beliefs, fortune, father, long journeys',
+  10: 'career, reputation, authority, major actions',
+  11: 'income, gains, networks, fulfilment, elder siblings',
+  12: 'expenses, sleep, foreign places, retreat, spirituality',
+};
+
+const PLANET_ENERGY = {
+  Sun: 'confidence, identity, leadership, vitality, authority',
+  Moon: 'emotions, care, intuition, comfort, adaptability',
+  Mars: 'action, courage, drive, initiative, decisive effort',
+  Mercury: 'thinking, communication, learning, analysis, practical skill',
+  Jupiter: 'wisdom, growth, faith, guidance, opportunity',
+  Venus: 'love, beauty, harmony, pleasure, connection',
+  Saturn: 'discipline, responsibility, patience, structure, endurance',
+  Rahu: 'ambition, desire, innovation, intensity, unconventional thinking',
+  Ketu: 'detachment, insight, spirituality, intuition, release',
+};
+
+function getHouseFromSign(sign, ascendantSign) {
+  const ascendantIndex = SIGNS_ORDER.indexOf(ascendantSign);
+  const signIndex = SIGNS_ORDER.indexOf(sign);
+  if (ascendantIndex === -1 || signIndex === -1) return null;
+  return ((signIndex - ascendantIndex + 12) % 12) + 1;
+}
+
+export function getPlanetLifeAreas(planet, ascendantSign, occupiedHouse) {
+  const ownedSigns = OWN_SIGNS[planet] || [];
+  const houses = ownedSigns
+    .map((sign) => getHouseFromSign(sign, ascendantSign))
+    .filter(Boolean)
+    .sort((first, second) => first - second);
+
+  if (houses.length === 0 && occupiedHouse) {
+    return `Your ${HOUSE_LIFE_AREAS[occupiedHouse]} are influenced through ${PLANET_ENERGY[planet]}.`;
+  }
+
+  if (houses.length === 0) return '';
+
+  const areas = houses.map((house) => HOUSE_LIFE_AREAS[house]);
+  const areaText = areas.join('; ');
+
+  return `Your ${areaText} are influenced through ${PLANET_ENERGY[planet]}.`;
+}
+
 // OUTSIDE THE BOX: Strictly Planet + Sign + House expression & behavioral energy
 const DIGNITY_BLURB = {
   Exalted: (p) => `${p} expresses its strongest and clearest potential.`,

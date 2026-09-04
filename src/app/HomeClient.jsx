@@ -304,19 +304,7 @@ export default function Home() {
   ];
 
   return (
-    <div className="min-h-screen w-full max-w-full overflow-x-hidden bg-[#FDFBF7] text-slate-800 font-sans antialiased">
-      {/* Top Utility Bar */}
-      <div className="border-b border-amber-900/10 bg-[#FAF6F0] text-[10px] sm:text-xs text-slate-600">
-        <div className="max-w-6xl mx-auto px-3 sm:px-6 h-8 sm:h-9 flex items-center justify-between gap-2 sm:gap-3">
-          <span className="truncate">Support: 10:00 AM – 6:00 PM (IST)</span>
-          <div className="hidden sm:flex shrink-0 gap-4">
-            <span className="font-semibold text-emerald-700">Free Preview</span>
-            <span>•</span>
-            <span>Instant PDF Download</span>
-          </div>
-        </div>
-      </div>
-
+    <div className="min-h-screen w-full max-w-full overflow-x-hidden bg-[#F7F5FB] text-[#26233D] font-sans antialiased">
       {showBrowserPrompt && (
         <div className="border-b border-amber-700/20 bg-amber-50 px-3 py-3 sm:px-6" role="status">
           <aside
@@ -342,34 +330,48 @@ export default function Home() {
       <Navbar />
 
       {/* Hero Section */}
-      <section className="max-w-6xl mx-auto px-3 sm:px-6 pt-3 sm:pt-4 pb-8 sm:pb-12"  >
+      <section className="relative max-w-6xl mx-auto overflow-hidden px-3 sm:px-6 pt-8 sm:pt-12 pb-10 sm:pb-16">
+        <div aria-hidden="true" className="pointer-events-none absolute left-1/2 top-[70px] z-0 h-[390px] w-[390px] -translate-x-1/2 opacity-25 lg:bottom-0 lg:left-[-6rem] lg:top-auto lg:h-[420px] lg:w-[420px] lg:translate-x-0 lg:opacity-60">
+          <div className="absolute inset-12 rounded-full border border-violet-200/80" />
+          <div className="absolute inset-24 rounded-full border border-violet-200/70" />
+          <div className="absolute left-1/2 top-1/2 h-12 w-12 -translate-x-1/2 -translate-y-1/2 rounded-full bg-gradient-to-br from-violet-300 to-violet-700 shadow-[0_0_45px_12px_rgba(139,92,246,0.2)] lg:h-24 lg:w-24" />
+          <span className="absolute right-16 top-20 h-3 w-3 rounded-full bg-violet-400" />
+          <span className="absolute left-20 top-10 h-2 w-2 rounded-full bg-violet-300" />
+        </div>
         <div className="grid md:grid-cols-12 gap-6 lg:gap-8 items-center">
 
           {/* Left Column */}
-          <div className="md:col-span-6 space-y-4 sm:space-y-6 min-w-0">
-            <div className="relative inline-flex max-w-full items-center gap-1.5 sm:gap-2 px-2.5 sm:px-3 py-1 bg-amber-100/70 border border-amber-200 text-amber-900 text-[10px] sm:text-xs font-semibold rounded-md">
-              <Sparkles className="w-3 h-3 sm:w-3.5 sm:h-3.5 text-amber-700 shrink-0" />
+          <div className="relative z-10 md:col-span-6 space-y-4 sm:space-y-6 min-w-0">
+            <div className="relative inline-flex max-w-full items-center gap-1.5 sm:gap-2 rounded-md border border-violet-200 bg-violet-100/80 px-2.5 py-1 text-[10px] font-semibold text-[#26233D] sm:px-3 sm:text-xs">
+              <Sparkles className="w-3 h-3 sm:w-3.5 sm:h-3.5 text-violet-600 shrink-0" />
               <span className="truncate">Free preview • Full personalized report ₹49</span>
             </div>
 
-            <h1 className="text-[20px] sm:text-2.5xl md:text-3xl lg:text-[2.7rem] font-black text-slate-900 leading-[1.15] tracking-tight">
-              Your Birth Chart. <span className="text-amber-800"><br />Your Personal Guidance.</span>
+            <h1 className="font-serif text-[2.35rem] sm:text-5xl md:text-6xl lg:text-[4.4rem] font-normal text-[#17152B] leading-[0.98] tracking-tight">
+              Ancient wisdom,
+              <span className="block italic text-violet-600">personal clarity.</span>
             </h1>
 
-            <p className="text-slate-600 text-sm sm:text-base md:text-lg leading-relaxed">
-              Get personalized insights for your career, relationships, finances, health, and everyday decisions from your birth details.
+            <p className="hidden max-w-xl text-[#39344F] text-sm leading-relaxed sm:block sm:text-base md:text-lg">
+              Read the patterns in your birth chart and turn ancient planetary wisdom into clearer decisions for career, love, money, and health.
             </p>
 
             {/* Feature Bullets */}
             <div className="space-y-2.5 sm:space-y-3 pt-1 sm:pt-2">
-              <div className="flex items-start sm:items-center gap-2.5 sm:gap-3 text-xs sm:text-sm font-semibold text-slate-700 leading-relaxed">
-                <CheckCircle2 className="w-4 h-4 sm:w-5 sm:h-5 text-amber-700 shrink-0 mt-0.5 sm:mt-0" />
-                <span>See your core planetary insights in a free preview</span>
+              <div className="flex items-start sm:items-center gap-2.5 sm:gap-3 text-xs sm:text-sm font-semibold text-[#39344F] leading-relaxed">
+                <CheckCircle2 className="w-4 h-4 sm:w-5 sm:h-5 text-violet-600 shrink-0 mt-0.5 sm:mt-0" />
+                <span>See your planetary patterns in a free preview</span>
               </div>
 
               <div className="flex items-start sm:items-center gap-2.5 sm:gap-3 text-xs sm:text-sm font-semibold text-slate-700 leading-relaxed">
-                <CheckCircle2 className="w-4 h-4 sm:w-5 sm:h-5 text-amber-700 shrink-0 mt-0.5 sm:mt-0" />
+                <CheckCircle2 className="w-4 h-4 sm:w-5 sm:h-5 text-violet-600 shrink-0 mt-0.5 sm:mt-0" />
                 <span>Unlock the complete remedy report instantly</span>
+              </div>
+
+              <div className="mx-auto flex w-fit max-w-full flex-wrap items-center justify-center gap-x-3 gap-y-1 text-center text-[11px] font-semibold text-[#39344F] sm:text-xs">
+                <span>Total visitors: <strong className="text-violet-800">1,000</strong></span>
+                <span className="text-violet-300" aria-hidden="true">|</span>
+                <span>Total reports generated: <strong className="text-violet-800">27</strong></span>
               </div>
             </div>
 
@@ -385,7 +387,7 @@ export default function Home() {
                 {[...heroPills, ...heroPills].map((pill, i) => (
                   <span
                     key={i}
-                    className="shrink-0 px-2.5 sm:px-3 py-1 bg-white border border-amber-900/10 text-slate-600 text-[11px] sm:text-xs font-medium rounded-md shadow-2xs"
+                    className="shrink-0 rounded-md border border-violet-200 bg-white/80 px-2.5 py-1 text-[11px] font-medium text-[#39344F] shadow-2xs sm:px-3 sm:text-xs"
                   >
                     {pill}
                   </span>
@@ -396,14 +398,14 @@ export default function Home() {
           </div>
 
           {/* Right Column: Direct Birth Form Card */}
-          <div id="birth-form" className="w-full max-w-full min-w-0 md:col-span-5 md:col-start-8 bg-white border border-amber-900/15 rounded-2xl sm:rounded-3xl p-4 sm:p-6 md:p-8 shadow-sm">
-            <div className="relative mb-3 sm:mb-5 pb-3 sm:pb-4 border-b border-amber-900/10">
+          <div id="birth-form" className="relative z-10 w-full max-w-full min-w-0 md:col-span-5 md:col-start-8 bg-white border border-violet-100 rounded-2xl sm:rounded-3xl p-4 sm:p-6 md:p-8 shadow-[0_18px_45px_rgba(63,35,99,0.10)]">
+            <div className="relative mb-3 sm:mb-5 pb-3 sm:pb-4 border-b border-violet-100">
               <div className="flex flex-row items-center justify-between gap-3">
                 <div>
-                  <h2 className="text-base sm:text-xl font-extrabold text-slate-900 leading-tight">Free Preview</h2>
-                  <p className="text-[10px] sm:text-xs text-slate-500 leading-relaxed">Personalized chart insights</p>
+                  <h2 className="text-base sm:text-xl font-extrabold text-slate-900 leading-tight">Get</h2>
+                  <p className="text-[10px] sm:text-xs text-slate-500 leading-relaxed">your personalized report</p>
                 </div>
-                <div className="bg-emerald-50 px-2 sm:px-3 py-1 sm:py-1.5 rounded-lg border border-emerald-200 flex items-center gap-1 text-emerald-800 font-bold text-[9px] sm:text-xs uppercase shrink-0">
+                <div className="bg-violet-50 px-2 sm:px-3 py-1 sm:py-1.5 rounded-lg border border-violet-200 flex items-center gap-1 text-violet-700 font-bold text-[9px] sm:text-xs uppercase shrink-0">
                   <Gift className="w-3 h-3 sm:w-3.5 sm:h-3.5" />
                   <span className="leading-tight sm:hidden">Free Preview</span>
                   <span className="hidden leading-tight sm:inline">Free Preview</span>
@@ -420,7 +422,7 @@ export default function Home() {
                   type="text"
                   required
                   placeholder="e.g. Rahul Sharma"
-                  className="w-full bg-[#FAF6F0] border border-amber-900/15 rounded-xl px-3.5 sm:px-4 py-2.5 sm:py-3 text-sm text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-amber-700/20 focus:border-amber-800 transition-all"
+                  className="w-full bg-[#F8F7FC] border border-violet-100 rounded-xl px-3.5 sm:px-4 py-2.5 sm:py-3 text-sm text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-violet-500/20 focus:border-violet-500 transition-all"
                   value={formData.name}
                   onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                 />
@@ -435,7 +437,7 @@ export default function Home() {
                     type="date"
                     required
                     style={{ minWidth: 0, width: '100%' }}
-                    className="w-full max-w-full min-w-0 bg-[#FAF6F0] border border-amber-900/15 rounded-xl px-3 py-2.5 sm:py-3 text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-amber-700/20 focus:border-amber-800 transition-all"
+                    className="w-full max-w-full min-w-0 bg-[#F8F7FC] border border-violet-100 rounded-xl px-3 py-2.5 sm:py-3 text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-violet-500/20 focus:border-violet-500 transition-all"
                     value={formData.dob}
                     onChange={(e) => setFormData({ ...formData, dob: e.target.value })}
                   />
@@ -449,7 +451,7 @@ export default function Home() {
                       required
                       value={timeSelector.hour}
                       onChange={(e) => handleTimeSelectorChange('hour', e.target.value)}
-                      className="w-full min-w-0 bg-[#FAF6F0] border border-amber-900/15 rounded-xl px-2 py-2.5 sm:py-3 text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-amber-700/20 focus:border-amber-800 transition-all"
+                      className="w-full min-w-0 bg-[#F8F7FC] border border-violet-100 rounded-xl px-2 py-2.5 sm:py-3 text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-violet-500/20 focus:border-violet-500 transition-all"
                     >
                       <option value="" disabled>HH</option>
                       {Array.from({ length: 12 }, (_, index) => {
@@ -466,7 +468,7 @@ export default function Home() {
                       required
                       value={timeSelector.minute}
                       onChange={(e) => handleTimeSelectorChange('minute', e.target.value)}
-                      className="w-full min-w-0 bg-[#FAF6F0] border border-amber-900/15 rounded-xl px-2 py-2.5 sm:py-3 text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-amber-700/20 focus:border-amber-800 transition-all"
+                      className="w-full min-w-0 bg-[#F8F7FC] border border-violet-100 rounded-xl px-2 py-2.5 sm:py-3 text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-violet-500/20 focus:border-violet-500 transition-all"
                     >
                       <option value="" disabled>MM</option>
                       {Array.from({ length: 60 }, (_, index) => {
@@ -483,7 +485,7 @@ export default function Home() {
                       required
                       value={timeSelector.meridiem || 'AM'}
                       onChange={(e) => handleTimeSelectorChange('meridiem', e.target.value)}
-                      className="w-full min-w-0 bg-[#FAF6F0] border border-amber-900/15 rounded-xl px-2 py-2.5 sm:py-3 text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-amber-700/20 focus:border-amber-800 transition-all"
+                      className="w-full min-w-0 bg-[#F8F7FC] border border-violet-100 rounded-xl px-2 py-2.5 sm:py-3 text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-violet-500/20 focus:border-violet-500 transition-all"
                     >
                       <option value="AM">AM</option>
                       <option value="PM">PM</option>
@@ -502,7 +504,7 @@ export default function Home() {
                     type="text"
                     required
                     placeholder="Type city name (e.g. Moradabad, U.P)"
-                    className="w-full bg-[#FAF6F0] border border-amber-900/15 rounded-xl pl-3.5 sm:pl-4 pr-10 py-2.5 sm:py-3 text-sm text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-amber-700/20 focus:border-amber-800 transition-all"
+                    className="w-full bg-[#F8F7FC] border border-violet-100 rounded-xl pl-3.5 sm:pl-4 pr-10 py-2.5 sm:py-3 text-sm text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-violet-500/20 focus:border-violet-500 transition-all"
                     value={placeQuery}
                     onChange={(e) => {
                       const nextValue = e.target.value;
@@ -522,14 +524,14 @@ export default function Home() {
 
                 {/* Geo Suggestions Dropdown */}
                 {showDropdown && suggestions.length > 0 && (
-                  <ul className="absolute z-50 w-full mt-1 bg-white border border-amber-900/15 rounded-xl shadow-lg max-h-56 overflow-y-auto divide-y divide-amber-900/5">
+                  <ul className="absolute z-50 w-full mt-1 bg-white border border-violet-100 rounded-xl shadow-lg max-h-56 overflow-y-auto divide-y divide-violet-100">
                     {suggestions.map((item) => (
                       <li
                         key={item.place_id}
                         onClick={() => handleSelectLocation(item)}
-                        className="p-3 text-xs text-slate-700 hover:bg-[#FAF6F0] hover:text-amber-900 cursor-pointer flex items-start gap-2.5 transition-colors active:bg-[#FAF6F0]"
+                        className="p-3 text-xs text-slate-700 hover:bg-violet-50 hover:text-violet-800 cursor-pointer flex items-start gap-2.5 transition-colors active:bg-violet-50"
                       >
-                        <MapPin className="w-4 h-4 text-amber-700 shrink-0 mt-0.5" />
+                        <MapPin className="w-4 h-4 text-violet-600 shrink-0 mt-0.5" />
                         <div className="min-w-0">
                           <span className="font-semibold block break-words">{item.display_name}</span>
                           <span className="text-[10px] text-slate-400 font-mono">
@@ -546,7 +548,7 @@ export default function Home() {
                 <button
                   type="submit"
                   disabled={isSubmitting}
-                  className="w-full flex items-center justify-center gap-2 bg-amber-800 hover:bg-amber-900 disabled:bg-amber-700 disabled:cursor-not-allowed text-white font-bold py-3 sm:py-3.5 px-6 rounded-xl text-sm transition-all shadow-sm active:scale-[0.99]"
+                  className="w-full flex items-center justify-center gap-2 bg-violet-600 hover:bg-violet-700 disabled:bg-violet-400 disabled:cursor-not-allowed text-white font-bold py-3 sm:py-3.5 px-6 rounded-xl text-sm transition-all shadow-[0_10px_20px_rgba(124,58,237,0.18)] active:scale-[0.99]"
                 >
                   {isSubmitting ? (
                     <>
@@ -562,9 +564,9 @@ export default function Home() {
                 </button>
               </div>
 
-              <div className="flex items-center justify-center gap-1.5 text-[10px] sm:text-[11px] font-medium text-slate-500 pt-1 text-center">
+              <div className="flex items-center justify-center gap-1.5 whitespace-nowrap pt-1 text-[9px] font-medium text-slate-500 sm:text-[11px]">
                 <CheckCircle2 className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-emerald-600 shrink-0" />
-                <span>No payment required • Instant results • Full report ₹49</span>
+                <span>No payment required • Instant results • ₹49 full report</span>
               </div>
             </form>
           </div>
@@ -574,12 +576,12 @@ export default function Home() {
 
       {/* Offers Section */}
       <section id="offers" className="max-w-6xl mx-auto px-3 sm:px-6 py-4 sm:py-6">
-        <div className="bg-[#FAF6F0] border border-amber-900/15 rounded-2xl sm:rounded-3xl p-4 sm:p-8 md:p-10 shadow-sm">
+        <div className="bg-white/75 border border-violet-100 rounded-2xl sm:rounded-3xl p-4 sm:p-8 md:p-10 shadow-sm">
           <div className="mb-5 sm:mb-8">
-            <h2 className="text-lg sm:text-2xl md:text-3xl font-extrabold text-amber-900 mb-2 leading-tight">
+            <h2 className="text-lg sm:text-2xl md:text-3xl font-extrabold text-violet-900 mb-2 leading-tight">
               Birth Chart Remedy Tool & Astrology Software
             </h2>
-            <div className="w-10 sm:w-12 h-1 bg-amber-700 rounded-full mb-2.5 sm:mb-3"></div>
+            <div className="w-10 sm:w-12 h-1 bg-violet-500 rounded-full mb-2.5 sm:mb-3"></div>
             <p className="text-slate-600 text-xs sm:text-sm md:text-base max-w-3xl leading-relaxed">
               Astro Remedies 3.5 is designed for users who want practical remedy guidance and structured astrological analysis.
             </p>
@@ -588,9 +590,9 @@ export default function Home() {
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
 
             {/* Box 1 */}
-            <div className="bg-white border border-amber-900/10 rounded-xl sm:rounded-2xl p-4 sm:p-6 flex flex-col justify-between shadow-sm">
+            <div className="bg-white border border-violet-100 rounded-xl sm:rounded-2xl p-4 sm:p-6 flex flex-col justify-between shadow-sm">
               <div>
-                <div className="w-6 h-6 sm:w-7 sm:h-7 rounded-full bg-amber-100 text-amber-900 font-bold text-xs flex items-center justify-center mb-3 sm:mb-4">
+                <div className="w-6 h-6 sm:w-7 sm:h-7 rounded-full bg-violet-100 text-violet-700 font-bold text-xs flex items-center justify-center mb-3 sm:mb-4">
                   1
                 </div>
                 <h3 className="font-bold text-slate-900 text-sm sm:text-base mb-1.5 sm:mb-2">
@@ -603,9 +605,9 @@ export default function Home() {
             </div>
 
             {/* Box 2 */}
-            <div className="bg-white border border-amber-900/10 rounded-xl sm:rounded-2xl p-4 sm:p-6 flex flex-col justify-between shadow-sm">
+            <div className="bg-white border border-violet-100 rounded-xl sm:rounded-2xl p-4 sm:p-6 flex flex-col justify-between shadow-sm">
               <div>
-                <div className="w-6 h-6 sm:w-7 sm:h-7 rounded-full bg-amber-100 text-amber-900 font-bold text-xs flex items-center justify-center mb-3 sm:mb-4">
+                <div className="w-6 h-6 sm:w-7 sm:h-7 rounded-full bg-violet-100 text-violet-700 font-bold text-xs flex items-center justify-center mb-3 sm:mb-4">
                   2
                 </div>
                 <h3 className="font-bold text-slate-900 text-sm sm:text-base mb-1.5 sm:mb-2">
@@ -618,9 +620,9 @@ export default function Home() {
             </div>
 
             {/* Box 3 */}
-            <div className="bg-white border border-amber-900/10 rounded-xl sm:rounded-2xl p-4 sm:p-6 flex flex-col justify-between shadow-sm">
+            <div className="bg-white border border-violet-100 rounded-xl sm:rounded-2xl p-4 sm:p-6 flex flex-col justify-between shadow-sm">
               <div>
-                <div className="w-6 h-6 sm:w-7 sm:h-7 rounded-full bg-amber-100 text-amber-900 font-bold text-xs flex items-center justify-center mb-3 sm:mb-4">
+                <div className="w-6 h-6 sm:w-7 sm:h-7 rounded-full bg-violet-100 text-violet-700 font-bold text-xs flex items-center justify-center mb-3 sm:mb-4">
                   3
                 </div>
                 <h3 className="font-bold text-slate-900 text-sm sm:text-base mb-1.5 sm:mb-2">
@@ -633,9 +635,9 @@ export default function Home() {
             </div>
 
             {/* Box 4 */}
-            <div className="bg-white border border-amber-900/10 rounded-xl sm:rounded-2xl p-4 sm:p-6 flex flex-col justify-between shadow-sm">
+            <div className="bg-white border border-violet-100 rounded-xl sm:rounded-2xl p-4 sm:p-6 flex flex-col justify-between shadow-sm">
               <div>
-                <div className="w-6 h-6 sm:w-7 sm:h-7 rounded-full bg-amber-100 text-amber-900 font-bold text-xs flex items-center justify-center mb-3 sm:mb-4">
+                <div className="w-6 h-6 sm:w-7 sm:h-7 rounded-full bg-violet-100 text-violet-700 font-bold text-xs flex items-center justify-center mb-3 sm:mb-4">
                   4
                 </div>
                 <h3 className="font-bold text-slate-900 text-sm sm:text-base mb-1.5 sm:mb-2">
@@ -653,7 +655,7 @@ export default function Home() {
 
       {/* FAQ Section */}
       <section id="faq" className="max-w-6xl mx-auto px-3 sm:px-6 py-5 sm:py-8">
-        <div className="bg-white border border-amber-900/15 rounded-2xl sm:rounded-3xl p-4 sm:p-8 md:p-10 shadow-sm">
+        <div className="bg-white/75 border border-violet-100 rounded-2xl sm:rounded-3xl p-4 sm:p-8 md:p-10 shadow-sm">
           <div className="text-center max-w-xl mx-auto mb-6 sm:mb-10">
             <h2 className="text-lg sm:text-2xl md:text-3xl font-extrabold text-slate-900 mb-2 leading-tight">Frequently Asked Questions</h2>
             <p className="text-xs sm:text-sm text-slate-500 leading-relaxed">Everything you need to know about generating your report.</p>
@@ -663,7 +665,7 @@ export default function Home() {
             {faqList.map((faq, idx) => (
               <div
                 key={idx}
-                className="border border-amber-900/10 rounded-xl bg-[#FAF6F0]/50 overflow-hidden transition-all"
+                className="border border-violet-100 rounded-xl bg-violet-50/50 overflow-hidden transition-all"
               >
                 <button
                   onClick={() => toggleFaq(idx)}
@@ -673,7 +675,7 @@ export default function Home() {
                   <ChevronDown className={`w-4 h-4 text-slate-500 shrink-0 transition-transform ${openFaq === idx ? 'rotate-180' : ''}`} />
                 </button>
                 {openFaq === idx && (
-                  <div className="px-3.5 sm:px-6 pb-3.5 sm:pb-4 text-xs text-slate-600 leading-relaxed border-t border-amber-900/5 pt-3 bg-white">
+                  <div className="px-3.5 sm:px-6 pb-3.5 sm:pb-4 text-xs text-slate-600 leading-relaxed border-t border-violet-100 pt-3 bg-white">
                     {faq.a}
                   </div>
                 )}

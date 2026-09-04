@@ -14,7 +14,7 @@ export default function BlogCategoryExplorer({ blogPosts, blogCategories }) {
   return (
     <>
       <div className="mt-6 sm:mt-8">
-        <label htmlFor="blog-category" className="text-[11px] font-bold uppercase tracking-[0.16em] text-slate-500 sm:text-xs">
+        <label htmlFor="blog-category" className="text-[11px] font-bold uppercase tracking-[0.16em] text-[#6B6480] sm:text-xs">
           Browse by category
         </label>
 
@@ -23,7 +23,7 @@ export default function BlogCategoryExplorer({ blogPosts, blogCategories }) {
             id="blog-category"
             value={selectedCategory}
             onChange={(event) => setSelectedCategory(event.target.value)}
-            className="w-full appearance-none rounded-2xl border border-amber-200 bg-white px-4 py-3 pr-10 text-sm font-medium text-slate-800 shadow-sm outline-none transition focus:border-amber-500 focus:ring-2 focus:ring-amber-100"
+            className="w-full appearance-none rounded-2xl border border-violet-200 bg-white px-4 py-3 pr-10 text-sm font-medium text-[#15152B] shadow-sm outline-none transition focus:border-violet-500 focus:ring-2 focus:ring-violet-100"
           >
             <option value="All">All categories</option>
             {blogCategories.map((category) => (
@@ -33,7 +33,7 @@ export default function BlogCategoryExplorer({ blogPosts, blogCategories }) {
             ))}
           </select>
 
-          <div className="pointer-events-none absolute inset-y-0 right-3 flex items-center text-amber-800">
+          <div className="pointer-events-none absolute inset-y-0 right-3 flex items-center text-violet-700">
             <svg viewBox="0 0 20 20" fill="currentColor" className="h-5 w-5" aria-hidden="true">
               <path fillRule="evenodd" d="M5.22 7.22a.75.75 0 0 1 1.06 0L10 10.94l3.72-3.72a.75.75 0 1 1 1.06 1.06l-4.25 4.25a.75.75 0 0 1-1.06 0L5.22 8.28a.75.75 0 0 1 0-1.06Z" clipRule="evenodd" />
             </svg>
@@ -71,7 +71,7 @@ export default function BlogCategoryExplorer({ blogPosts, blogCategories }) {
           {filteredPosts.map((post, index) => (
             <article
               key={post.slug}
-              className={`${index === 0 ? 'md:col-span-2 xl:col-span-3' : ''} rounded-2xl border border-amber-900/10 bg-white p-4 shadow-sm transition-transform duration-200 sm:rounded-3xl sm:p-5 sm:hover:-translate-y-1`}
+              className={`${index === 0 ? 'md:col-span-2 xl:col-span-3' : ''} rounded-2xl border border-violet-100 bg-white p-4 shadow-sm transition-transform duration-200 sm:rounded-3xl sm:p-5 sm:hover:-translate-y-1`}
             >
               {index === 0 && (
                 <div className="relative mb-5 h-32 overflow-hidden rounded-xl bg-[#11081e] sm:h-44">
@@ -87,7 +87,7 @@ export default function BlogCategoryExplorer({ blogPosts, blogCategories }) {
               </div>
 
               <h2 className="mt-3 text-lg font-black leading-snug text-slate-900 sm:mt-4 sm:text-xl sm:leading-tight">
-                <Link href={`/blogs/${post.slug}`} className="hover:text-amber-800">
+                <Link href={`/blogs/${post.slug}`} className="hover:text-violet-700">
                   {post.title}
                 </Link>
               </h2>
@@ -102,7 +102,7 @@ export default function BlogCategoryExplorer({ blogPosts, blogCategories }) {
                     year: 'numeric',
                   })}
                 </span>
-                <Link href={`/blogs/${post.slug}`} className="font-semibold text-amber-900 hover:text-orange-700">
+                <Link href={`/blogs/${post.slug}`} className="font-semibold text-[#4C1D95] hover:text-violet-700">
                   Read article →
                 </Link>
               </div>

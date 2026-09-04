@@ -39,11 +39,11 @@ import DomainReportPayment from '../components/DomainReportPayment';
 /* ============================================================
   DESIGN TOKENS
   Ink        #14171F   — primary text
-  Parchment  #FAF8F4   — page background
+  Lavender   #F7F5FB   — page background
   Surface    #FFFFFF   — card background
-  Line       #E7E2D8   — hairline borders
-  Marigold   #B4571F   — primary accent (auspicious / action)
-  Indigo     #362D6B   — secondary accent (mystical / dosha)
+  Line       #E8E0F5   — hairline borders
+  Violet     #7C3AED   — primary accent (auspicious / action)
+  Indigo     #4C1D95   — secondary accent (mystical / dosha)
   Sage       #3D6B4F   — positive / "clear" signal
   Typeface   Display: font-serif (Georgia stack) — editorial, ceremonial
               Body:    font-sans (system) — clean, legible
@@ -72,9 +72,9 @@ const LIFE_DOMAINS = [
   that ties every section back to the printed-chart signature. */
 function Eyebrow({ children, tone = 'ink' }) {
   const tones = {
-    ink: 'text-[#8A8371]',
-    marigold: 'text-[#B4571F]',
-    indigo: 'text-[#362D6B]',
+    ink: 'text-[#6B6480]',
+    marigold: 'text-[#7C3AED]',
+    indigo: 'text-[#4C1D95]',
     sage: 'text-[#3D6B4F]',
     rose: 'text-[#9C3B3B]',
   };
@@ -87,8 +87,8 @@ function Eyebrow({ children, tone = 'ink' }) {
 
 function SectionHeading({ icon: Icon, eyebrow, title, subtitle, tone = 'marigold' }) {
   const bg = {
-    marigold: 'bg-[#B4571F]/10 text-[#B4571F]',
-    indigo: 'bg-[#362D6B]/10 text-[#362D6B]',
+    marigold: 'bg-violet-100 text-violet-700',
+    indigo: 'bg-violet-100 text-violet-900',
   }[tone];
   return (
     <div className="flex items-center gap-2.5 sm:gap-3.5">
@@ -107,7 +107,7 @@ function SectionHeading({ icon: Icon, eyebrow, title, subtitle, tone = 'marigold
 /* Two-way toggle: Planetary | Domain. Sits above the shared card. */
 function ViewToggle({ activeView, onChange }) {
   return (
-    <div className="grid grid-cols-2 gap-1 p-1 rounded-xl bg-[#FAF8F4] border border-[#E7E2D8]">
+    <div className="grid grid-cols-2 gap-1 rounded-xl border border-violet-100 bg-violet-50 p-1">
       {[
         { key: 'planetary', label: 'Planetary' },
         { key: 'domain', label: 'Domain' },
@@ -117,8 +117,8 @@ function ViewToggle({ activeView, onChange }) {
           type="button"
           onClick={() => onChange(tab.key)}
           className={`py-2 rounded-lg text-xs sm:text-[13px] font-semibold transition-colors duration-150 ${activeView === tab.key
-              ? 'bg-[#14171F] text-white shadow-sm'
-              : 'text-[#6B6455] hover:text-[#14171F]'
+              ? 'bg-violet-600 text-white shadow-sm'
+              : 'text-[#6B6480] hover:bg-violet-100 hover:text-violet-800'
             }`}
         >
           {tab.label}
@@ -280,7 +280,7 @@ export default function ReportPage({ initialReportToken = null }) {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-[#FAF8F4] flex flex-col items-center justify-center text-[#14171F]">
+      <div className="min-h-screen bg-[#F7F5FB] flex flex-col items-center justify-center text-[#14171F]">
         <Loader2 className="w-6 h-6 animate-spin text-[#B4571F] mb-3" />
         <p className="text-[13px] font-medium text-[#78715F] tracking-wide">Calculating sidereal planetary coordinates…</p>
       </div>
@@ -289,7 +289,7 @@ export default function ReportPage({ initialReportToken = null }) {
 
   if (!userData) {
     return (
-      <div className="min-h-screen bg-[#FAF8F4] flex flex-col items-center justify-center p-6 text-center">
+      <div className="min-h-screen bg-[#F7F5FB] flex flex-col items-center justify-center p-6 text-center">
         <div className="w-14 h-14 rounded-2xl bg-[#B4571F]/10 flex items-center justify-center mb-5">
           <ShieldAlert className="w-6 h-6 text-[#B4571F]" />
         </div>
@@ -430,7 +430,7 @@ export default function ReportPage({ initialReportToken = null }) {
   };
 
   return (
-    <div className="min-h-screen bg-[#FAF8F4] text-[#14171F] font-sans antialiased pb-20">
+    <div data-report-theme className="min-h-screen bg-[#F7F5FB] text-[#14171F] font-sans antialiased ">
       {isDownloading && (
         <div className="fixed inset-0 z-[100] flex items-center justify-center bg-slate-950/60 px-4 backdrop-blur-sm" role="dialog" aria-modal="true" aria-labelledby="download-progress-title">
           <div className="w-full max-w-xs rounded-2xl border border-[#E7E2D8] bg-white p-6 text-center shadow-2xl">
@@ -469,20 +469,14 @@ export default function ReportPage({ initialReportToken = null }) {
         <div className="flex items-center justify-between gap-3">
           <Link href="/" className="flex items-center gap-2 text-xs font-medium text-[#6B6455] hover:text-[#14171F] transition-colors duration-150">
             <ArrowLeft className="w-4 h-4" />
-            <span>Back to home</span>
+            <span>Back</span>
           </Link>
 
-          <button
-            onClick={handleDownload}
-            className="flex items-center gap-2 bg-[#14171F] hover:bg-[#2A2E38] active:scale-[0.97] text-white text-[11px] sm:text-xs font-semibold px-3.5 sm:px-4 py-2 rounded-lg transition-all duration-150"
-          >
-            <Printer className="w-3.5 h-3.5" />
-            <span>Save PDF</span>
-          </button>
+         
         </div>
 
         {/* Identity */}
-        <section className="relative bg-white border border-[#E7E2D8] rounded-2xl p-4 sm:p-7 md:p-9 overflow-hidden">
+        <section className="relative overflow-hidden rounded-2xl border border-violet-100 bg-white p-4 sm:p-7 md:p-9">
           
           <div className="flex flex-col md:flex-row justify-between md:items-end gap-3 sm:gap-6 pb-4 sm:pb-6">
             <div>
@@ -503,7 +497,7 @@ export default function ReportPage({ initialReportToken = null }) {
           </div>
 
           {/* orbit rule — signature divider */}
-          <div className="h-px w-full bg-gradient-to-r from-[#B4571F]/50 via-[#E7E2D8] to-[#362D6B]/50 mb-4 sm:mb-6" />
+          <div className="mb-4 h-px w-full bg-gradient-to-r from-violet-400/50 via-violet-100 to-violet-700/50 sm:mb-6" />
 
           <div className="grid grid-cols-3 gap-2.5 sm:gap-3">
             <div className="min-w-0 p-2.5 sm:p-4 rounded-xl bg-[#FAF8F4] border border-[#E7E2D8]">
@@ -525,10 +519,10 @@ export default function ReportPage({ initialReportToken = null }) {
         </section>
 
         {/* Core Conflict / Lifeline */}
-        <section className="bg-white border border-[#E7E2D8] rounded-2xl p-4 sm:p-7 md:p-9 space-y-5">
+        <section className="space-y-5 rounded-2xl border border-violet-100 bg-white p-4 sm:p-7 md:p-9">
           <SectionHeading icon={AlertCircle} eyebrow="Diagnosis" title="Core conflict & Guidance" tone="marigold" />
           <div>
-            <div className="p-5 rounded-xl bg-[#FAF8F4] border border-[#E7E2D8] space-y-2">
+            <div className="space-y-2 rounded-xl border border-violet-100 bg-[#F8F7FC] p-5">
               <Eyebrow tone="rose">Primary bottleneck</Eyebrow>
               <p className="text-[13px] text-[#3A362C] leading-relaxed">
                 {bottleneckProblem || `Challenges related to ${ascendantSign} placements.`}
@@ -542,25 +536,25 @@ export default function ReportPage({ initialReportToken = null }) {
         <ViewToggle activeView={activeView} onChange={setActiveView} />
 
         {/* ===================== Shared card: swaps content by activeView ===================== */}
-        <section className="bg-white border border-[#E7E2D8] rounded-2xl p-4 sm:p-7 md:p-9 space-y-6">
+        <section className="space-y-6 rounded-2xl border border-violet-100 bg-white p-4 sm:p-7 md:p-9">
 
           {activeView === 'planetary' ? (
             <>
               {/* ---- PLANETARY REMEDIES ---- */}
-              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-5 border-b border-[#E7E2D8]">
+              <div className="flex flex-col justify-between gap-4 border-b border-violet-100 pb-5 sm:flex-row sm:items-center">
                 <SectionHeading icon={BookOpen} eyebrow="Index of nine" title="Planetary remedies" subtitle="Select a planet for a tailored reading" tone="marigold" />
 
                 <div className="relative w-full sm:min-w-[170px] sm:w-auto">
                   <select
                     value={selectedPlanet}
                     onChange={(e) => setSelectedPlanet(e.target.value)}
-                    className="w-full appearance-none bg-[#FAF8F4] border border-[#E7E2D8] rounded-lg px-3.5 py-2.5 text-xs font-semibold text-[#14171F] focus:outline-none focus:ring-2 focus:ring-[#B4571F]/25 hover:border-[#B4571F]/40 cursor-pointer pr-9 transition-colors duration-150"
+                    className="w-full appearance-none rounded-lg border border-violet-100 bg-[#F8F7FC] px-3.5 py-2.5 pr-9 text-xs font-semibold text-[#14171F] transition-colors duration-150 focus:border-violet-500 focus:outline-none focus:ring-2 focus:ring-violet-500/20 hover:border-violet-400"
                   >
                     {availablePlanets.map((planet) => (
                       <option key={planet} value={planet}>{planet} placement</option>
                     ))}
                   </select>
-                  <ChevronDown className="w-3.5 h-3.5 text-[#B4571F] absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none" />
+                  <ChevronDown className="absolute right-3 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-violet-600 pointer-events-none" />
                 </div>
               </div>
 
@@ -583,7 +577,7 @@ export default function ReportPage({ initialReportToken = null }) {
               </div>
 
               {activePlanetLifeAreas && (
-                <p className="text-[11px] sm:text-[13px] font-medium text-[#B4571F] bg-[#B4571F]/[0.06] p-3.5 rounded-xl border border-[#B4571F]/15 leading-relaxed">
+                <p className="rounded-xl border border-violet-200 bg-violet-50 p-3.5 text-[11px] font-medium leading-relaxed text-violet-800 sm:text-[13px]">
                   {activePlanetLifeAreas}
                 </p>
               )}
@@ -627,7 +621,7 @@ export default function ReportPage({ initialReportToken = null }) {
                     </div>
                   </div>
                   <div className="absolute inset-0 z-10 flex flex-col items-center justify-center overflow-y-auto p-4 text-center bg-white/85 backdrop-blur-sm">
-                    <div className="w-10 h-10 rounded-xl bg-[#14171F] text-white flex items-center justify-center mb-3">
+                    <div className="mb-3 flex h-10 w-10 items-center justify-center rounded-xl bg-violet-600 text-white shadow-[0_8px_18px_rgba(124,58,237,0.2)]">
                       <Lock className="w-4 h-4" />
                     </div>
                     <h3 className="text-base font-serif font-semibold text-[#14171F]">
@@ -653,14 +647,14 @@ export default function ReportPage({ initialReportToken = null }) {
           ) : (
             <>
               {/* ---- DEEP LIFE DOMAIN ANALYSIS ---- */}
-              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-5 border-b border-[#E7E2D8]">
+              <div className="flex flex-col justify-between gap-4 border-b border-violet-100 pb-5 sm:flex-row sm:items-center">
                 <SectionHeading icon={Compass} eyebrow="₹49 per report" title="Deep life domain analysis" subtitle="Pick a domain for a " tone="indigo" />
 
                 <div className="relative w-full sm:min-w-[210px] sm:w-auto">
                   <select
                     value={selectedDomain}
                     onChange={(e) => setSelectedDomain(e.target.value)}
-                    className="w-full appearance-none bg-[#FAF8F4] border border-[#E7E2D8] rounded-lg px-3.5 py-2.5 text-xs font-semibold text-[#14171F] focus:outline-none focus:ring-2 focus:ring-[#362D6B]/25 hover:border-[#362D6B]/40 cursor-pointer pr-9 transition-colors duration-150"
+                    className="w-full appearance-none rounded-lg border border-violet-100 bg-[#F8F7FC] px-3.5 py-2.5 pr-9 text-xs font-semibold text-[#14171F] transition-colors duration-150 focus:border-violet-500 focus:outline-none focus:ring-2 focus:ring-violet-500/20 hover:border-violet-400"
                   >
                     {LIFE_DOMAINS.map((domain) => (
                       <option key={domain.key} value={domain.key}>
@@ -668,7 +662,7 @@ export default function ReportPage({ initialReportToken = null }) {
                       </option>
                     ))}
                   </select>
-                  <ChevronDown className="w-3.5 h-3.5 text-[#362D6B] absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none" />
+                  <ChevronDown className="absolute right-3 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-violet-700 pointer-events-none" />
                 </div>
               </div>
 
@@ -723,7 +717,7 @@ export default function ReportPage({ initialReportToken = null }) {
 
               {/* ---- Paid domain content is fully unlocked once payment is verified ---- */}
               {!isPaid && (
-                <div className="relative h-[220px] rounded-xl overflow-hidden border border-[#E7E2D8] bg-[#FAF8F4]">
+                <div className="relative h-[220px] overflow-hidden rounded-xl border border-violet-100 bg-[#F8F7FC]">
                   <div className="absolute inset-0 p-5 blur-sm select-none pointer-events-none opacity-40 space-y-2">
                     <div className="flex items-center gap-2 text-[#B4571F]">
                       <ActiveDomainIcon className="w-4 h-4" />
@@ -735,7 +729,7 @@ export default function ReportPage({ initialReportToken = null }) {
                   </div>
 
                   <div className="absolute inset-0 z-10 flex flex-col items-center justify-center overflow-y-auto p-4 text-center bg-white/85 backdrop-blur-sm">
-                    <div className="w-10 h-10 rounded-xl bg-[#14171F] text-white flex items-center justify-center mb-3">
+                    <div className="mb-3 flex h-10 w-10 items-center justify-center rounded-xl bg-violet-600 text-white shadow-[0_8px_18px_rgba(124,58,237,0.2)]">
                       <Lock className="w-4 h-4" />
                     </div>
                     <h3 className="text-base font-serif font-semibold text-[#14171F]">

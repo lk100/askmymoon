@@ -162,7 +162,7 @@ export default function DomainReportPayment({ userName, reportData, onSuccess })
         modal: {
           ondismiss: () => setIsPaying(false),
         },
-        theme: { color: '#92400e' },
+        theme: { color: '#7C3AED' },
       });
 
       razorpay.on('payment.failed', (response) => {
@@ -266,7 +266,7 @@ export default function DomainReportPayment({ userName, reportData, onSuccess })
           <button
             type="submit"
             disabled={!pricing || isPaying}
-            className="mt-2 w-full rounded-xl bg-[#B4571F] px-4 py-3 text-[15px] font-bold text-white shadow-[0_8px_18px_rgba(180,87,31,0.2)] transition hover:bg-[#9D4819] disabled:opacity-60 flex items-center justify-center gap-2"
+            className="mt-2 flex w-full items-center justify-center gap-2 rounded-xl bg-violet-600 px-4 py-3 text-[15px] font-bold text-white shadow-[0_8px_18px_rgba(124,58,237,0.2)] transition hover:bg-violet-700 disabled:opacity-60"
           >
             {isPaying ? (
               'Processing...'
@@ -289,7 +289,7 @@ export default function DomainReportPayment({ userName, reportData, onSuccess })
         type="button"
         onClick={() => setShowDetailsForm(true)}
         disabled={isLoadingPricing || isPaying || !pricing}
-        className="w-full min-h-[48px] rounded-xl bg-amber-800 px-4 py-3 text-[13px] font-bold text-white transition hover:bg-amber-900 disabled:cursor-not-allowed disabled:opacity-60 sm:text-sm"
+        className="min-h-[48px] w-full rounded-xl bg-violet-600 px-4 py-3 text-[13px] font-bold text-white transition hover:bg-violet-700 disabled:cursor-not-allowed disabled:opacity-60 sm:text-sm"
       >
         {isPaying
           ? 'Processing payment...'

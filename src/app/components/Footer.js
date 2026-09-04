@@ -1,88 +1,74 @@
-import Link from 'next/link';
-import { Camera, Globe } from 'lucide-react';
+import React from 'react';
+import { Lock, ShieldCheck, Camera } from 'lucide-react';
 
-export default function Footer() {
-    return (
-        <footer className="border-t border-amber-900/10 bg-[#FAF6F0] mt-4">
-            <div className="max-w-5xl mx-auto px-4 sm:px-6 py-8 sm:py-10">
-                <div className="flex flex-col items-center gap-5 text-center">
-
-                    {/* Brand line */}
-                    <div className="space-y-1.5">
-                        <p className="text-sm font-bold text-slate-800 tracking-tight">
-                            Ask My Moon
-                        </p>
-                        <p className="text-xs text-slate-500 max-w-xs leading-relaxed">
-                            Personalized Vedic remedies, built with care.
-                        </p>
-                    </div>
-
-                    {/* Social / credit links */}
-                    <div className="flex items-center gap-5">
-                        <a
-                            href="https://www.instagram.com/askmymoon/"
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="flex items-center gap-1.5 text-xs font-semibold text-slate-600 hover:text-amber-800 transition-colors duration-150"
-                        >
-                            <Camera className="w-3.5 h-3.5" />
-                            <span>@askmymoon</span>
-                        </a>
-                        <span className="w-1 h-1 rounded-full bg-amber-900/20" />
-                        <a
-                            href="https://www.instagram.com/_13verse/"
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="flex items-center gap-1.5 text-xs font-semibold text-slate-600 hover:text-amber-800 transition-colors duration-150"
-                        >
-                            <Camera className="w-3.5 h-3.5" />
-                            <span>@_13verse</span>
-                        </a>
-                    </div>
-
-                    {/* Divider */}
-                    <div className="w-12 h-px bg-amber-900/15" />
-
-                    {/* Legal nav */}
-                    <nav className="flex flex-wrap items-center justify-center gap-x-4 gap-y-2">
-                        <Link
-                            href="/blogs"
-                            className="text-xs font-medium text-slate-500 hover:text-amber-800 transition-colors duration-150"
-                        >
-                            Blog
-                        </Link>
-                        <Link
-                            href="/consultation"
-                            className="text-xs font-medium text-slate-500 hover:text-amber-800 transition-colors duration-150"
-                        >
-                            Consultation
-                        </Link>
-                        <Link
-                            href="/about"
-                            className="text-xs font-medium text-slate-500 hover:text-amber-800 transition-colors duration-150"
-                        >
-                            About
-                        </Link>
-                        <Link
-                            href="/terms"
-                            className="text-xs font-medium text-slate-500 hover:text-amber-800 transition-colors duration-150"
-                        >
-                            Terms & Conditions
-                        </Link>
-                        <Link
-                            href="/privacy"
-                            className="text-xs font-medium text-slate-500 hover:text-amber-800 transition-colors duration-150"
-                        >
-                            Privacy Policy
-                        </Link>
-                    </nav>
-
-                    {/* Copyright */}
-                    <p className="text-[11px] text-slate-400 pt-1">
-                        © {new Date().getFullYear()} Ask My Moon. All rights reserved.
-                    </p>
-                </div>
+export default function FooterRedesign() {
+  return (
+    <footer className="w-full bg-[#EDECF7] text-[#2C2A40] font-sans px-6 sm:px-10 py-10 sm:py-12">
+      <div className="max-w-6xl mx-auto">
+        {/* Grid layout */}
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-10 sm:gap-8">
+          
+          {/* Brand + Trust */}
+          <div className="col-span-2 sm:col-span-1">
+            <h2 className="font-serif text-xl text-[#1F1C33] mb-2">Ask My Moon</h2>
+            <p className="text-sm text-[#5C5875] leading-relaxed mb-5">
+              Personalized Vedic remedies, built with care.
+            </p>
+            <div className="flex flex-col gap-2.5">
+              <span className="inline-flex items-center gap-2 text-sm text-[#4A3FCF]">
+                <Lock className="w-4 h-4" /> Private and confidential
+              </span>
+              <span className="inline-flex items-center gap-2 text-sm text-[#4A3FCF]">
+                <ShieldCheck className="w-4 h-4" /> Verified astrologers
+              </span>
+              <span className="inline-flex items-center gap-2 text-sm text-[#4A3FCF]">
+                <ShieldCheck className="w-4 h-4" /> Secure payments
+              </span>
             </div>
-        </footer>
-    );
+          </div>
+
+          {/* Explore */}
+          <div>
+            <h3 className="text-sm font-semibold text-[#1F1C33] mb-3">Explore</h3>
+            <ul className="flex flex-col gap-2.5 text-sm text-[#5C5875]">
+              <li><a href="#" className="hover:text-[#4A3FCF] transition-colors">Blog</a></li>
+              <li><a href="#" className="hover:text-[#4A3FCF] transition-colors">Consultation</a></li>
+              <li><a href="#" className="hover:text-[#4A3FCF] transition-colors">About</a></li>
+            </ul>
+          </div>
+
+          {/* Legal */}
+          <div>
+            <h3 className="text-sm font-semibold text-[#1F1C33] mb-3">Legal</h3>
+            <ul className="flex flex-col gap-2.5 text-sm text-[#5C5875]">
+              <li><a href="#" className="hover:text-[#4A3FCF] transition-colors">Terms and conditions</a></li>
+              <li><a href="#" className="hover:text-[#4A3FCF] transition-colors">Privacy policy</a></li>
+            </ul>
+          </div>
+
+          {/* Social */}
+          <div>
+            <h3 className="text-sm font-semibold text-[#1F1C33] mb-3">Follow</h3>
+            <ul className="flex flex-col gap-2.5 text-sm text-[#5C5875]">
+              <li className="inline-flex items-center gap-2">
+                <Camera className="w-4 h-4" />
+                <a href="#" className="hover:text-[#4A3FCF] transition-colors">@askmymoon</a>
+              </li>
+              <li className="inline-flex items-center gap-2">
+                <Camera className="w-4 h-4" />
+                <a href="#" className="hover:text-[#4A3FCF] transition-colors">@_13verse</a>
+              </li>
+            </ul>
+          </div>
+        </div>
+
+        {/* Divider + Copyright */}
+        <div className="border-t border-[#D6D4E8] mt-8 pt-4 text-center">
+          <p className="text-xs text-[#7A7690] tracking-wide">
+            © 2026 Ask My Moon. All rights reserved.
+          </p>
+        </div>
+      </div>
+    </footer>
+  );
 }

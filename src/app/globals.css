@@ -5,8 +5,8 @@
 }
 
 body {
-  background-color: #FDFBF7;
-  color: #151515;
+  background-color: #F7F5FB;
+  color: #15152B;
 }
 
 .marquee-track {
@@ -34,10 +34,31 @@ select {
 }
 
 .marquee-pill {
-  background: rgba(248, 240, 223, 0.9);
-  color: #7a4b13;
-  border-color: rgba(216, 174, 89, 0.9);
-  box-shadow: inset 0 0 0 1px rgba(216, 174, 89, 0.15);
+  background: rgba(242, 237, 253, 0.95);
+  color: #5B3A9C;
+  border-color: rgba(139, 92, 246, 0.35);
+  box-shadow: inset 0 0 0 1px rgba(139, 92, 246, 0.08);
+}
+
+[data-report-theme] [class*="bg-[#FAF8F4]"] {
+  background-color: #F8F7FC !important;
+}
+
+[data-report-theme] [class*="border-[#E7E2D8]"] {
+  border-color: #E8E0F5 !important;
+}
+
+[data-report-theme] [class*="text-[#B4571F]"] {
+  color: #7C3AED !important;
+}
+
+[data-report-theme] [class*="text-[#362D6B]"] {
+  color: #4C1D95 !important;
+}
+
+[data-report-theme] main > section {
+  background-color: #FBFAFF !important;
+  border-color: #E8E0F5 !important;
 }
 
 @keyframes marquee-scroll {

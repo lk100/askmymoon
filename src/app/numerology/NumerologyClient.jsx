@@ -94,55 +94,50 @@ export default function NumerologyClient() {
   };
 
   return (
-    <div className="min-h-screen bg-[#FDFBF7] text-slate-800 antialiased">
+    <div className="min-h-screen bg-[#F7F5FB] text-[#26233D] antialiased">
       <Navbar ctaLabel="Astrology Report" ctaHref="/#birth-form" />
 
       <main className="mx-auto max-w-6xl px-3.5 py-6 sm:px-6 sm:py-10">
-        <section className="grid items-start gap-6 lg:grid-cols-[1fr_0.82fr] lg:gap-10">
+        <section className="flex flex-col gap-6 lg:gap-10">
           <div className="pt-2 sm:pt-8">
-            <div className="inline-flex items-center gap-2 rounded-md border border-amber-200 bg-amber-100/70 px-3 py-1 text-[10px] font-semibold text-amber-900 sm:text-xs">
-              <Sparkles className="h-3.5 w-3.5 text-amber-700" />
+            <div className="inline-flex items-center gap-2 rounded-md border border-violet-200 bg-violet-100/80 px-3 py-1 text-[10px] font-semibold text-[#26233D] sm:text-xs">
+              <Sparkles className="h-3.5 w-3.5 text-violet-600" />
               Numerology insights for your next chapter
             </div>
-            <h1 className="mt-5 text-[30px] font-black leading-[1.08] tracking-tight text-slate-900 sm:text-5xl">
-              Your numbers reveal <span className="text-amber-800">your personal pattern.</span>
+            <h1 className="mt-5 text-[28px] font-black leading-[1.08] tracking-tight text-slate-900 sm:text-5xl">
+              Your numbers shape <span className="text-violet-700">your path.</span>
             </h1>
-            <p className="mt-5 max-w-xl text-sm leading-relaxed text-slate-600 sm:text-lg">
+            <p className="mt-5 hidden max-w-xl text-sm leading-relaxed text-slate-600 sm:block sm:text-lg">
               Understand the energy behind your name and birth date across career, relationships, money, health, and life direction.
             </p>
 
-            <div className="mt-7 grid gap-3 sm:grid-cols-2">
+            <div className="mt-6 grid grid-cols-2 gap-x-4 gap-y-3 sm:mt-7 sm:gap-3">
               {['Life path and core strengths', 'Career and money tendencies', 'Relationship patterns', 'Personal yearly direction'].map((item) => (
-                <div key={item} className="flex items-start gap-2.5 text-sm font-semibold text-slate-700">
-                  <CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0 text-amber-700" />
+                <div key={item} className="flex items-start gap-2 text-xs font-semibold leading-5 text-slate-700 sm:gap-2.5 sm:text-sm sm:leading-normal">
+                  <CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0 text-violet-600" />
                   <span>{item}</span>
                 </div>
               ))}
             </div>
 
-            <div className="mt-8 flex items-center gap-3 text-xs text-slate-500">
-              <span className="rounded-full border border-emerald-200 bg-emerald-50 px-3 py-1.5 font-semibold text-emerald-800">Free preview</span>
-              <span>Complete numerology report</span>
-              <span className="font-bold text-emerald-800">Free</span>
-            </div>
           </div>
 
-          <div id="numerology-form" className="rounded-2xl border border-amber-900/15 bg-white p-4 shadow-sm sm:rounded-3xl sm:p-7">
-            <div className="mb-5 flex items-start justify-between gap-3 border-b border-amber-900/10 pb-4">
+          <div id="numerology-form" className="rounded-2xl border border-violet-100 bg-white p-4 shadow-sm sm:rounded-3xl sm:p-7">
+            <div className="mb-5 flex items-start justify-between gap-3 border-b border-violet-100 pb-4">
               <div>
-                <h2 className="text-xl font-extrabold leading-tight text-slate-900">Get your free preview</h2>
+                <h2 className="text-lg font-extrabold leading-tight text-slate-900 sm:text-xl">Get your free preview</h2>
                 <p className="mt-1 text-xs text-slate-500">Personalized numerology insights</p>
               </div>
-              <span className="inline-flex shrink-0 items-center gap-1 rounded-lg border border-emerald-200 bg-emerald-50 px-2.5 py-1.5 text-[10px] font-bold uppercase text-emerald-800">
+              <span className="inline-flex shrink-0 items-center gap-1 rounded-lg border border-violet-200 bg-violet-50 px-2 py-1.5 text-[9px] font-bold uppercase text-violet-800 sm:px-2.5 sm:text-[10px]">
                 <Gift className="h-3.5 w-3.5" /> Free
               </span>
             </div>
 
             {numerologyResults ? (
               <div className="space-y-3">
-                <div className="rounded-xl border border-emerald-200 bg-emerald-50 p-4">
+                <div className="rounded-xl border border-violet-200 bg-violet-50 p-4">
                   <div className="flex items-center gap-2">
-                    <CheckCircle2 className="h-5 w-5 text-emerald-700" />
+                    <CheckCircle2 className="h-5 w-5 text-violet-700" />
                     <h3 className="font-bold text-slate-900">Your numerology preview</h3>
                   </div>
                   <p className="mt-1 text-xs leading-relaxed text-slate-600">Your core numbers are calculated from your name and birth date.</p>
@@ -157,30 +152,30 @@ export default function NumerologyClient() {
                     ['Soul Urge Number', numerologyResults.soulUrge],
                     ['Subconscious Self', numerologyResults.subconsciousSelf],
                   ].map(([label, result]) => (
-                    <div key={label} className="rounded-xl border border-amber-900/10 bg-[#FAF6F0] p-3">
+                    <div key={label} className="rounded-xl border border-violet-100 bg-[#F8F7FC] p-3">
                       <div className="flex items-center justify-between gap-2">
                         <span className="text-[10px] font-bold uppercase tracking-wide text-slate-500">{label}</span>
-                        <span className="flex h-8 w-8 items-center justify-center rounded-full bg-amber-800 text-sm font-black text-white">{result.number}</span>
+                        <span className="flex h-8 w-8 items-center justify-center rounded-full bg-violet-700 text-sm font-black text-white">{result.number}</span>
                       </div>
                       <p className="mt-2 text-[11px] leading-relaxed text-slate-700">{result.meaning}</p>
                     </div>
                   ))}
                 </div>
-                <div className="rounded-xl border border-amber-900/10 bg-white p-3">
+                <div className="rounded-xl border border-violet-100 bg-white p-3">
                   <p className="text-[10px] font-bold uppercase tracking-wide text-slate-500">Challenge Numbers</p>
                   <div className="mt-2 grid gap-2 sm:grid-cols-2">
                     {[['1st', numerologyResults.challengeOne], ['2nd', numerologyResults.challengeTwo], ['3rd', numerologyResults.challengeThree], ['4th', numerologyResults.challengeFour]].map(([label, result]) => (
-                      <div key={label} className="rounded-lg bg-[#FAF6F0] p-2">
+                      <div key={label} className="rounded-lg bg-[#F8F7FC] p-2">
                         <div className="flex items-center gap-2">
                           <span className="text-[9px] font-semibold text-slate-500">{label}</span>
-                          <span className="text-lg font-black text-amber-900">{result.number}</span>
+                          <span className="text-lg font-black text-violet-900">{result.number}</span>
                         </div>
                         <p className="mt-1 text-[10px] leading-relaxed text-slate-600">{result.meaning}</p>
                       </div>
                     ))}
                   </div>
                 </div>
-                <button type="button" onClick={() => setNumerologyResults(null)} className="w-full rounded-xl border border-amber-900/15 bg-white px-4 py-2.5 text-xs font-semibold text-slate-700 transition hover:border-amber-700 hover:text-amber-900">
+                <button type="button" onClick={() => setNumerologyResults(null)} className="w-full rounded-xl border border-violet-100 bg-white px-4 py-2.5 text-xs font-semibold text-slate-700 transition hover:border-violet-500 hover:text-violet-900">
                   Recalculate with different details
                 </button>
               </div>
@@ -188,12 +183,12 @@ export default function NumerologyClient() {
               <form onSubmit={handleSubmit} className="space-y-3.5">
                 <label className="block text-[11px] font-bold uppercase tracking-wider text-slate-700">
                   Full name
-                  <input required value={formData.name} onChange={(event) => setFormData({ ...formData, name: event.target.value })} placeholder="e.g. Rahul Sharma" className="mt-1.5 w-full rounded-xl border border-amber-900/15 bg-[#FAF6F0] px-3.5 py-3 text-sm font-normal normal-case tracking-normal text-slate-900 outline-none transition focus:border-amber-800 focus:ring-2 focus:ring-amber-700/20" />
+                  <input required value={formData.name} onChange={(event) => setFormData({ ...formData, name: event.target.value })} placeholder="e.g. Rahul Sharma" className="mt-1.5 w-full rounded-xl border border-violet-100 bg-[#F8F7FC] px-3.5 py-3 text-sm font-normal normal-case tracking-normal text-slate-900 outline-none transition focus:border-violet-500 focus:ring-2 focus:ring-violet-100" />
                 </label>
 
                 <label className="block text-[11px] font-bold uppercase tracking-wider text-slate-700">
                   Date of birth
-                  <input required type="date" value={formData.dob} onChange={(event) => setFormData({ ...formData, dob: event.target.value })} className="mt-1.5 w-full rounded-xl border border-amber-900/15 bg-[#FAF6F0] px-3 py-3 text-sm font-normal normal-case tracking-normal text-slate-900 outline-none transition focus:border-amber-800 focus:ring-2 focus:ring-amber-700/20" />
+                  <input required type="date" value={formData.dob} onChange={(event) => setFormData({ ...formData, dob: event.target.value })} className="mt-1.5 w-full rounded-xl border border-violet-100 bg-[#F8F7FC] px-3 py-3 text-sm font-normal normal-case tracking-normal text-slate-900 outline-none transition focus:border-violet-500 focus:ring-2 focus:ring-violet-100" />
                 </label>
 
                 <fieldset>
@@ -203,12 +198,12 @@ export default function NumerologyClient() {
                       ['hour', 'HH', Array.from({ length: 12 }, (_, index) => String(index + 1).padStart(2, '0'))],
                       ['minute', 'MM', Array.from({ length: 60 }, (_, index) => String(index).padStart(2, '0'))],
                     ].map(([key, label, options]) => (
-                      <select required key={key} value={timeParts[key]} onChange={(event) => updateTime(key, event.target.value)} className="w-full rounded-xl border border-amber-900/15 bg-[#FAF6F0] px-2 py-3 text-sm text-slate-900 outline-none focus:border-amber-800 focus:ring-2 focus:ring-amber-700/20">
+                      <select required key={key} value={timeParts[key]} onChange={(event) => updateTime(key, event.target.value)} className="w-full rounded-xl border border-violet-100 bg-[#F8F7FC] px-2 py-3 text-sm text-slate-900 outline-none focus:border-violet-500 focus:ring-2 focus:ring-violet-100">
                         <option value="" disabled>{label}</option>
                         {options.map((option) => <option key={option} value={option}>{option}</option>)}
                       </select>
                     ))}
-                    <select required value={timeParts.meridiem} onChange={(event) => updateTime('meridiem', event.target.value)} className="w-full rounded-xl border border-amber-900/15 bg-[#FAF6F0] px-2 py-3 text-sm text-slate-900 outline-none focus:border-amber-800 focus:ring-2 focus:ring-amber-700/20">
+                    <select required value={timeParts.meridiem} onChange={(event) => updateTime('meridiem', event.target.value)} className="w-full rounded-xl border border-violet-100 bg-[#F8F7FC] px-2 py-3 text-sm text-slate-900 outline-none focus:border-violet-500 focus:ring-2 focus:ring-violet-100">
                       <option value="AM">AM</option>
                       <option value="PM">PM</option>
                     </select>
@@ -219,16 +214,16 @@ export default function NumerologyClient() {
                   <label className="block text-[11px] font-bold uppercase tracking-wider text-slate-700">
                     Place of birth
                     <div className="relative mt-1.5">
-                      <input required value={placeQuery} onChange={(event) => { setPlaceQuery(event.target.value); setHasSelectedLocation(false); setFormData({ ...formData, place: event.target.value, lat: null, lon: null }); }} placeholder="Type city name" className="w-full rounded-xl border border-amber-900/15 bg-[#FAF6F0] px-3.5 py-3 pr-10 text-sm font-normal normal-case tracking-normal text-slate-900 outline-none transition focus:border-amber-800 focus:ring-2 focus:ring-amber-700/20" />
-                      <span className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400">{isSearching ? <Loader2 className="h-4 w-4 animate-spin text-amber-700" /> : <MapPin className="h-4 w-4" />}</span>
+                      <input required value={placeQuery} onChange={(event) => { setPlaceQuery(event.target.value); setHasSelectedLocation(false); setFormData({ ...formData, place: event.target.value, lat: null, lon: null }); }} placeholder="Type city name" className="w-full rounded-xl border border-violet-100 bg-[#F8F7FC] px-3.5 py-3 pr-10 text-sm font-normal normal-case tracking-normal text-slate-900 outline-none transition focus:border-violet-500 focus:ring-2 focus:ring-violet-100" />
+                      <span className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400">{isSearching ? <Loader2 className="h-4 w-4 animate-spin text-violet-600" /> : <MapPin className="h-4 w-4" />}</span>
                     </div>
                   </label>
                   {suggestions.length > 0 && (
-                    <ul className="absolute z-20 mt-1 max-h-52 w-full overflow-y-auto rounded-xl border border-amber-900/15 bg-white shadow-lg">
+                    <ul className="absolute z-20 mt-1 max-h-52 w-full overflow-y-auto rounded-xl border border-violet-100 bg-white shadow-lg">
                       {suggestions.map((location) => (
                         <li key={location.place_id}>
-                          <button type="button" onClick={() => selectLocation(location)} className="flex w-full items-start gap-2.5 border-b border-amber-900/5 p-3 text-left text-xs text-slate-700 transition hover:bg-[#FAF6F0]">
-                            <MapPin className="mt-0.5 h-4 w-4 shrink-0 text-amber-700" />
+                          <button type="button" onClick={() => selectLocation(location)} className="flex w-full items-start gap-2.5 border-b border-violet-50 p-3 text-left text-xs text-slate-700 transition hover:bg-violet-50">
+                            <MapPin className="mt-0.5 h-4 w-4 shrink-0 text-violet-600" />
                             <span className="font-semibold">{location.display_name}</span>
                           </button>
                         </li>
@@ -237,7 +232,7 @@ export default function NumerologyClient() {
                   )}
                 </div>
 
-                <button type="submit" className="flex w-full items-center justify-center gap-2 rounded-xl bg-amber-800 px-6 py-3.5 text-sm font-bold text-white shadow-sm transition hover:bg-amber-900 active:scale-[0.99]">
+                <button type="submit" className="flex w-full items-center justify-center gap-2 rounded-xl bg-violet-600 px-6 py-3.5 text-sm font-bold text-white shadow-[0_10px_20px_rgba(124,58,237,0.18)] transition hover:bg-violet-700 active:scale-[0.99]">
                   Calculate my preview <ArrowRight className="h-4 w-4" />
                 </button>
                 <p className="text-center text-[10px] font-medium text-slate-500">No payment required · Your complete report is free</p>

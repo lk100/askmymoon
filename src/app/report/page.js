@@ -33,7 +33,7 @@ import { ASCENDANT_REMEDIES, getPrimaryBottleneck, getLifelineRemedyTeaser } fro
 import { PLANETARY_REMEDIES } from '@/data/planetaryRemedies';
 import { getPlanetExplanation, getFunctionalNature, getPlanetLifeAreas } from '@/data/planetaryData';
 import Footer from '../components/Footer';
-import BrandLogo from '../components/BrandLogo';
+import Navbar from '../components/Navbar';
 import DomainReportPayment from '../components/DomainReportPayment';
 
 /* ============================================================
@@ -461,28 +461,25 @@ export default function ReportPage({ initialReportToken = null }) {
         </div>
       )}
 
-      {/* ============ HEADER ============ */}
-      <header className="border-b border-[#E7E2D8] bg-[#FAF8F4]/90 backdrop-blur-md sticky top-0 z-40">
-        <div className="max-w-4xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between gap-3">
+      <Navbar />
+
+      {/* ============ ON-SCREEN CONTENT ============ */}
+      <main className="max-w-4xl mx-auto px-3.5 sm:px-6 pt-5 sm:pt-10 space-y-3.5 sm:space-y-5">
+
+        <div className="flex items-center justify-between gap-3">
           <Link href="/" className="flex items-center gap-2 text-xs font-medium text-[#6B6455] hover:text-[#14171F] transition-colors duration-150">
             <ArrowLeft className="w-4 h-4" />
-            <span className="hidden sm:inline">Back to home</span>
+            <span>Back to home</span>
           </Link>
-
-          <BrandLogo />
 
           <button
             onClick={handleDownload}
             className="flex items-center gap-2 bg-[#14171F] hover:bg-[#2A2E38] active:scale-[0.97] text-white text-[11px] sm:text-xs font-semibold px-3.5 sm:px-4 py-2 rounded-lg transition-all duration-150"
           >
             <Printer className="w-3.5 h-3.5" />
-            <span className="hidden sm:inline">Save PDF</span>
+            <span>Save PDF</span>
           </button>
         </div>
-      </header>
-
-      {/* ============ ON-SCREEN CONTENT ============ */}
-      <main className="max-w-4xl mx-auto px-3.5 sm:px-6 pt-5 sm:pt-10 space-y-3.5 sm:space-y-5">
 
         {/* Identity */}
         <section className="relative bg-white border border-[#E7E2D8] rounded-2xl p-4 sm:p-7 md:p-9 overflow-hidden">

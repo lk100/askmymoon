@@ -55,6 +55,7 @@ export async function POST(request) {
       userPhone,
       amount,
       currency,
+      reportData,
     } = payload || {};
 
     const submittedEmail = email || userEmail;
@@ -74,6 +75,10 @@ export async function POST(request) {
       amount !== ALLOWED_PRICES[currency]
     ) {
       return NextResponse.json({ error: 'Invalid payment payload.' }, { status: 400 });
+    }
+
+    if (!reportData || typeof reportData !== 'object' || Array.isArray(reportData)) {
+      return NextResponse.json({ error: 'Report data is required.' }, { status: 400 });
     }
 
     if (!hasValidSignature(paymentId, orderId, signature)) {
@@ -101,7 +106,8 @@ export async function POST(request) {
       name: safeName,
       amount: paidAmount,
       currency,
-      report_data: {},
+      report_data: reportData,
+      report_token: crypto.randomBytes(32).toString('hex'),
       created_at: createdAt,
     };
     let { error: insertError } = await supabase.from('paid_reports').upsert(reportRow, { onConflict: 'payment_id' });
@@ -123,7 +129,18 @@ export async function POST(request) {
       );
     }
 
-    return NextResponse.json({ success: true });
+    const { data: savedReport, error: tokenError } = await supabase
+      .from('paid_reports')
+      .select('report_token')
+      .eq('payment_id', paymentId)
+      .maybeSingle();
+
+    if (tokenError || !savedReport?.report_token) {
+      console.error('Supabase report token lookup failed:', tokenError);
+      return NextResponse.json({ error: 'Unable to create the report link.' }, { status: 500 });
+    }
+
+    return NextResponse.json({ success: true, reportToken: savedReport.report_token });
   } catch (error) {
     console.error('Payment verification failed:', error);
     return NextResponse.json({ error: 'Unable to verify payment and save the report.' }, { status: 500 });

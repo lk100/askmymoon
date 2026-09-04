@@ -24,6 +24,7 @@ import {
   AlertCircle,
   ChevronDown,
   Lock,
+  Copy,
   Moon,
   Sun as SunIcon,
 } from 'lucide-react';
@@ -190,13 +191,15 @@ function DomainPlacementsPdf({ placements }) {
   );
 }
 
-export default function ReportPage() {
+export default function ReportPage({ initialReportToken = null }) {
   const [userData, setUserData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [selectedPlanet, setSelectedPlanet] = useState('Sun');
   const [selectedDomain, setSelectedDomain] = useState('career');
   const [activeView, setActiveView] = useState('planetary'); // 'planetary' | 'domain'
   const [isPaid, setIsPaid] = useState(false);
+  const [reportToken, setReportToken] = useState(initialReportToken);
+  const [copyStatus, setCopyStatus] = useState('');
   const [isDownloading, setIsDownloading] = useState(false);
   const [downloadError, setDownloadError] = useState('');
 
@@ -208,12 +211,44 @@ export default function ReportPage() {
         const merged = { ...parsed, ...(parsed.chartResults || {}) };
         setUserData(merged);
         setIsPaid(parsed.paymentStatus === 'verified');
+        setReportToken(parsed.reportToken || initialReportToken);
         const availablePlanets = merged.planetPositions ? Object.keys(merged.planetPositions) : [];
         if (availablePlanets.length > 0) setSelectedPlanet(availablePlanets[0]);
       }
       setLoading(false);
     }
   }, []);
+
+  useEffect(() => {
+    if (!initialReportToken) return;
+
+    async function loadSharedReport() {
+      try {
+        const response = await fetch(`/api/report/${initialReportToken}`, { cache: 'no-store' });
+        const result = await response.json();
+        if (!response.ok) throw new Error(result.error || 'Unable to load the report.');
+
+        const sharedData = {
+          ...(result.reportData || {}),
+          name: result.name || result.reportData?.name || 'Customer',
+          paymentStatus: 'verified',
+          reportToken: initialReportToken,
+        };
+        sessionStorage.setItem('astro_user_data', JSON.stringify(sharedData));
+        localStorage.setItem('astro_user_data', JSON.stringify(sharedData));
+        setUserData({ ...sharedData, ...(sharedData.chartResults || {}) });
+        setReportToken(initialReportToken);
+        setIsPaid(true);
+      } catch (error) {
+        console.error('Shared report loading failed:', error);
+      } finally {
+        setLoading(false);
+      }
+    }
+
+    setLoading(true);
+    loadSharedReport();
+  }, [initialReportToken]);
 
   const careerData = useMemo(() => {
     if (!userData?.planetPositions || !userData?.ascendant) {
@@ -350,11 +385,26 @@ export default function ReportPage() {
       ...userData,
       ...(paymentResult?.contact || {}),
       paymentStatus: 'verified',
+      reportToken: paymentResult?.reportToken || userData.reportToken,
     };
     sessionStorage.setItem('astro_user_data', JSON.stringify(updatedUserData));
     localStorage.setItem('astro_user_data', JSON.stringify(updatedUserData));
     setUserData(updatedUserData);
     setIsPaid(true);
+    setReportToken(paymentResult?.reportToken || userData.reportToken || null);
+  };
+
+  const handleCopyLink = async () => {
+    if (!reportToken) return;
+
+    try {
+      await navigator.clipboard.writeText(`${window.location.origin}/report/${reportToken}`);
+      setCopyStatus('Link copied');
+      window.setTimeout(() => setCopyStatus(''), 2500);
+    } catch (error) {
+      console.error('Report link copy failed:', error);
+      setCopyStatus('Copy failed');
+    }
   };
 
   const handleDownload = async () => {
@@ -545,7 +595,7 @@ export default function ReportPage() {
                   <Eyebrow tone="rose">Core problem & affliction</Eyebrow>
                   <p className="text-[13px] text-[#3A362C] leading-relaxed">{activePlanetData.coreProblem}</p>
                 </div>
-                {!isPaid && (
+                {isPaid && (
                   <div className="p-4 sm:p-5 rounded-xl bg-[#FAF8F4] border border-[#E7E2D8] space-y-2">
                     <Eyebrow tone="indigo">Fast & quick donation remedies</Eyebrow>
                     <p className="text-[13px] text-[#3A362C] leading-relaxed">{activePlanetData.quickRemedy}</p>
@@ -628,14 +678,25 @@ export default function ReportPage() {
                     <div>
                       <span className="mt-1 text-xs text-[#3D6B4F]">Your complete report is ready to download.</span>
                     </div>
-                    <button
-                      type="button"
-                      onClick={handleDownload}
-                      className="inline-flex items-center gap-2 rounded-lg bg-[#3D6B4F] px-4 py-2.5 text-xs font-semibold text-white transition hover:bg-[#2A4C38]"
-                    >
-                      <Printer className="h-3.5 w-3.5" />
-                      Download full PDF
-                    </button>
+                    <div className="flex flex-wrap items-center gap-2">
+                      <button
+                        type="button"
+                        onClick={handleCopyLink}
+                        disabled={!reportToken}
+                        className="inline-flex items-center gap-2 rounded-lg border border-[#3D6B4F]/30 bg-white px-4 py-2.5 text-xs font-semibold text-[#3D6B4F] transition hover:bg-[#3D6B4F]/10 disabled:cursor-not-allowed disabled:opacity-50"
+                      >
+                        <Copy className="h-3.5 w-3.5" />
+                        {copyStatus || 'Copy link'}
+                      </button>
+                      <button
+                        type="button"
+                        onClick={handleDownload}
+                        className="inline-flex items-center gap-2 rounded-lg bg-[#3D6B4F] px-4 py-2.5 text-xs font-semibold text-white transition hover:bg-[#2A4C38]"
+                      >
+                        <Printer className="h-3.5 w-3.5" />
+                        Download full PDF
+                      </button>
+                    </div>
                   </div>
 
                   {activeLordRemedy && (

@@ -36,7 +36,7 @@ function loadRazorpayScript() {
   });
 }
 
-export default function DomainReportPayment({ onSuccess }) {
+export default function DomainReportPayment({ userName, reportData, onSuccess }) {
   const [pricing, setPricing] = useState(null);
   const [isLoadingPricing, setIsLoadingPricing] = useState(true);
   const [showDetailsForm, setShowDetailsForm] = useState(false);
@@ -142,6 +142,8 @@ export default function DomainReportPayment({ onSuccess }) {
                 signature: response.razorpay_signature,
                 amount: pricing.amount,
                 currency: pricing.currency,
+                userName,
+                reportData,
                 ...contact,
               }),
             });

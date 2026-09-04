@@ -18,6 +18,7 @@ import Footer from './components/Footer';
 import BrandLogo from './components/BrandLogo';
 import Navbar from './components/Navbar';
 import { fromZonedTime } from 'date-fns-tz';
+import { getBirthTimeZone } from '@/lib/birthTime';
 
 const heroPills = ['Instant Remedies', 'Career', 'Finances', 'Marriage', 'Health'];
 const DEFAULT_TIME_VALUE = '';
@@ -174,11 +175,15 @@ export default function Home() {
 
   const handleSelectLocation = (place) => {
     const formattedName = place.display_name;
+    const latitude = parseFloat(place.lat);
+    const longitude = parseFloat(place.lon);
+    const timeZone = getBirthTimeZone(latitude, longitude);
     setFormData((prev) => ({
       ...prev,
       place: formattedName,
-      lat: parseFloat(place.lat),
-      lon: parseFloat(place.lon),
+      lat: latitude,
+      lon: longitude,
+      timeZone,
     }));
     setPlaceQuery(formattedName);
     setHasSelectedLocation(true);
@@ -239,19 +244,19 @@ export default function Home() {
     const latitude = formData.lat;
     const longitude = formData.lon;
 
-    const detectedTimeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+    const timeZone = formData.timeZone || getBirthTimeZone(latitude, longitude);
 
     try {
       const dateObj = fromZonedTime(
         `${formData.dob}T${safeTime}:00`,
-        detectedTimeZone
+        timeZone
       );
 
       const chartResults = calculateChart(
         dateObj,
         latitude,
         longitude,
-        detectedTimeZone,
+        timeZone,
         formData.system
       );
 
@@ -261,7 +266,7 @@ export default function Home() {
         time: safeTime,
         lat: latitude,
         lon: longitude,
-        timeZone: detectedTimeZone,
+        timeZone,
         ...chartResults
       };
 

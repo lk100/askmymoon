@@ -8,6 +8,7 @@ import Footer from '../components/Footer';
 import { calculateNumerology } from '@/lib/numerology';
 import { calculateChart } from '@/lib/astrology';
 import { fromZonedTime } from 'date-fns-tz';
+import { getBirthTimeZone } from '@/lib/birthTime';
 
 const DEFAULT_TIME = { hour: '', minute: '', meridiem: 'AM' };
 
@@ -62,7 +63,10 @@ export default function NumerologyClient() {
   }, []);
 
   const selectLocation = (location) => {
-    setFormData((current) => ({ ...current, place: location.display_name, lat: Number(location.lat), lon: Number(location.lon) }));
+    const latitude = Number(location.lat);
+    const longitude = Number(location.lon);
+    const timeZone = getBirthTimeZone(latitude, longitude);
+    setFormData((current) => ({ ...current, place: location.display_name, lat: latitude, lon: longitude, timeZone }));
     setPlaceQuery(location.display_name);
     setHasSelectedLocation(true);
     setSuggestions([]);
@@ -80,7 +84,7 @@ export default function NumerologyClient() {
 
     const normalizedName = formData.name.trim();
     const results = calculateNumerology(normalizedName, formData.dob);
-    const timeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+    const timeZone = formData.timeZone || getBirthTimeZone(formData.lat, formData.lon);
     const dateObj = fromZonedTime(`${formData.dob}T${formData.time}:00`, timeZone);
     const chartResults = calculateChart(dateObj, formData.lat, formData.lon, timeZone, 'vedic');
     localStorage.setItem('astro_numerology_data', JSON.stringify({

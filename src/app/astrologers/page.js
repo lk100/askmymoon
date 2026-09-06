@@ -42,7 +42,7 @@ export default function AstrologersPage() {
                   <p className="mt-2 max-w-xl text-sm leading-relaxed text-slate-600">Understand your work strengths, timing, career direction, and the next practical move through astrology and numerology.</p>
                   <div className="mt-4 flex flex-wrap gap-2 text-xs font-semibold text-violet-800">
                     <span className="rounded-full bg-violet-50 px-3 py-1.5"><Sparkles className="mr-1 inline h-3.5 w-3.5" />1 free question</span>
-                    <span className="rounded-full bg-orange-50 px-3 py-1.5 text-orange-800">₹99 per question after</span>
+                    <span className="rounded-full bg-orange-50 px-3 py-1.5 text-orange-800">₹49 per question after</span>
                   </div>
                 </div>
               </div>

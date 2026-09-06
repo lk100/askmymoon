@@ -270,8 +270,8 @@ export default function CareerAstrologerPage() {
                     <Sparkles className="mt-0.5 h-5 w-5 shrink-0 text-orange-700" />
                     <div>
                       <p className="text-sm font-bold text-orange-950">Your free question is complete</p>
-                      <p className="mt-1 text-xs leading-relaxed text-orange-900">Pay ₹99 to continue this conversation with another focused career question.</p>
-                      <button type="button" onClick={() => setShowComingSoon(true)} className="mt-3 rounded-lg bg-orange-700 px-4 py-2 text-xs font-bold text-white hover:bg-orange-800">Unlock next question · ₹99</button>
+                      <p className="mt-1 text-xs leading-relaxed text-orange-900">Pay ₹49 to continue this conversation with another focused career question.</p>
+                      <button type="button" onClick={() => setShowComingSoon(true)} className="mt-3 rounded-lg bg-orange-700 px-4 py-2 text-xs font-bold text-white hover:bg-orange-800">Unlock next question · ₹49</button>
                     </div>
                   </div>
                 )}

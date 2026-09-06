@@ -374,9 +374,9 @@ export default function Home() {
               </div>
 
               <div className="mx-auto flex w-fit max-w-full flex-wrap items-center justify-center gap-x-3 gap-y-1 text-center text-[11px] font-semibold text-[#39344F] sm:text-xs">
-                <span>Total visitors: <strong className="text-violet-800">1,000</strong></span>
+                <span>Total visitors: <strong className="text-violet-800">2.3k</strong></span>
                 <span className="text-violet-300" aria-hidden="true">|</span>
-                <span>Total reports generated: <strong className="text-violet-800">27</strong></span>
+                <span>Total reports: <strong className="text-violet-800">50</strong></span>
               </div>
             </div>
 

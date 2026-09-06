@@ -1,5 +1,10 @@
 @import "tailwindcss";
 
+@theme inline {
+  --font-sans: var(--font-body);
+  --font-serif: var(--font-display);
+}
+
 :root {
   color-scheme: light;
 }
@@ -7,6 +12,17 @@
 body {
   background-color: #F7F5FB;
   color: #15152B;
+  font-family: var(--font-body), sans-serif;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+.font-serif {
+  font-family: var(--font-display), Georgia, serif;
 }
 
 .marquee-track {
@@ -16,6 +32,15 @@ body {
 html, body {
   overflow-x: hidden;
   width: 100%;
+}
+
+.hide-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+.hide-scrollbar::-webkit-scrollbar {
+  display: none;
 }
 
 input[type="date"],

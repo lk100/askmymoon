@@ -6,6 +6,7 @@ import { ChevronDown, Menu, X } from 'lucide-react';
 import BrandLogo from './BrandLogo';
 
 const navLinks = [
+  { href: '/astrologers', label: 'Astrologers' },
   { href: '/consultation', label: 'Consultation' },
   { href: '/blogs', label: 'Blog' },
 ];

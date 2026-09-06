@@ -1,6 +1,22 @@
 import './globals.css';
 import Script from 'next/script';
 import { Analytics } from '@vercel/analytics/next';
+import { Cormorant_Garamond, DM_Sans } from 'next/font/google';
+
+const displayFont = Cormorant_Garamond({
+  subsets: ['latin'],
+  variable: '--font-display',
+  display: 'swap',
+  weight: ['400', '500', '600', '700'],
+  style: ['normal', 'italic'],
+});
+
+const bodyFont = DM_Sans({
+  subsets: ['latin'],
+  variable: '--font-body',
+  display: 'swap',
+  weight: ['400', '500', '600', '700'],
+});
 
 const googleAnalyticsId = process.env.NEXT_PUBLIC_GA_ID;
 
@@ -72,7 +88,7 @@ export default function RootLayout({ children }) {
         </>
       )}
       <body
-        className="bg-slate-950 text-slate-100 antialiased overflow-x-hidden"
+        className={`${displayFont.variable} ${bodyFont.variable} bg-slate-950 text-slate-100 antialiased overflow-x-hidden`}
         suppressHydrationWarning={true}
       >
         {/* Overrides standard framework fallback text for Googlebot */}

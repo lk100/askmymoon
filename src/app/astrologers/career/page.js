@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from 'react';
 import { ArrowRight, BriefcaseBusiness, Loader2, MapPin, Send, Sparkles } from 'lucide-react';
 import Navbar from '../../components/Navbar';
 import Footer from '../../components/Footer';
+import DomainReportPayment from '../../components/DomainReportPayment';
 import { getBirthTimeZone } from '@/lib/birthTime';
 import { getCareerFreeAnswer } from '@/data/careerFreeAnswers';
 
@@ -14,18 +15,13 @@ const suggestedQuestions = [
   'Should I go for a job or business?',
 ];
 
-const getChartFingerprint = (chart) => JSON.stringify(chart);
-
-const getAscendantLabel = (ascendant) => {
-  if (!ascendant || typeof ascendant !== 'object') return ascendant || 'Not available';
-  return ascendant.sign || 'Not available';
-};
-
-const getAscendantLordLabel = (ascendant) => {
-  if (!ascendant?.lord) return '';
-  const { name, sign } = ascendant.lord;
-  return [name, sign].filter(Boolean).join(' · ');
-};
+const getBirthDetailsFingerprint = ({ dob, time, lat, lon, timeZone }) => JSON.stringify({
+  dob,
+  time,
+  lat: Number(lat),
+  lon: Number(lon),
+  timeZone,
+});
 
 const getUsedFreeCharts = () => {
   try {
@@ -44,11 +40,12 @@ export default function CareerAstrologerPage() {
   const [messages, setMessages] = useState([]);
   const [isThinking, setIsThinking] = useState(false);
   const [questionCount, setQuestionCount] = useState(0);
+  const [isPaidQuestionUnlocked, setIsPaidQuestionUnlocked] = useState(false);
+  const [contactDetails, setContactDetails] = useState(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSearching, setIsSearching] = useState(false);
   const [suggestions, setSuggestions] = useState([]);
   const [error, setError] = useState('');
-  const [showMoreDetails, setShowMoreDetails] = useState(false);
   const [showComingSoon, setShowComingSoon] = useState(false);
   const locationTimer = useRef(null);
 
@@ -57,10 +54,13 @@ export default function CareerAstrologerPage() {
       const saved = JSON.parse(sessionStorage.getItem('career_astrologer_session') || 'null');
       if (saved?.chart) {
         const savedChart = saved.chart.astrology || saved.chart;
-        setForm(saved.form || form);
+        const savedForm = saved.form || form;
+        setForm(savedForm);
         setChart(savedChart);
         setChartToken(saved.chartToken || '');
-        setQuestionCount(saved.questionCount || (getUsedFreeCharts().includes(getChartFingerprint(savedChart)) ? 1 : 0));
+        setQuestionCount(saved.questionCount || (getUsedFreeCharts().includes(getBirthDetailsFingerprint(savedForm)) ? 1 : 0));
+        setIsPaidQuestionUnlocked(Boolean(saved.paidQuestionUnlocked));
+        setContactDetails(saved.contactDetails || null);
         setAnswer('');
         setMessages(saved.messages || (saved.answer ? [{ role: 'assistant', content: saved.answer }] : []));
       }
@@ -114,19 +114,26 @@ export default function CareerAstrologerPage() {
       const data = await response.json();
       if (!response.ok) throw new Error(data.error || 'Unable to prepare the chart.');
       const nextChart = data.chart;
-      const nextQuestionCount = getUsedFreeCharts().includes(getChartFingerprint(nextChart)) ? 1 : 0;
+      const nextQuestionCount = getUsedFreeCharts().includes(getBirthDetailsFingerprint(form)) ? 1 : 0;
       const previousMessages = data.previousFreeQuestion?.question && data.previousFreeQuestion?.answer
         ? [
           { role: 'user', content: data.previousFreeQuestion.question },
           { role: 'assistant', content: data.previousFreeQuestion.answer },
         ]
         : [];
+      const hasUsedFreeQuestion = Boolean(data.previousFreeQuestion) || nextQuestionCount > 0;
+      const nextMessages = previousMessages.length > 0
+        ? previousMessages
+        : hasUsedFreeQuestion
+          ? [{ role: 'assistant', content: 'This birth chart has already used its free question. Additional questions are available at ₹49 per question.' }]
+          : [];
       setChart(nextChart);
       setChartToken(data.chartToken);
-      setQuestionCount(data.previousFreeQuestion ? 1 : nextQuestionCount);
+      setQuestionCount(hasUsedFreeQuestion ? 1 : 0);
+      setIsPaidQuestionUnlocked(false);
       setAnswer('');
-      setMessages(previousMessages);
-      sessionStorage.setItem('career_astrologer_session', JSON.stringify({ form, chart: nextChart, chartToken: data.chartToken, questionCount: data.previousFreeQuestion ? 1 : nextQuestionCount, answer: data.previousFreeQuestion?.answer || '', messages: previousMessages }));
+      setMessages(nextMessages);
+      sessionStorage.setItem('career_astrologer_session', JSON.stringify({ form, chart: nextChart, chartToken: data.chartToken, questionCount: hasUsedFreeQuestion ? 1 : 0, paidQuestionUnlocked: false, answer: data.previousFreeQuestion?.answer || '', messages: nextMessages }));
     } catch {
       setError('We could not prepare the chart. Please check your birth details.');
     } finally {
@@ -142,31 +149,76 @@ export default function CareerAstrologerPage() {
       setError('Please select one of the suggested questions for your free reading.');
       return;
     }
-    if (questionCount > 0) {
-      setShowComingSoon(true);
-      return;
-    }
+    if (questionCount > 0 && !isPaidQuestionUnlocked) return;
     setIsSubmitting(true);
     setIsThinking(true);
     setError('');
     const userMessage = { role: 'user', content: selectedQuestion.trim() };
     try {
-      const freeAnswer = getCareerFreeAnswer(selectedQuestion.trim(), chart, form.dob);
-      if (!freeAnswer) throw new Error('Please select one of the available career questions.');
+      const isPaidQuestion = questionCount > 0;
+      let nextAnswer = getCareerFreeAnswer(selectedQuestion.trim(), chart, form.dob);
+      if (isPaidQuestion) {
+        const response = await fetch('/api/career-astrologer/follow-up', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            question: selectedQuestion.trim(),
+            chartToken,
+            conversation: messages,
+          }),
+        });
+        if (!response.ok) {
+          const data = await response.json().catch(() => null);
+          throw new Error(data?.error || 'Unable to generate the career answer.');
+        }
+        if (!response.body) throw new Error('The astrologer response could not be streamed.');
+
+        const streamingMessages = [...messages, userMessage, { role: 'assistant', content: '' }];
+        setMessages(streamingMessages);
+        const reader = response.body.getReader();
+        const decoder = new TextDecoder();
+        let buffer = '';
+        nextAnswer = '';
+
+        while (true) {
+          const { done, value } = await reader.read();
+          buffer += decoder.decode(value || new Uint8Array(), { stream: !done });
+          const lines = buffer.split('\n');
+          buffer = lines.pop() || '';
+
+          for (const line of lines) {
+            if (!line.trim()) continue;
+            const chunk = JSON.parse(line);
+            if (!chunk.text) continue;
+            nextAnswer += chunk.text;
+            const streamedAnswer = nextAnswer;
+            setMessages([...messages, userMessage, { role: 'assistant', content: streamedAnswer }]);
+          }
+
+          if (done) break;
+        }
+
+        if (buffer.trim()) {
+          const chunk = JSON.parse(buffer);
+          nextAnswer += chunk.text || '';
+        }
+      }
+      if (!nextAnswer) throw new Error('Please select one of the available career questions.');
       const nextMessages = [
         ...messages,
         userMessage,
-        { role: 'assistant', content: freeAnswer },
+        { role: 'assistant', content: nextAnswer },
       ];
       const nextCount = questionCount + 1;
-      const fingerprint = getChartFingerprint(chart);
+      const fingerprint = getBirthDetailsFingerprint(form);
       const usedFreeCharts = getUsedFreeCharts();
       if (!usedFreeCharts.includes(fingerprint)) {
         localStorage.setItem('career_astrologer_free_charts', JSON.stringify([...usedFreeCharts, fingerprint]));
       }
       setMessages(nextMessages);
       setQuestionCount(nextCount);
-      sessionStorage.setItem('career_astrologer_session', JSON.stringify({ form, chart, chartToken, questionCount: nextCount, answer: freeAnswer, messages: nextMessages }));
+      setIsPaidQuestionUnlocked(false);
+      sessionStorage.setItem('career_astrologer_session', JSON.stringify({ form, chart, chartToken, questionCount: nextCount, paidQuestionUnlocked: false, contactDetails, answer: nextAnswer, messages: nextMessages }));
       setQuestion('');
     } catch (requestError) {
       setError(requestError.message);
@@ -198,7 +250,7 @@ export default function CareerAstrologerPage() {
             </div>
             {error && <p className="mt-4 text-sm text-rose-700">{error}</p>}
             <button disabled={isSubmitting} type="submit" className="mt-6 inline-flex w-full items-center justify-center gap-2 rounded-xl bg-violet-700 px-5 py-3.5 text-sm font-bold text-white transition hover:bg-violet-800 disabled:cursor-not-allowed disabled:bg-violet-400">
-              {isSubmitting ? <><Loader2 className="h-4 w-4 animate-spin" /> Generating chart...</> : <>Prepare my chart <ArrowRight className="h-4 w-4" /></>}
+              {isSubmitting ? <><Loader2 className="h-4 w-4 animate-spin" /> Generating chart...</> : <>Ask the Astrologer <ArrowRight className="h-4 w-4" /></>}
             </button>
           </form>
         ) : (
@@ -209,23 +261,19 @@ export default function CareerAstrologerPage() {
                   <p className="text-[9px] font-bold uppercase tracking-[0.14em] text-violet-700">{messages.length > 0 ? 'Birth details' : 'Chart ready'}</p>
                   <p className="mt-1 truncate text-sm font-bold text-slate-900">{form.name}</p>
                 </div>
-                <button type="button" onClick={() => { setChart(null); setAnswer(''); setMessages([]); setQuestionCount(0); }} className="shrink-0 text-[11px] font-semibold leading-tight text-violet-700 hover:text-violet-900">Regenerate</button>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setChart(null);
+                    setAnswer('');
+                    setMessages([]);
+                    setQuestionCount(0);
+                  }}
+                  className="shrink-0 inline-flex items-center gap-1 rounded-full border border-violet-200 bg-violet-50 px-3 py-1.5 text-[11px] font-semibold leading-tight text-violet-700 shadow-sm transition-colors hover:bg-violet-100 active:bg-violet-200"
+                >
+                  New +
+                </button>
               </div>
-              <div className="mt-3 grid grid-cols-2 gap-2 border-t border-violet-100 pt-3 text-[11px]">
-                <div><span className="block text-slate-500">Ascendant</span><strong>{getAscendantLabel(chart.ascendant)}</strong></div>
-                <div><span className="block text-slate-500">Ascendant lord</span><strong>{getAscendantLordLabel(chart.ascendant) || 'Not available'}</strong></div>
-              </div>
-              <button type="button" onClick={() => setShowMoreDetails((current) => !current)} className="mt-3 text-[11px] font-semibold text-violet-700 hover:text-violet-900">{showMoreDetails ? 'Show less' : 'Show more'}</button>
-              {showMoreDetails && (
-                <div className="mt-3 grid grid-cols-1 gap-1.5 border-t border-violet-100 pt-3">
-                  {Object.entries(chart.career_houses || {}).map(([house, details]) => (
-                    <div key={house} className="flex min-w-0 items-center justify-between gap-1 rounded-lg bg-white px-2 py-1.5 text-[10px]">
-                      <span className="font-semibold capitalize text-slate-700">{house.replace('_', ' ')}</span>
-                      <span className="truncate text-right text-slate-500">{details.lord?.name || 'Not available'} · {details.lord?.sign || 'Sign unavailable'}</span>
-                    </div>
-                  ))}
-                </div>
-              )}
             </div>
 
             <div className="mb-4 flex shrink-0 items-center gap-2 border-b border-violet-100 pb-4">
@@ -234,54 +282,71 @@ export default function CareerAstrologerPage() {
             </div>
 
             <div className="hide-scrollbar min-h-0 flex-1 overflow-y-auto pr-1 pb-40">
-            {questionCount === 0 && messages.length === 0 && !isThinking && (
-              <div className="space-y-3">
-                <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
-                  {suggestedQuestions.map((item) => (
-                    <button
-                      type="button"
-                      key={item}
-                      onClick={() => askQuestion(item, true)}
-                      className="flex min-h-12 w-full items-center justify-center rounded-full border border-violet-200 bg-violet-50 px-3 py-2 text-center text-xs font-medium text-violet-800 transition hover:border-violet-400 hover:bg-violet-100"
-                    >
-                      {item}
-                    </button>
-                  ))}
+              {questionCount === 0 && messages.length === 0 && !isThinking && (
+                <div className="space-y-3">
+                  <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
+                    {suggestedQuestions.map((item) => (
+                      <button
+                        type="button"
+                        key={item}
+                        onClick={() => askQuestion(item, true)}
+                        className="flex min-h-12 w-full items-center justify-center rounded-full border border-violet-200 bg-violet-50 px-3 py-2 text-center text-xs font-medium text-violet-800 transition hover:border-violet-400 hover:bg-violet-100"
+                      >
+                        {item}
+                      </button>
+                    ))}
+                  </div>
                 </div>
-              </div>
-            )}
-            {messages.length === 0 && !isThinking && error && <p className="mt-4 text-sm text-rose-700">{error}</p>}
+              )}
+              {messages.length === 0 && !isThinking && error && <p className="mt-4 text-sm text-rose-700">{error}</p>}
 
-            {(messages.length > 0 || isThinking) && (
-              <>
-                <div className="space-y-4">
-                  {isThinking && <div className="flex justify-start"><div className="rounded-2xl rounded-bl-md border border-violet-100 bg-[#F8F7FC] px-4 py-3 text-sm text-slate-500"><span>Career astrologer is thinking</span><span className="ml-1 inline-flex gap-0.5 align-middle"><span className="animate-bounce">.</span><span className="animate-bounce [animation-delay:120ms]">.</span><span className="animate-bounce [animation-delay:240ms]">.</span></span></div></div>}
-                  {messages.map((message, index) => (
-                    <div key={`${message.role}-${index}`} className={`flex ${message.role === 'user' ? 'justify-end' : 'justify-start'}`}>
-                      <div className={`max-w-[88%] rounded-2xl px-3 py-2 text-xs leading-5 ${message.role === 'user' ? 'rounded-br-md bg-violet-700 text-white' : 'rounded-bl-md border border-violet-100 bg-[#F8F7FC] text-slate-700'}`}>
-                        {message.content}
+              {(messages.length > 0 || isThinking) && (
+                <>
+                  <div className="space-y-4">
+                    {isThinking && <div className="flex justify-start"><div className="rounded-2xl rounded-bl-md border border-violet-100 bg-[#F8F7FC] px-4 py-3 text-sm text-slate-500"><span>Career astrologer is thinking</span><span className="ml-1 inline-flex gap-0.5 align-middle"><span className="animate-bounce">.</span><span className="animate-bounce [animation-delay:120ms]">.</span><span className="animate-bounce [animation-delay:240ms]">.</span></span></div></div>}
+                    {messages.map((message, index) => (
+                      <div key={`${message.role}-${index}`} className={`flex ${message.role === 'user' ? 'justify-end' : 'justify-start'}`}>
+                        <div className={`max-w-[88%] rounded-2xl px-3 py-2 text-xs leading-5 ${message.role === 'user' ? 'rounded-br-md border border-violet-200 bg-violet-100 text-violet-950' : 'rounded-bl-md border border-violet-100 bg-[#F8F7FC] text-slate-700'}`}>
+                          {message.content}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                  {error && <p className="mt-4 text-sm text-rose-700">{error}</p>}
+                  {questionCount > 0 && (
+                    <div className="mt-5 flex items-start gap-3 rounded-2xl border border-violet-100 bg-white p-4">
+                      <Sparkles className="mt-0.5 h-5 w-5 shrink-0 text-violet-700" />
+                      <div>
+                        <p className="text-sm font-bold text-slate-900">Free question complete ✨</p>
+                        <p className="mt-1 text-xs leading-relaxed text-slate-600">Go deeper — ask another career question</p>
+                        <div className="mt-3">
+                          {isPaidQuestionUnlocked ? (
+                            <p className="text-xs font-semibold text-emerald-800">One question unlocked. Send it below.</p>
+                          ) : (
+                            <DomainReportPayment
+                              userName={form.name}
+                              reportData={{ type: 'career-question', chart, questionCount }}
+                              buttonLabel="Ask question"
+                              contactDetails={contactDetails}
+                              buttonClassName="!min-h-[32px] w-full max-w-[220px] whitespace-nowrap !px-1.5 !py-0.5 !text-[11px] !leading-none sm:!min-h-[48px] sm:max-w-none sm:!px-4 sm:!py-3 sm:!text-sm"
+                              onSuccess={({ contact }) => {
+                                setIsPaidQuestionUnlocked(true);
+                                setContactDetails(contact);
+                                sessionStorage.setItem('career_astrologer_session', JSON.stringify({ form, chart, chartToken, questionCount, paidQuestionUnlocked: true, contactDetails: contact, answer, messages }));
+                              }}
+                            />
+                          )}
+                        </div>
                       </div>
                     </div>
-                  ))}
-                </div>
-                {error && <p className="mt-4 text-sm text-rose-700">{error}</p>}
-                {questionCount > 0 && (
-                  <div className="mt-5 flex items-start gap-3 rounded-2xl border border-orange-100 bg-orange-50 p-4">
-                    <Sparkles className="mt-0.5 h-5 w-5 shrink-0 text-orange-700" />
-                    <div>
-                      <p className="text-sm font-bold text-orange-950">Your free question is complete</p>
-                      <p className="mt-1 text-xs leading-relaxed text-orange-900">Pay ₹49 to continue this conversation with another focused career question.</p>
-                      <button type="button" onClick={() => setShowComingSoon(true)} className="mt-3 rounded-lg bg-orange-700 px-4 py-2 text-xs font-bold text-white hover:bg-orange-800">Unlock next question · ₹49</button>
-                    </div>
-                  </div>
-                )}
-              </>
-            )}
+                  )}
+                </>
+              )}
             </div>
             <div className="fixed inset-x-0 bottom-0 z-20 border-t border-violet-100 bg-white/95 px-4 py-3 shadow-[0_-8px_24px_rgba(38,35,61,0.08)] backdrop-blur sm:px-8">
               <form onSubmit={askQuestion} className="mx-auto flex max-w-5xl items-center gap-2">
                 <textarea required value={question} onChange={(event) => setQuestion(event.target.value)} rows={1} className="hide-scrollbar min-w-0 flex-1 resize-none overflow-y-auto rounded-xl border border-violet-100 bg-[#F8F7FC] px-4 py-3 text-sm placeholder:text-xs outline-none focus:border-violet-500" placeholder="Write your next career question..." />
-                <button aria-label="Send question" title="Send question" disabled={isSubmitting} type="submit" className="inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-violet-700 text-white transition hover:bg-violet-800 disabled:cursor-not-allowed disabled:bg-violet-400">
+                <button aria-label="Send question" title="Send question" disabled={isSubmitting || (questionCount > 0 && !isPaidQuestionUnlocked)} type="submit" className="inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-violet-700 text-white transition hover:bg-violet-800 disabled:cursor-not-allowed disabled:bg-violet-400">
                   {isSubmitting ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Send className="h-3.5 w-3.5" />}
                 </button>
               </form>
@@ -290,16 +355,6 @@ export default function CareerAstrologerPage() {
         )}
       </main>
       {!chart && <Footer />}
-      {showComingSoon && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/40 px-4" role="dialog" aria-modal="true" aria-labelledby="coming-soon-title">
-          <div className="w-full max-w-sm rounded-2xl bg-white p-6 text-center shadow-2xl">
-            <div className="mx-auto flex h-11 w-11 items-center justify-center rounded-full bg-orange-100 text-orange-700"><Sparkles className="h-5 w-5" /></div>
-            <h2 id="coming-soon-title" className="mt-4 text-lg font-bold text-slate-900">Coming soon</h2>
-            <p className="mt-2 text-sm leading-6 text-slate-600">Paid career questions will be available soon.</p>
-            <button type="button" onClick={() => setShowComingSoon(false)} className="mt-5 w-full rounded-xl bg-violet-700 px-4 py-3 text-sm font-bold text-white hover:bg-violet-800">Close</button>
-          </div>
-        </div>
-      )}
     </div>
   );
 }

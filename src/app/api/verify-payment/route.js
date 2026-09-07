@@ -1,6 +1,7 @@
 import crypto from 'node:crypto';
 import { NextResponse } from 'next/server';
 import { createClient } from '@supabase/supabase-js';
+import { getVisitorId } from '@/lib/careerAstrologerStore';
 
 const ALLOWED_PRICES = {
   INR: 4900,
@@ -98,9 +99,11 @@ export async function POST(request) {
     );
     const createdAt = new Date().toISOString();
     const paidAmount = amount / 100;
+    const visitor = getVisitorId(request);
     const reportRow = {
       payment_id: paymentId,
       order_id: orderId,
+      visitor_id: visitor.id,
       email: safeEmail,
       phone: safePhone,
       name: safeName,

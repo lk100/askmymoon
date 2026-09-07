@@ -121,3 +121,41 @@ export async function recordCareerQuestion({ sessionId, question, answer, provid
 
   if (error) throw new Error(`Unable to save career question: ${error.message}`);
 }
+
+export async function claimPaidCareerQuestion(visitorId, chartFingerprint) {
+  const supabase = getSupabaseAdmin();
+  const { data: payments, error: paymentError } = await supabase
+    .from('paid_reports')
+    .select('id, report_data')
+    .eq('visitor_id', visitorId)
+    .eq('career_question_used', false)
+    .eq('report_data->>type', 'career-question')
+    .order('created_at', { ascending: true });
+
+  if (paymentError) throw new Error(`Unable to load paid career questions: ${paymentError.message}`);
+  const payment = payments?.find((item) => item.report_data?.chart?._chartFingerprint === chartFingerprint);
+  if (!payment) return null;
+
+  const { data: claimed, error: claimError } = await supabase
+    .from('paid_reports')
+    .update({ career_question_used: true })
+    .eq('id', payment.id)
+    .eq('visitor_id', visitorId)
+    .eq('career_question_used', false)
+    .select('id')
+    .maybeSingle();
+
+  if (claimError) throw new Error(`Unable to claim paid career question: ${claimError.message}`);
+  return claimed?.id ? payment.id : null;
+}
+
+export async function releasePaidCareerQuestion(paymentId) {
+  const supabase = getSupabaseAdmin();
+  const { error } = await supabase
+    .from('paid_reports')
+    .update({ career_question_used: false })
+    .eq('id', paymentId)
+    .eq('career_question_used', true);
+
+  if (error) throw new Error(`Unable to release paid career question: ${error.message}`);
+}

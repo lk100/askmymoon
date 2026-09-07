@@ -21,6 +21,12 @@ alter table public.paid_reports
 alter table public.paid_reports
   add column if not exists report_token text;
 
+alter table public.paid_reports
+  add column if not exists visitor_id uuid;
+
+alter table public.paid_reports
+  add column if not exists career_question_used boolean not null default false;
+
 notify pgrst, 'reload schema';
 
 alter table public.paid_reports
@@ -34,6 +40,10 @@ alter table public.paid_reports
 
 create index if not exists paid_reports_email_idx
   on public.paid_reports (email);
+
+create index if not exists paid_reports_visitor_career_idx
+  on public.paid_reports (visitor_id, career_question_used)
+  where visitor_id is not null;
 
 create unique index if not exists paid_reports_report_token_idx
   on public.paid_reports (report_token)

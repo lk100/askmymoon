@@ -36,7 +36,7 @@ function loadRazorpayScript() {
   });
 }
 
-export default function DomainReportPayment({ userName, reportData, onSuccess }) {
+export default function DomainReportPayment({ userName, reportData, onSuccess, buttonLabel = 'Get Full Report', buttonClassName = '', contactDetails = null }) {
   const [pricing, setPricing] = useState(null);
   const [isLoadingPricing, setIsLoadingPricing] = useState(true);
   const [showDetailsForm, setShowDetailsForm] = useState(false);
@@ -45,13 +45,18 @@ export default function DomainReportPayment({ userName, reportData, onSuccess })
   const [mounted, setMounted] = useState(false);
 
   // Contact details collected in the modal, required before payment starts.
-  const [email, setEmail] = useState('');
-  const [phone, setPhone] = useState('');
+  const [email, setEmail] = useState(contactDetails?.email || '');
+  const [phone, setPhone] = useState(contactDetails?.phone || '');
   const [touched, setTouched] = useState({ email: false, phone: false });
 
   const isEmailValid = EMAIL_PATTERN.test(email.trim());
   const isPhoneValid = PHONE_PATTERN.test(phone.trim());
   const isContactValid = isEmailValid && isPhoneValid;
+
+  useEffect(() => {
+    setEmail(contactDetails?.email || '');
+    setPhone(contactDetails?.phone || '');
+  }, [contactDetails?.email, contactDetails?.phone]);
 
   // Needed because createPortal touches document.body, which only exists client-side.
   useEffect(() => {
@@ -287,9 +292,15 @@ export default function DomainReportPayment({ userName, reportData, onSuccess })
     <div className="space-y-3">
       <button
         type="button"
-        onClick={() => setShowDetailsForm(true)}
+        onClick={() => {
+          if (isContactValid) {
+            handlePayment();
+          } else {
+            setShowDetailsForm(true);
+          }
+        }}
         disabled={isLoadingPricing || isPaying || !pricing}
-        className="min-h-[48px] w-full rounded-xl bg-violet-600 px-4 py-3 text-[13px] font-bold text-white transition hover:bg-violet-700 disabled:cursor-not-allowed disabled:opacity-60 sm:text-sm"
+        className={`min-h-[48px] w-full rounded-xl bg-violet-600 px-4 py-3 text-[13px] font-bold text-white transition hover:bg-violet-700 disabled:cursor-not-allowed disabled:opacity-60 sm:text-sm ${buttonClassName}`}
       >
         {isPaying
           ? 'Processing payment...'
@@ -297,7 +308,7 @@ export default function DomainReportPayment({ userName, reportData, onSuccess })
           ? 'Loading price...'
           : (
             <span className="inline-flex items-center gap-1.5">
-              <span>Get Full Report</span>
+              <span>{buttonLabel}</span>
               <span className="line-through opacity-70 font-normal">{displayOriginalPrice}</span>
               <span>{displayPrice}</span>
             </span>

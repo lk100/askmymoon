@@ -8,6 +8,9 @@ export default function sitemap() {
     '/blogs',
     '/checkout',
     '/consultation',
+    '/astrologers',
+    '/astrologers/career',
+    '/numerology',
     '/privacy',
     '/terms',
   ];

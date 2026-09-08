@@ -12,6 +12,7 @@ import {
   Gift,
   Compass,
   X,
+  MessageCircle,
 } from 'lucide-react';
 import { calculateChart } from '@/lib/astrology';
 import Footer from './components/Footer';
@@ -152,7 +153,7 @@ export default function Home() {
         console.error("Geocoding fetch error:", error);
         setSuggestions([]);
         setShowDropdown(false);
-      } finally {
+      } {
         if (!controller.signal.aborted) setIsSearchingLocation(false);
       }
     }, 350);
@@ -323,7 +324,7 @@ export default function Home() {
               <p className="mt-1 text-[11px] leading-relaxed text-slate-600 sm:text-xs">
                 You are viewing AskMyMoon inside Instagram. Open this page in your external browser for reliable payment and PDF downloads.
               </p>
-          
+
             </div>
             <button type="button" onClick={() => setShowBrowserPrompt(false)} aria-label="Close browser notice" className="shrink-0 rounded-md p-1 text-amber-900 transition hover:bg-amber-200">
               <X className="h-4 w-4" />
@@ -347,9 +348,21 @@ export default function Home() {
 
           {/* Left Column */}
           <div className="relative z-10 md:col-span-6 space-y-4 sm:space-y-6 min-w-0">
-            <div className="relative inline-flex max-w-full items-center gap-1.5 sm:gap-2 rounded-md border border-violet-200 bg-violet-100/80 px-2.5 py-1 text-[10px] font-semibold text-[#26233D] sm:px-3 sm:text-xs">
-              <Sparkles className="w-3 h-3 sm:w-3.5 sm:h-3.5 text-violet-600 shrink-0" />
-              <span className="truncate">Free preview • Full personalized report ₹49</span>
+            {/* Top Badges & Astrologer Link */}
+            <div className="flex flex-wrap items-center gap-2">
+              <div className="relative inline-flex max-w-full items-center gap-1.5 sm:gap-2 rounded-md border border-violet-200 bg-violet-100/80 px-2.5 py-1 text-[10px] font-semibold text-[#26233D] sm:px-3 sm:text-xs">
+                <Sparkles className="w-3 h-3 sm:w-3.5 sm:h-3.5 text-violet-600 shrink-0" />
+                <span className="truncate">Free preview • Full personalized report ₹49</span>
+              </div>
+
+              <Link
+                href="/astrologers"
+                className="inline-flex items-center gap-1.5 rounded-md border border-violet-300 bg-white px-2.5 py-1 text-[10px] font-bold text-violet-700 shadow-2xs hover:bg-violet-50 hover:text-violet-900 transition-colors sm:px-3 sm:text-xs"
+              >
+                <MessageCircle className="w-3 h-3 sm:w-3.5 sm:h-3.5 text-violet-600 shrink-0" />
+                <span>Chat to Astrologer</span>
+                <ArrowRight className="w-3 h-3 shrink-0" />
+              </Link>
             </div>
 
             <h1 className="font-serif text-[2.35rem] sm:text-5xl md:text-6xl lg:text-[4.4rem] font-normal text-[#17152B] leading-[0.98] tracking-tight">

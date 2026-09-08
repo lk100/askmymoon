@@ -4,8 +4,8 @@ import { createClient } from '@supabase/supabase-js';
 import { getVisitorId } from '@/lib/careerAstrologerStore';
 
 const ALLOWED_PRICES = {
-  INR: 4900,
-  USD: 100,
+  domain_report: { INR: 4900, USD: 100 },
+  ai_astrologer: { INR: 3900, USD: 49 },
 };
 
 function isNonEmptyString(value) {
@@ -56,6 +56,7 @@ export async function POST(request) {
       userPhone,
       amount,
       currency,
+      product = 'domain_report',
       reportData,
     } = payload || {};
 
@@ -65,6 +66,8 @@ export async function POST(request) {
     const safePhone = isNonEmptyString(submittedPhone) ? submittedPhone.trim() : null;
     const safeName = isNonEmptyString(userName) ? userName.trim() : 'Customer';
 
+    const productPrices = ALLOWED_PRICES[product];
+
     if (
       !isNonEmptyString(paymentId) ||
       !isNonEmptyString(orderId) ||
@@ -72,8 +75,9 @@ export async function POST(request) {
       !safeEmail ||
       !safePhone ||
       !Number.isInteger(amount) ||
-      !Object.hasOwn(ALLOWED_PRICES, currency) ||
-      amount !== ALLOWED_PRICES[currency]
+      !productPrices ||
+      !Object.hasOwn(productPrices, currency) ||
+      amount !== productPrices[currency]
     ) {
       return NextResponse.json({ error: 'Invalid payment payload.' }, { status: 400 });
     }
@@ -92,14 +96,17 @@ export async function POST(request) {
         { status: 500 }
       );
     }
+
     const supabase = createClient(
       process.env.SUPABASE_URL,
       process.env.SUPABASE_SERVICE_KEY,
       { auth: { persistSession: false, autoRefreshToken: false } }
     );
+
     const createdAt = new Date().toISOString();
     const paidAmount = amount / 100;
     const visitor = getVisitorId(request);
+
     const reportRow = {
       payment_id: paymentId,
       order_id: orderId,
@@ -113,6 +120,7 @@ export async function POST(request) {
       report_token: crypto.randomBytes(32).toString('hex'),
       created_at: createdAt,
     };
+
     let { error: insertError } = await supabase.from('paid_reports').upsert(reportRow, { onConflict: 'payment_id' });
 
     if (insertError?.code === 'PGRST204' && insertError.message.includes("'order_id' column")) {

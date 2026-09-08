@@ -117,8 +117,8 @@ function ViewToggle({ activeView, onChange }) {
           type="button"
           onClick={() => onChange(tab.key)}
           className={`py-2 rounded-lg text-xs sm:text-[13px] font-semibold transition-colors duration-150 ${activeView === tab.key
-              ? 'bg-violet-600 text-white shadow-sm'
-              : 'text-[#6B6480] hover:bg-violet-100 hover:text-violet-800'
+            ? 'bg-violet-600 text-white shadow-sm'
+            : 'text-[#6B6480] hover:bg-violet-100 hover:text-violet-800'
             }`}
         >
           {tab.label}
@@ -353,27 +353,27 @@ export default function ReportPage({ initialReportToken = null }) {
 
   const activeLiveDomainData =
     selectedDomain === 'finances' ? financeData :
-    selectedDomain === 'marriage' ? marriageData :
-    selectedDomain === 'health' ? healthData :
-    careerData;
+      selectedDomain === 'marriage' ? marriageData :
+        selectedDomain === 'health' ? healthData :
+          careerData;
 
   const activeLordLabel =
     selectedDomain === 'finances' ? '2nd lord' :
-    selectedDomain === 'marriage' ? '7th lord' :
-    selectedDomain === 'health' ? '6th lord' :
-    '10th lord';
+      selectedDomain === 'marriage' ? '7th lord' :
+        selectedDomain === 'health' ? '6th lord' :
+          '10th lord';
 
   const activeLord =
     selectedDomain === 'finances' ? financeData.secondLord :
-    selectedDomain === 'marriage' ? marriageData.seventhLord :
-    selectedDomain === 'health' ? healthData.sixthLord :
-    careerData.tenthLord;
+      selectedDomain === 'marriage' ? marriageData.seventhLord :
+        selectedDomain === 'health' ? healthData.sixthLord :
+          careerData.tenthLord;
 
   const activeLordRemedy =
     selectedDomain === 'finances' ? financeData.secondLordRemedy :
-    selectedDomain === 'marriage' ? marriageData.seventhLordRemedy :
-    selectedDomain === 'health' ? healthData.sixthLordRemedy :
-    careerData.tenthLordRemedy;
+      selectedDomain === 'marriage' ? marriageData.seventhLordRemedy :
+        selectedDomain === 'health' ? healthData.sixthLordRemedy :
+          careerData.tenthLordRemedy;
 
   const activeDomainProblem = activeLordRemedy?.coreProblem
     || activeLiveDomainData.placements.find((placement) => placement.coreProblem)?.coreProblem
@@ -472,12 +472,12 @@ export default function ReportPage({ initialReportToken = null }) {
             <span>Back</span>
           </Link>
 
-         
+
         </div>
 
         {/* Identity */}
         <section className="relative overflow-hidden rounded-2xl border border-violet-100 bg-white p-4 sm:p-7 md:p-9">
-          
+
           <div className="flex flex-col md:flex-row justify-between md:items-end gap-3 sm:gap-6 pb-4 sm:pb-6">
             <div>
               <Eyebrow tone="marigold">Personal chart index</Eyebrow>
@@ -528,7 +528,7 @@ export default function ReportPage({ initialReportToken = null }) {
                 {bottleneckProblem || `Challenges related to ${ascendantSign} placements.`}
               </p>
             </div>
-           
+
           </div>
         </section>
 
@@ -642,7 +642,7 @@ export default function ReportPage({ initialReportToken = null }) {
               )}
 
               {/* Locked: Mantra — same gate */}
-             
+
             </>
           ) : (
             <>
@@ -740,6 +740,7 @@ export default function ReportPage({ initialReportToken = null }) {
                     </p>
                     <div className="mt-4 w-full max-w-xs">
                       <DomainReportPayment
+                        product="domain_report"
                         userName={userData.name}
                         reportData={{ ...userData, careerReport: careerData, financeReport: financeData, marriageReport: marriageData, healthReport: healthData }}
                         onSuccess={handlePaymentSuccess}
@@ -753,7 +754,7 @@ export default function ReportPage({ initialReportToken = null }) {
         </section>
 
         {/* Dosha Diagnostics */}
-     
+
       </main>
 
       {/* ============ HIDDEN PDF-ONLY CONTENT ============

@@ -36,7 +36,15 @@ function loadRazorpayScript() {
   });
 }
 
-export default function DomainReportPayment({ userName, reportData, onSuccess, buttonLabel = 'Get Full Report', buttonClassName = '', contactDetails = null }) {
+export default function DomainReportPayment({
+  userName,
+  reportData,
+  onSuccess,
+  buttonLabel = 'Get Full Report',
+  buttonClassName = '',
+  contactDetails = null,
+  product = 'domain_report', // NEW: 'domain_report' | 'ai_astrologer'
+}) {
   const [pricing, setPricing] = useState(null);
   const [isLoadingPricing, setIsLoadingPricing] = useState(true);
   const [showDetailsForm, setShowDetailsForm] = useState(false);
@@ -78,8 +86,9 @@ export default function DomainReportPayment({ userName, reportData, onSuccess, b
 
     async function loadPricing() {
       try {
+        setIsLoadingPricing(true);
         const clientCountry = getClientCountry();
-        const response = await fetch('/api/geo-pricing', {
+        const response = await fetch(`/api/geo-pricing?product=${encodeURIComponent(product)}`, {
           cache: 'no-store',
           headers: { 'x-client-country': clientCountry },
         });
@@ -97,7 +106,7 @@ export default function DomainReportPayment({ userName, reportData, onSuccess, b
     return () => {
       isMounted = false;
     };
-  }, []);
+  }, [product]); // NEW: refetch pricing if product changes
 
   async function handlePayment(event) {
     event?.preventDefault();
@@ -118,7 +127,7 @@ export default function DomainReportPayment({ userName, reportData, onSuccess, b
       const orderResponse = await fetch('/api/create-order', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json', 'x-client-country': clientCountry },
-        body: JSON.stringify({ amount: pricing.amount, currency: pricing.currency, ...contact }),
+        body: JSON.stringify({ amount: pricing.amount, currency: pricing.currency, product, ...contact }),
       });
       const order = await orderResponse.json();
       if (!orderResponse.ok) throw new Error(order.error || 'Unable to create payment order.');
@@ -131,7 +140,7 @@ export default function DomainReportPayment({ userName, reportData, onSuccess, b
         amount: order.amount,
         currency: order.currency,
         name: 'Astro Remedies',
-        description: 'Personalized domain report',
+        description: product === 'ai_astrologer' ? 'AI Astrologer report' : 'Personalized domain report',
         prefill: {
           email: contact.email,
           contact: contact.phone,
@@ -147,6 +156,7 @@ export default function DomainReportPayment({ userName, reportData, onSuccess, b
                 signature: response.razorpay_signature,
                 amount: pricing.amount,
                 currency: pricing.currency,
+                product,
                 userName,
                 reportData,
                 ...contact,
@@ -182,8 +192,13 @@ export default function DomainReportPayment({ userName, reportData, onSuccess, b
   }
 
   // Fallbacks so the UI never shows a blank price while pricing is loading/missing.
-  const displayPrice = pricing?.displayPrice || '₹49';
-  const displayOriginalPrice = pricing?.displayOriginalPrice || '₹99';
+  const fallbackPrices = {
+    domain_report: { displayPrice: '₹49', displayOriginalPrice: '₹99' },
+    ai_astrologer: { displayPrice: '₹39', displayOriginalPrice: '₹79' },
+  };
+  const fallback = fallbackPrices[product] || fallbackPrices.domain_report;
+  const displayPrice = pricing?.displayPrice || fallback.displayPrice;
+  const displayOriginalPrice = pricing?.displayOriginalPrice || fallback.displayOriginalPrice;
 
   const modal = (
     <div

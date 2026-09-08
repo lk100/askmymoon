@@ -2,8 +2,8 @@ import { NextResponse } from 'next/server';
 import Razorpay from 'razorpay';
 
 const ALLOWED_PRICES = {
-  INR: 4900,
-  USD: 100,
+  domain_report: { INR: 4900, USD: 100 },
+  ai_astrologer: { INR: 3900, USD: 49 },
 };
 
 function getCountry(request) {
@@ -16,20 +16,22 @@ function getCountry(request) {
 
 export async function POST(request) {
   try {
-    const { amount, currency } = await request.json();
+    const { amount, currency, product } = await request.json();
     const country = getCountry(request);
     const expectedCurrency = country === 'IN' ? 'INR' : 'USD';
 
+    const productPrices = ALLOWED_PRICES[product];
+
     if (
+      !productPrices ||
       !Number.isInteger(amount) ||
       amount < 100 ||
-      !Object.hasOwn(ALLOWED_PRICES, currency) ||
+      !Object.hasOwn(productPrices, currency) ||
       currency !== expectedCurrency ||
-      amount !== ALLOWED_PRICES[expectedCurrency]
+      amount !== productPrices[expectedCurrency]
     ) {
       return NextResponse.json({ error: 'Invalid payment amount or currency.' }, { status: 400 });
     }
-
     if (!process.env.RAZORPAY_KEY_ID || !process.env.RAZORPAY_KEY_SECRET) {
       return NextResponse.json({ error: 'Razorpay is not configured.' }, { status: 500 });
     }
@@ -41,7 +43,7 @@ export async function POST(request) {
     const order = await razorpay.orders.create({
       amount,
       currency,
-      receipt: `astro_${Date.now()}`,
+      receipt: `${product}_${Date.now()}`,
     });
 
     return NextResponse.json({

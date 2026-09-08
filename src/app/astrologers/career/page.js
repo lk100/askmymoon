@@ -31,6 +31,50 @@ const getUsedFreeCharts = () => {
   }
 };
 
+// Formats raw LLM string into readable paragraphs, bold text, and lists
+const renderFormattedContent = (content) => {
+  if (!content) return null;
+
+  const paragraphs = content.split(/\n\n+/);
+
+  return paragraphs.map((para, pIdx) => {
+    const lines = para.split('\n').filter(Boolean);
+    const isList = lines.every((line) => line.trim().startsWith('* ') || line.trim().startsWith('- '));
+
+    if (isList) {
+      return (
+        <ul key={pIdx} className="my-2 space-y-1.5 pl-4 list-disc text-slate-700">
+          {lines.map((line, lIdx) => {
+            const cleanLine = line.replace(/^[*\-]\s*/, '');
+            return <li key={lIdx}>{formatBoldText(cleanLine)}</li>;
+          })}
+        </ul>
+      );
+    }
+
+    return (
+      <p key={pIdx} className="mb-2 last:mb-0 leading-relaxed text-slate-700">
+        {formatBoldText(para)}
+      </p>
+    );
+  });
+};
+
+// Helper to format **bold** markdown tags
+const formatBoldText = (text) => {
+  const parts = text.split(/(\*\*.*?\*\*)/g);
+  return parts.map((part, index) => {
+    if (part.startsWith('**') && part.endsWith('**')) {
+      return (
+        <strong key={index} className="font-semibold text-slate-900">
+          {part.slice(2, -2)}
+        </strong>
+      );
+    }
+    return part;
+  });
+};
+
 export default function CareerAstrologerPage() {
   const [form, setForm] = useState({ name: '', dob: '', time: '', place: '', lat: null, lon: null, timeZone: '' });
   const [chart, setChart] = useState(null);
@@ -232,21 +276,62 @@ export default function CareerAstrologerPage() {
     <div className="min-h-screen bg-[#F7F5FB] text-[#26233D]">
       <Navbar ctaLabel="Astrologers" ctaHref="/astrologers" />
       <main className={`mx-auto ${chart ? 'h-[calc(100vh-4rem)] max-w-none overflow-hidden px-0 py-0' : 'max-w-6xl px-4 py-6 sm:px-6 sm:py-10 lg:py-14'}`}>
-        {!chart && <div className="mb-8 max-w-3xl sm:mb-10">
-          <div className="mb-4 flex items-center gap-3"><span className="h-px w-8 bg-violet-500" /><p className="text-[10px] font-bold uppercase tracking-[0.22em] text-violet-600 sm:text-[11px]">Career astrologer</p></div>
-          <h1 className="max-w-2xl text-[2.35rem] font-black leading-[1.04] tracking-tight text-slate-900 sm:text-5xl">A clearer question for your working life.</h1>
-          <p className="mt-4 max-w-xl text-sm leading-6 text-slate-600 sm:text-base sm:leading-7">Enter your details once. We calculate your astrology chart once, then use it for every career question.</p>
-          <div className="mt-4 flex items-center gap-2 text-[11px] font-semibold text-slate-500"><span className="h-2 w-2 rounded-full bg-emerald-500" />Chart-based guidance · One free question to begin</div>
-        </div>}
+        {!chart && (
+          <div className="mb-8 max-w-3xl sm:mb-10">
+            <div className="mb-4 flex items-center gap-3">
+              <span className="h-px w-8 bg-violet-500" />
+              <p className="text-[10px] font-bold uppercase tracking-[0.22em] text-violet-600 sm:text-[11px]">Career astrologer</p>
+            </div>
+            <h1 className="max-w-2xl text-[2.35rem] font-black leading-[1.04] tracking-tight text-slate-900 sm:text-5xl">A clearer question for your working life.</h1>
+            <p className="mt-4 max-w-xl text-sm leading-6 text-slate-600 sm:text-base sm:leading-7">Enter your details once. We calculate your astrology chart once, then use it for every career question.</p>
+            <div className="mt-4 flex items-center gap-2 text-[11px] font-semibold text-slate-500">
+              <span className="h-2 w-2 rounded-full bg-emerald-500" />
+              Chart-based guidance · One free question to begin
+            </div>
+          </div>
+        )}
 
         {!chart ? (
           <form onSubmit={prepareChart} className="max-w-3xl rounded-[28px] border border-violet-100 bg-white p-5 shadow-[0_18px_45px_rgba(76,29,149,0.09)] sm:p-8">
-            <div className="mb-6 flex items-center gap-3"><div className="flex h-11 w-11 items-center justify-center rounded-xl bg-violet-100 text-violet-800"><BriefcaseBusiness className="h-5 w-5" /></div><div><h2 className="font-bold text-slate-900">Create your career chart</h2><p className="text-xs text-slate-500">Your first question is free</p></div></div>
+            <div className="mb-6 flex items-center gap-3">
+              <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-violet-100 text-violet-800">
+                <BriefcaseBusiness className="h-5 w-5" />
+              </div>
+              <div>
+                <h2 className="font-bold text-slate-900">Create your career chart</h2>
+                <p className="text-xs text-slate-500">Your first question is free</p>
+              </div>
+            </div>
             <div className="grid gap-4 sm:grid-cols-2">
-              <label className="sm:col-span-2"><span className="mb-1 block text-xs font-bold uppercase tracking-wider text-slate-700">Full name</span><input required value={form.name} onChange={(event) => setForm({ ...form, name: event.target.value })} className="w-full rounded-xl border border-violet-100 bg-[#F8F7FC] px-4 py-3 text-sm outline-none focus:border-violet-500" placeholder="e.g. Rahul Sharma" /></label>
-              <label><span className="mb-1 block text-xs font-bold uppercase tracking-wider text-slate-700">Date of birth</span><input required type="date" value={form.dob} onChange={(event) => setForm({ ...form, dob: event.target.value })} className="w-full rounded-xl border border-violet-100 bg-[#F8F7FC] px-3 py-3 text-sm outline-none focus:border-violet-500" /></label>
-              <label><span className="mb-1 block text-xs font-bold uppercase tracking-wider text-slate-700">Time of birth</span><input required type="time" value={form.time} onChange={(event) => setForm({ ...form, time: event.target.value })} className="w-full rounded-xl border border-violet-100 bg-[#F8F7FC] px-3 py-3 text-sm outline-none focus:border-violet-500" /></label>
-              <label className="relative sm:col-span-2"><span className="mb-1 block text-xs font-bold uppercase tracking-wider text-slate-700">Place of birth</span><div className="relative"><input required value={form.place} onChange={(event) => searchPlaces(event.target.value)} className="w-full rounded-xl border border-violet-100 bg-[#F8F7FC] px-4 py-3 pr-10 text-sm outline-none focus:border-violet-500" placeholder="Type a city and choose a result" /><span className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400">{isSearching ? <Loader2 className="h-4 w-4 animate-spin" /> : <MapPin className="h-4 w-4" />}</span></div>{suggestions.length > 0 && <div className="absolute z-10 mt-1 max-h-52 w-full overflow-y-auto rounded-xl border border-violet-100 bg-white shadow-lg">{suggestions.map((place) => <button type="button" key={place.place_id} onClick={() => choosePlace(place)} className="flex w-full items-start gap-2 border-b border-violet-50 p-3 text-left text-xs text-slate-700 hover:bg-violet-50"><MapPin className="h-4 w-4 shrink-0 text-violet-600" />{place.display_name}</button>)}</div>}</label>
+              <label className="sm:col-span-2">
+                <span className="mb-1 block text-xs font-bold uppercase tracking-wider text-slate-700">Full name</span>
+                <input required value={form.name} onChange={(event) => setForm({ ...form, name: event.target.value })} className="w-full rounded-xl border border-violet-100 bg-[#F8F7FC] px-4 py-3 text-sm outline-none focus:border-violet-500" placeholder="e.g. Rahul Sharma" />
+              </label>
+              <label>
+                <span className="mb-1 block text-xs font-bold uppercase tracking-wider text-slate-700">Date of birth</span>
+                <input required type="date" value={form.dob} onChange={(event) => setForm({ ...form, dob: event.target.value })} className="w-full rounded-xl border border-violet-100 bg-[#F8F7FC] px-3 py-3 text-sm outline-none focus:border-violet-500" />
+              </label>
+              <label>
+                <span className="mb-1 block text-xs font-bold uppercase tracking-wider text-slate-700">Time of birth</span>
+                <input required type="time" value={form.time} onChange={(event) => setForm({ ...form, time: event.target.value })} className="w-full rounded-xl border border-violet-100 bg-[#F8F7FC] px-3 py-3 text-sm outline-none focus:border-violet-500" />
+              </label>
+              <label className="relative sm:col-span-2">
+                <span className="mb-1 block text-xs font-bold uppercase tracking-wider text-slate-700">Place of birth</span>
+                <div className="relative">
+                  <input required value={form.place} onChange={(event) => searchPlaces(event.target.value)} className="w-full rounded-xl border border-violet-100 bg-[#F8F7FC] px-4 py-3 pr-10 text-sm outline-none focus:border-violet-500" placeholder="Type a city and choose a result" />
+                  <span className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400">{isSearching ? <Loader2 className="h-4 w-4 animate-spin" /> : <MapPin className="h-4 w-4" />}</span>
+                </div>
+                {suggestions.length > 0 && (
+                  <div className="absolute z-10 mt-1 max-h-52 w-full overflow-y-auto rounded-xl border border-violet-100 bg-white shadow-lg">
+                    {suggestions.map((place) => (
+                      <button type="button" key={place.place_id} onClick={() => choosePlace(place)} className="flex w-full items-start gap-2 border-b border-violet-50 p-3 text-left text-xs text-slate-700 hover:bg-violet-50">
+                        <MapPin className="h-4 w-4 shrink-0 text-violet-600" />
+                        {place.display_name}
+                      </button>
+                    ))}
+                  </div>
+                )}
+              </label>
             </div>
             {error && <p className="mt-4 text-sm text-rose-700">{error}</p>}
             <button disabled={isSubmitting} type="submit" className="mt-6 inline-flex w-full items-center justify-center gap-2 rounded-xl bg-violet-700 px-5 py-3.5 text-sm font-bold text-white transition hover:bg-violet-800 disabled:cursor-not-allowed disabled:bg-violet-400">
@@ -277,8 +362,13 @@ export default function CareerAstrologerPage() {
             </div>
 
             <div className="mb-4 flex shrink-0 items-center gap-2 border-b border-violet-100 pb-4">
-              <div className="flex h-8 w-8 items-center justify-center rounded-full bg-violet-100 text-violet-700"><Sparkles className="h-4 w-4" /></div>
-              <div><p className="text-sm font-bold text-slate-900">Career astrologer</p><p className="text-[11px] text-slate-500">Your private chart conversation</p></div>
+              <div className="flex h-8 w-8 items-center justify-center rounded-full bg-violet-100 text-violet-700">
+                <Sparkles className="h-4 w-4" />
+              </div>
+              <div>
+                <p className="text-sm font-bold text-slate-900">Career astrologer</p>
+                <p className="text-[11px] text-slate-500">Your private chart conversation</p>
+              </div>
             </div>
 
             <div className="hide-scrollbar min-h-0 flex-1 overflow-y-auto pr-1 pb-40">
@@ -303,14 +393,25 @@ export default function CareerAstrologerPage() {
               {(messages.length > 0 || isThinking) && (
                 <>
                   <div className="space-y-4">
-                    {isThinking && <div className="flex justify-start"><div className="rounded-2xl rounded-bl-md border border-violet-100 bg-[#F8F7FC] px-4 py-3 text-sm text-slate-500"><span>Career astrologer is thinking</span><span className="ml-1 inline-flex gap-0.5 align-middle"><span className="animate-bounce">.</span><span className="animate-bounce [animation-delay:120ms]">.</span><span className="animate-bounce [animation-delay:240ms]">.</span></span></div></div>}
                     {messages.map((message, index) => (
                       <div key={`${message.role}-${index}`} className={`flex ${message.role === 'user' ? 'justify-end' : 'justify-start'}`}>
-                        <div className={`max-w-[88%] rounded-2xl px-3 py-2 text-xs leading-5 ${message.role === 'user' ? 'rounded-br-md border border-violet-200 bg-violet-100 text-violet-950' : 'rounded-bl-md border border-violet-100 bg-[#F8F7FC] text-slate-700'}`}>
-                          {message.content}
+                        <div className={`max-w-[88%] rounded-2xl px-4 py-3 text-xs sm:text-sm leading-relaxed ${message.role === 'user' ? 'rounded-br-md border border-violet-200 bg-violet-100 text-violet-950 font-medium' : 'rounded-bl-md border border-violet-100 bg-[#F8F7FC] text-slate-800'}`}>
+                          {message.role === 'user' ? message.content : renderFormattedContent(message.content)}
                         </div>
                       </div>
                     ))}
+                    {isThinking && (
+                      <div className="flex justify-start">
+                        <div className="rounded-2xl rounded-bl-md border border-violet-100 bg-[#F8F7FC] px-4 py-3 text-sm text-slate-500">
+                          <span>Career astrologer is thinking</span>
+                          <span className="ml-1 inline-flex gap-0.5 align-middle">
+                            <span className="animate-bounce">.</span>
+                            <span className="animate-bounce [animation-delay:120ms]">.</span>
+                            <span className="animate-bounce [animation-delay:240ms]">.</span>
+                          </span>
+                        </div>
+                      </div>
+                    )}
                   </div>
                   {error && <p className="mt-4 text-sm text-rose-700">{error}</p>}
                   {questionCount > 0 && (
@@ -324,6 +425,7 @@ export default function CareerAstrologerPage() {
                             <p className="text-xs font-semibold text-emerald-800">One question unlocked. Send it below.</p>
                           ) : (
                             <DomainReportPayment
+                              product="ai_astrologer"
                               userName={form.name}
                               reportData={{ type: 'career-question', chart, questionCount }}
                               buttonLabel="Ask question"
@@ -345,8 +447,34 @@ export default function CareerAstrologerPage() {
             </div>
             <div className="fixed inset-x-0 bottom-0 z-20 border-t border-violet-100 bg-white/95 px-4 py-3 shadow-[0_-8px_24px_rgba(38,35,61,0.08)] backdrop-blur sm:px-8">
               <form onSubmit={askQuestion} className="mx-auto flex max-w-5xl items-center gap-2">
-                <textarea required value={question} onChange={(event) => setQuestion(event.target.value)} rows={1} className="hide-scrollbar min-w-0 flex-1 resize-none overflow-y-auto rounded-xl border border-violet-100 bg-[#F8F7FC] px-4 py-3 text-sm placeholder:text-xs outline-none focus:border-violet-500" placeholder="Write your next career question..." />
-                <button aria-label="Send question" title="Send question" disabled={isSubmitting || (questionCount > 0 && !isPaidQuestionUnlocked)} type="submit" className="inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-violet-700 text-white transition hover:bg-violet-800 disabled:cursor-not-allowed disabled:bg-violet-400">
+                {/* Textarea relative wrapper */}
+                <div className="relative min-w-0 flex-1">
+                  <textarea
+                    required
+                    maxLength={500}
+                    value={question}
+                    onChange={(event) => setQuestion(event.target.value)}
+                    rows={1}
+                    className="hide-scrollbar w-full resize-none overflow-y-auto rounded-xl border border-violet-100 bg-[#F8F7FC] py-3 pl-4 pr-16 text-sm placeholder:text-xs outline-none focus:border-violet-500"
+                    placeholder="Write your question..."
+                  />
+
+                  {/* Live Character Counter */}
+                  <span
+                    className={`pointer-events-none absolute right-3 bottom-2 text-[10px] font-semibold transition-colors ${question.length >= 480 ? 'text-rose-600 font-bold' : 'text-slate-400'
+                      }`}
+                  >
+                    {question.length}/500
+                  </span>
+                </div>
+
+                <button
+                  aria-label="Send question"
+                  title="Send question"
+                  disabled={isSubmitting || (questionCount > 0 && !isPaidQuestionUnlocked)}
+                  type="submit"
+                  className="inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-violet-700 text-white transition hover:bg-violet-800 disabled:cursor-not-allowed disabled:bg-violet-400"
+                >
                   {isSubmitting ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Send className="h-3.5 w-3.5" />}
                 </button>
               </form>

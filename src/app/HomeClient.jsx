@@ -352,7 +352,7 @@ export default function Home() {
             <div className="flex flex-wrap items-center gap-2">
               <div className="relative inline-flex max-w-full items-center gap-1.5 sm:gap-2 rounded-md border border-violet-200 bg-violet-100/80 px-2.5 py-1 text-[10px] font-semibold text-[#26233D] sm:px-3 sm:text-xs">
                 <Sparkles className="w-3 h-3 sm:w-3.5 sm:h-3.5 text-violet-600 shrink-0" />
-                <span className="truncate">Free preview • Full personalized report ₹49</span>
+                <span className="truncate">Pay as you ASK !!</span>
               </div>
 
               <Link

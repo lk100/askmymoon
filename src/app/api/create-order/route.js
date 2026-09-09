@@ -4,6 +4,7 @@ import Razorpay from 'razorpay';
 const ALLOWED_PRICES = {
   domain_report: { INR: 4900, USD: 100 },
   ai_astrologer: { INR: 3900, USD: 49 },
+  ai_astrologer_bundle_5: { INR: 12100, USD: 149 }, // 5 questions for ₹121 / $1.49
 };
 
 function getCountry(request) {

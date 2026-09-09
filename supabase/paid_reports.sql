@@ -50,3 +50,21 @@ create unique index if not exists paid_reports_report_token_idx
   where report_token is not null;
 
 alter table public.paid_reports enable row level security;
+
+
+create table if not exists love_astrologer_votes (
+  id bigint generated always as identity primary key,
+  voter_id text not null unique,
+  created_at timestamptz not null default now()
+);
+
+alter table love_astrologer_votes enable row level security;
+
+-- allow the server (service role) full access; no public policies needed
+-- since all reads/writes go through your API route with the service key
+
+-- seed with your existing count so the number doesn't reset to 0
+insert into love_astrologer_votes (voter_id)
+select 'seed-' || gs
+from generate_series(1, 1316) as gs
+on conflict (voter_id) do nothing;

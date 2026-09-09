@@ -140,7 +140,12 @@ export default function DomainReportPayment({
         amount: order.amount,
         currency: order.currency,
         name: 'Astro Remedies',
-        description: product === 'ai_astrologer' ? 'AI Astrologer report' : 'Personalized domain report',
+        description:
+          product === 'ai_astrologer_bundle_5'
+            ? '5 Career Questions Bundle'
+            : product === 'ai_astrologer'
+              ? 'AI Astrologer report'
+              : 'Personalized domain report',
         prefill: {
           email: contact.email,
           contact: contact.phone,
@@ -177,7 +182,7 @@ export default function DomainReportPayment({
         modal: {
           ondismiss: () => setIsPaying(false),
         },
-        theme: { color: '#7C3AED' },
+        theme: { color: '#B9A6E8' },
       });
 
       razorpay.on('payment.failed', (response) => {
@@ -195,7 +200,9 @@ export default function DomainReportPayment({
   const fallbackPrices = {
     domain_report: { displayPrice: '₹49', displayOriginalPrice: '₹99' },
     ai_astrologer: { displayPrice: '₹39', displayOriginalPrice: '₹79' },
+    ai_astrologer_bundle_5: { displayPrice: '₹121', displayOriginalPrice: '₹195' },
   };
+
   const fallback = fallbackPrices[product] || fallbackPrices.domain_report;
   const displayPrice = pricing?.displayPrice || fallback.displayPrice;
   const displayOriginalPrice = pricing?.displayOriginalPrice || fallback.displayOriginalPrice;
@@ -244,11 +251,10 @@ export default function DomainReportPayment({
               onChange={(e) => setEmail(e.target.value)}
               onBlur={() => setTouched((t) => ({ ...t, email: true }))}
               placeholder="you@example.com"
-              className={`w-full rounded-xl border bg-white px-3.5 py-2.5 text-[13px] text-[#14171F] placeholder:text-[#A9A290] focus:outline-none focus:ring-2 transition ${
-                touched.email && !isEmailValid
-                  ? 'border-rose-400 focus:ring-rose-200'
-                  : 'border-[#E7E2D8] focus:ring-[#B4571F]/25'
-              }`}
+              className={`w-full rounded-xl border bg-white px-3.5 py-2.5 text-[13px] text-[#14171F] placeholder:text-[#A9A290] focus:outline-none focus:ring-2 transition ${touched.email && !isEmailValid
+                ? 'border-rose-400 focus:ring-rose-200'
+                : 'border-[#E7E2D8] focus:ring-[#B4571F]/25'
+                }`}
             />
             {touched.email && !isEmailValid && (
               <p className="mt-1 text-[11px] text-rose-600">Enter a valid email address.</p>
@@ -259,11 +265,10 @@ export default function DomainReportPayment({
             <label htmlFor="report-phone" className="block text-[10px] font-bold uppercase tracking-[0.08em] text-[#78715F] mb-1">
               Phone number
             </label>
-            <div className={`flex items-center rounded-xl border bg-white px-3.5 focus-within:ring-2 transition ${
-              touched.phone && !isPhoneValid
-                ? 'border-rose-400 focus-within:ring-rose-200'
-                : 'border-[#E7E2D8] focus-within:ring-[#B4571F]/25'
-            }`}>
+            <div className={`flex items-center rounded-xl border bg-white px-3.5 focus-within:ring-2 transition ${touched.phone && !isPhoneValid
+              ? 'border-rose-400 focus-within:ring-rose-200'
+              : 'border-[#E7E2D8] focus-within:ring-[#B4571F]/25'
+              }`}>
               <span className="text-[13px] text-[#78715F] pr-2 border-r border-[#E7E2D8] mr-2">+91</span>
               <input
                 id="report-phone"
@@ -286,7 +291,7 @@ export default function DomainReportPayment({
           <button
             type="submit"
             disabled={!pricing || isPaying}
-            className="mt-2 flex w-full items-center justify-center gap-2 rounded-xl bg-violet-600 px-4 py-3 text-[15px] font-bold text-white shadow-[0_8px_18px_rgba(124,58,237,0.2)] transition hover:bg-violet-700 disabled:opacity-60"
+            className="mt-2 flex w-full items-center justify-center gap-2 rounded-xl border border-violet-200 bg-violet-100 px-4 py-3 text-[15px] font-bold text-violet-800 shadow-[0_4px_12px_rgba(124,58,237,0.08)] transition hover:bg-violet-200 disabled:opacity-60"
           >
             {isPaying ? (
               'Processing...'
@@ -315,19 +320,19 @@ export default function DomainReportPayment({
           }
         }}
         disabled={isLoadingPricing || isPaying || !pricing}
-        className={`min-h-[48px] w-full rounded-xl bg-violet-600 px-4 py-3 text-[13px] font-bold text-white transition hover:bg-violet-700 disabled:cursor-not-allowed disabled:opacity-60 sm:text-sm ${buttonClassName}`}
+        className={`min-h-[48px] w-full rounded-xl border border-violet-200 bg-violet-100 px-4 py-3 text-[13px] font-bold text-violet-800 transition hover:bg-violet-200 disabled:cursor-not-allowed disabled:opacity-60 sm:text-sm ${buttonClassName}`}
       >
         {isPaying
           ? 'Processing payment...'
           : isLoadingPricing
-          ? 'Loading price...'
-          : (
-            <span className="inline-flex items-center gap-1.5">
-              <span>{buttonLabel}</span>
-              <span className="line-through opacity-70 font-normal">{displayOriginalPrice}</span>
-              <span>{displayPrice}</span>
-            </span>
-          )}
+            ? 'Loading price...'
+            : (
+              <span className="inline-flex items-center gap-1.5">
+                <span>{buttonLabel}</span>
+                <span className="line-through opacity-70 font-normal">{displayOriginalPrice}</span>
+                <span>{displayPrice}</span>
+              </span>
+            )}
       </button>
 
       {mounted && showDetailsForm && !isPaying && createPortal(modal, document.body)}

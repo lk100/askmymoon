@@ -1,4 +1,4 @@
-    import crypto from 'node:crypto';
+import crypto from 'node:crypto';
 import { createClient } from '@supabase/supabase-js';
 
 export const CAREER_VISITOR_COOKIE = 'career_visitor_id';
@@ -122,26 +122,34 @@ export async function recordCareerQuestion({ sessionId, question, answer, provid
   if (error) throw new Error(`Unable to save career question: ${error.message}`);
 }
 
+const CAREER_QUESTION_TYPES = ['career-question', 'career-question-bundle'];
+
+// Claims one credit from the oldest payment (for this visitor + chart) that still
+// has unused credits. A single bundle payment can be claimed from up to 5 times.
 export async function claimPaidCareerQuestion(visitorId, chartFingerprint) {
   const supabase = getSupabaseAdmin();
   const { data: payments, error: paymentError } = await supabase
     .from('paid_reports')
-    .select('id, report_data')
+    .select('id, report_data, career_credits_total, career_credits_used')
     .eq('visitor_id', visitorId)
-    .eq('career_question_used', false)
-    .eq('report_data->>type', 'career-question')
+    .in('report_data->>type', CAREER_QUESTION_TYPES)
     .order('created_at', { ascending: true });
 
   if (paymentError) throw new Error(`Unable to load paid career questions: ${paymentError.message}`);
-  const payment = payments?.find((item) => item.report_data?.chart?._chartFingerprint === chartFingerprint);
+
+  const payment = payments?.find((item) =>
+    item.report_data?.chart?._chartFingerprint === chartFingerprint &&
+    item.career_credits_used < item.career_credits_total
+  );
   if (!payment) return null;
 
+  // Atomic: only succeeds if career_credits_used hasn't changed since we read it
+  // (guards against two simultaneous requests claiming the same last credit).
   const { data: claimed, error: claimError } = await supabase
     .from('paid_reports')
-    .update({ career_question_used: true })
+    .update({ career_credits_used: payment.career_credits_used + 1 })
     .eq('id', payment.id)
-    .eq('visitor_id', visitorId)
-    .eq('career_question_used', false)
+    .eq('career_credits_used', payment.career_credits_used)
     .select('id')
     .maybeSingle();
 
@@ -151,11 +159,20 @@ export async function claimPaidCareerQuestion(visitorId, chartFingerprint) {
 
 export async function releasePaidCareerQuestion(paymentId) {
   const supabase = getSupabaseAdmin();
+  const { data: payment, error: fetchError } = await supabase
+    .from('paid_reports')
+    .select('career_credits_used')
+    .eq('id', paymentId)
+    .maybeSingle();
+
+  if (fetchError) throw new Error(`Unable to load payment to release: ${fetchError.message}`);
+  if (!payment || payment.career_credits_used <= 0) return;
+
   const { error } = await supabase
     .from('paid_reports')
-    .update({ career_question_used: false })
+    .update({ career_credits_used: payment.career_credits_used - 1 })
     .eq('id', paymentId)
-    .eq('career_question_used', true);
+    .eq('career_credits_used', payment.career_credits_used);
 
   if (error) throw new Error(`Unable to release paid career question: ${error.message}`);
 }

@@ -2,12 +2,16 @@ import { NextResponse } from 'next/server';
 
 const PRICES = {
   domain_report: {
-    IN: { currency: 'INR', amount: 4900, displayPrice: '₹49' },
-    INTERNATIONAL: { currency: 'USD', amount: 100, displayPrice: '$1' },
+    IN: { currency: 'INR', amount: 4900, displayPrice: '₹49', displayOriginalPrice: '₹99' },
+    INTERNATIONAL: { currency: 'USD', amount: 100, displayPrice: '$1', displayOriginalPrice: '$2' },
   },
   ai_astrologer: {
-    IN: { currency: 'INR', amount: 3900, displayPrice: '₹39' },
-    INTERNATIONAL: { currency: 'USD', amount: 47, displayPrice: '$0.47' },
+    IN: { currency: 'INR', amount: 3900, displayPrice: '₹39', displayOriginalPrice: '₹79' },
+    INTERNATIONAL: { currency: 'USD', amount: 47, displayPrice: '$0.47', displayOriginalPrice: '$0.99' },
+  },
+  ai_astrologer_bundle_5: {
+    IN: { currency: 'INR', amount: 12100, displayPrice: '₹121', displayOriginalPrice: '₹195' },
+    INTERNATIONAL: { currency: 'USD', amount: 149, displayPrice: '$1.49', displayOriginalPrice: '$2.49' },
   },
 };
 

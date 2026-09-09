@@ -8,31 +8,19 @@ const PLANET_MATURITY_AGES = {
   Jupiter: 16, Venus: 25, Saturn: 36, Rahu: 42, Ketu: 48,
 };
 
-const PLANET_CAREER_DIRECTIONS = {
-  Sun: 'leadership, administration, or high-visibility roles',
-  Moon: 'people care, public-facing service, or dynamic environments',
-  Mars: 'engineering, technology, strategy, or high-stakes problem-solving',
-  Mercury: 'commerce, analytics, media, or tech-driven communications',
-  Jupiter: 'advising, high-level consulting, finance, or executive wisdom',
-  Venus: 'design, luxury, brand equity, or client-relationship management',
-  Saturn: 'complex systems, research, corporate compliance, or long-term infrastructure',
-  Rahu: 'digital platforms, global markets, disruptive innovation, or foreign links',
-  Ketu: 'niche investigation, specialized research, or independent mastery',
-};
-
 const SIGN_CAREER_DIRECTIONS = {
-  Aries: 'fast-moving leadership, pioneering projects, and direct authority',
-  Taurus: 'asset management, steady value creation, and luxury/financial markets',
-  Gemini: 'data-driven strategy, media, trading, and multi-stream commercial work',
-  Cancer: 'organizational growth, public relations, and high-impact people leadership',
-  Leo: 'executive control, brand authority, and high-stakes decision-making',
-  Virgo: 'systems optimization, analytical research, and precision operations',
-  Libra: 'strategic partnerships, corporate law, negotiation, and high-end client relations',
-  Scorpio: 'risk transformation, confidential operations, and deep investigative strategy',
-  Sagittarius: 'global expansion, advisory roles, publishing, and enterprise strategy',
-  Capricorn: 'corporate hierarchy, large-scale operations, and institutional leadership',
-  Aquarius: 'tech innovation, network building, and scalable modern systems',
-  Pisces: 'creative strategy, global advisory, specialized consulting, and intuitive leadership',
+  Aries: 'fast-moving leadership and direct authority',
+  Taurus: 'asset management and steady value creation',
+  Gemini: 'data-driven strategy and multi-stream commercial work',
+  Cancer: 'organizational growth and high-impact people leadership',
+  Leo: 'executive control and high-stakes decision-making',
+  Virgo: 'systems optimization and precision operations',
+  Libra: 'strategic partnerships and high-end client relations',
+  Scorpio: 'risk transformation and deep investigative strategy',
+  Sagittarius: 'global expansion and enterprise strategy',
+  Capricorn: 'institutional leadership and large-scale operations',
+  Aquarius: 'tech innovation and scalable modern systems',
+  Pisces: 'creative strategy and intuitive leadership',
 };
 
 const QUESTION_KEYS = {
@@ -54,22 +42,26 @@ function getHouseSign(chart, number) {
   return ascendantIndex >= 0 ? ZODIAC_SIGNS[(ascendantIndex + number - 1) % 12] : 'the relevant sign';
 }
 
-function getNamedPlanets(house) {
-  return [
-    ...(house.planets || []),
-    ...(house.conjuncting_lord || []),
-    ...(house.aspecting_planets || []),
-  ].filter((planet) => planet?.name);
+// Backend shape: each house has a flat "influences" array, each entry
+// tagged by "relation": placed_in_house | aspects_house | aspects_lord | conjunct_with_lord
+function getInfluences(house, relations) {
+  return (house.influences || []).filter(
+    (entry) => entry?.name && relations.includes(entry.relation)
+  );
 }
 
-function uniqueNames(planets) {
-  return [...new Set(planets.map((planet) => planet.name))];
+function hasAnyInfluence(house) {
+  return getInfluences(house, [
+    'placed_in_house', 'aspects_house', 'aspects_lord', 'conjunct_with_lord',
+  ]).length > 0;
 }
 
-function formatList(items) {
-  if (items.length === 0) return '';
-  if (items.length === 1) return items[0];
-  return `${items.slice(0, -1).join(', ')} and ${items.at(-1)}`;
+function getCurrentMahadasha(chart) {
+  return chart?.current_mahadasha || null;
+}
+
+function getCurrentAntardasha(chart) {
+  return chart?.current_antardasha || null;
 }
 
 function formatDate(date) {
@@ -84,28 +76,32 @@ function getMaturityDate(dob, planetName) {
   return { age: maturityAge, date: formatDate(date) };
 }
 
-// --- OPTIMIZED FOR CONVERSION & CURIOSITY ---
+// --- TEASER ANSWERS ---
+// Rule for every function below: name the CATEGORY (house, sign, "a tension
+// exists", "a dasha is active") — never name the specific planet/lord/date
+// that resolves it. That mechanism is what the paid follow-up unlocks.
 
 function answerStrengths(chart) {
-  const tenthHouse = getHouse(chart, 10);
   const tenthSign = getHouseSign(chart, 10);
-  const planets = uniqueNames(getNamedPlanets(tenthHouse));
-  const planetText = planets.length 
-    ? `**${formatList(planets)}** is directly activating this zone, blending ${formatList(planets.map((p) => PLANET_CAREER_DIRECTIONS[p]).filter(Boolean))} into your profile.` 
-    : 'While no major planets sit here directly, its ruling planet governs how fast you rise.';
+  const tenthHouse = getHouse(chart, 10);
+  const tenthLord = tenthHouse.lord?.name;
+  const hasDirectActivation = hasAnyInfluence(tenthHouse);
 
-  return `Your 10th house of career rests in **${tenthSign}**, pointing toward a high-potential path in **${SIGN_CAREER_DIRECTIONS[tenthSign]}**.\n\n${planetText}\n\n**The Hidden Friction:** However, sitting on powerful potential without knowing your active **Dasha timing** can feel like driving with the handbrake on. Ask below to decode your current Dasha phase and exact industry placement.`;
+  const insight = hasDirectActivation
+    ? `and it's not sitting quiet — there's real planetary activity here actively shaping how far this can go`
+    : `and while the house itself looks quiet, ${tenthLord || 'its ruling planet'} is doing the real work from elsewhere in your chart`;
+
+  return `Your 10th house of career sits in **${tenthSign}**, which naturally leans toward **${SIGN_CAREER_DIRECTIONS[tenthSign]}**, ${insight}.\n\nWhether that activity is currently helping you or working against this exact strength depends on which planetary period you're in right now — the same placement can mean very different things a year apart.`;
 }
 
 function answerBlockages(chart) {
   const sixthHouse = getHouse(chart, 6);
   const tenthHouse = getHouse(chart, 10);
-  const sixthLord = sixthHouse.lord?.name || 'your 6th-house lord';
-  const tenthLord = tenthHouse.lord?.name || 'your 10th-house lord';
-  const sixthPlacement = sixthHouse.lord?.sign ? ` in ${sixthHouse.lord.sign}` : '';
-  const tenthPlacement = tenthHouse.lord?.sign ? ` in ${tenthHouse.lord.sign}` : '';
+  const sixthSign = getHouseSign(chart, 6);
+  const tenthSign = getHouseSign(chart, 10);
+  const tenthLord = tenthHouse.lord?.name;
 
-  return `Your chart shows a conflict between immediate effort and long-term recognition.\n\n* **Daily Friction:** Driven by **${sixthLord}${sixthPlacement}**, creating unexpected friction, workplace dynamics, or burnout.\n* **Growth Hold-Up:** Controlled by **${tenthLord}${tenthPlacement}**, which delays the exact promotion or public standing you deserve.\n\n**The Unlock:** Is this blockage caused by a temporary transit or an alignment mismatch? Ask a follow-up question below to reveal the specific astrological remedy to clear this obstacle.`;
+  return `Your chart shows a real conflict between two houses — your **6th house (${sixthSign})**, where you're putting in daily effort, and your **10th house (${tenthSign})**, where recognition is supposed to show up.\n\n${tenthLord || 'Your 10th house lord'} is currently caught in a planetary period that's slowing down how fast that effort turns into visible results — this is why the promotion, the raise, or the recognition keeps feeling one step away instead of arriving.`;
 }
 
 function answerSuccess(chart, dob) {
@@ -116,25 +112,25 @@ function answerSuccess(chart, dob) {
     return 'Your primary career ruler needs deeper chart calculation. Provide your full details to unlock your primary success timeline.';
   }
 
-  if (!maturity) {
-    return `Your primary career activation planet is **${tenthLord}**. Its maturity cycle marks your foundational career shift.\n\nTo map this to an exact calendar date and see your upcoming major career breakthrough window, unlock your full reading below.`;
-  }
+  const baseline = maturity
+    ? `Your career house carries a natural stabilization age of **${maturity.age}** — but this is the generic baseline every chart with your career-ruler placement shares. It's rarely when your actual breakthrough happens.`
+    : `Your career house carries a natural maturity cycle, but that cycle alone rarely marks when your actual breakthrough happens.`;
 
-  return `Your career governor **${tenthLord}** reaches structural maturity around **Age ${maturity.age}** (roughly **${maturity.date}**). This is your baseline timeline for major professional stabilization.\n\n**However:** Breakthroughs usually trigger *before* this age during specific planetary Dashas.\n\nWant to know if your **current year** contains a hidden career promotion or job switch window? Ask your specific follow-up question below.`;
+  return `${baseline}\n\nThe real trigger is a specific planetary period — one most people don't even know they're currently in. Depending on which period is active for you right now, your true breakthrough window could already be open, months away, or years past.`;
 }
 
 function answerJobOrBusiness(chart) {
   const sixthHouse = getHouse(chart, 6);
   const sixthSign = getHouseSign(chart, 6);
   const sixthLord = sixthHouse.lord?.name;
-  const businessPlanets = ['Sun', 'Mars', 'Jupiter', 'Rahu'];
-  const pattern = uniqueNames(getNamedPlanets(sixthHouse));
+  const businessSigns = ['Aries', 'Leo', 'Sagittarius', 'Aquarius'];
+  const hasStrongPull = hasAnyInfluence(sixthHouse) || businessSigns.includes(sixthSign);
 
-  const supportsBusiness = pattern.some((p) => businessPlanets.includes(p)) || ['Aries', 'Leo', 'Sagittarius', 'Aquarius'].includes(sixthSign);
-  const PrimaryType = supportsBusiness ? 'Independent Business / Consulting' : 'Corporate Employment / Structured Hierarchy';
-  const AlternateType = supportsBusiness ? 'Corporate Jobs' : 'Solopreneurship';
+  const leaning = hasStrongPull
+    ? `a genuine pull toward independence, with ${sixthLord || 'its ruling planet'} sitting in a house built for risk and competition`
+    : `a pull toward structure over a solo leap, with ${sixthLord || 'its ruling planet'} favoring steady ground`;
 
-  return `Your 6th house in **${sixthSign}** (ruled by ${sixthLord || 'its planetary lord'}) shows a strong structural pull toward **${PrimaryType}** over pure ${AlternateType}.\n\n* **Risk Factor:** Transitioning too early without checking your 11th house (Gains) can result in cash-flow instability.\n* **Optimal Strategy:** A phased transition is likely indicated in your chart.\n\nShould you build a side-business now or switch jobs first? Ask your follow-up question below to map out your safest transition step.`;
+  return `Your 6th house sits in **${sixthSign}**, and your chart shows ${leaning} — but the same placement that creates this pull is also caught in a timing conflict with your current planetary period, which is likely why the idea keeps circling back without you acting on it yet.`;
 }
 
 export function getCareerFreeAnswer(question, chart, dob) {

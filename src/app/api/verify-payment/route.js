@@ -6,6 +6,13 @@ import { getVisitorId } from '@/lib/careerAstrologerStore';
 const ALLOWED_PRICES = {
   domain_report: { INR: 4900, USD: 100 },
   ai_astrologer: { INR: 3900, USD: 49 },
+  ai_astrologer_bundle_5: { INR: 12100, USD: 149 },
+};
+
+// How many career-question credits each product grants when paid for.
+const CAREER_CREDITS = {
+  ai_astrologer: 1,
+  ai_astrologer_bundle_5: 5,
 };
 
 function isNonEmptyString(value) {
@@ -106,6 +113,7 @@ export async function POST(request) {
     const createdAt = new Date().toISOString();
     const paidAmount = amount / 100;
     const visitor = getVisitorId(request);
+    const careerCreditsTotal = CAREER_CREDITS[product] || 0;
 
     const reportRow = {
       payment_id: paymentId,
@@ -119,12 +127,22 @@ export async function POST(request) {
       report_data: reportData,
       report_token: crypto.randomBytes(32).toString('hex'),
       created_at: createdAt,
+      career_credits_total: careerCreditsTotal,
+      career_credits_used: 0,
     };
 
     let { error: insertError } = await supabase.from('paid_reports').upsert(reportRow, { onConflict: 'payment_id' });
 
     if (insertError?.code === 'PGRST204' && insertError.message.includes("'order_id' column")) {
       const { order_id: unusedOrderId, ...legacyReportRow } = reportRow;
+      ({ error: insertError } = await supabase.from('paid_reports').upsert(legacyReportRow, { onConflict: 'payment_id' }));
+    }
+
+    // Some deployments may not have run the career_credits migration yet — retry
+    // without those columns so payment verification still succeeds. In that case
+    // claimPaidCareerQuestion will need the migration applied before credits work.
+    if (insertError?.code === 'PGRST204' && insertError.message.includes('career_credits')) {
+      const { career_credits_total: unusedTotal, career_credits_used: unusedUsed, ...legacyReportRow } = reportRow;
       ({ error: insertError } = await supabase.from('paid_reports').upsert(legacyReportRow, { onConflict: 'payment_id' }));
     }
 

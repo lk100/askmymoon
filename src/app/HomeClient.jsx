@@ -1,401 +1,140 @@
 'use client';
 
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import {
-  ChevronDown,
-  CheckCircle2,
   ArrowRight,
-  Sparkles,
-  MapPin,
-  Loader2,
-  Gift,
-  Compass,
-  X,
+  BriefcaseBusiness,
+  ChevronDown,
+  Heart,
   MessageCircle,
+  Sparkles,
+  Wand2,
+  X,
+  CheckCircle2,
+  ThumbsUp,
 } from 'lucide-react';
-import { calculateChart } from '@/lib/astrology';
-import Footer from './components/Footer';
-import BrandLogo from './components/BrandLogo';
 import Navbar from './components/Navbar';
-import { fromZonedTime } from 'date-fns-tz';
-import { getBirthTimeZone } from '@/lib/birthTime';
+import Footer from './components/Footer';
 
-const heroPills = ['Instant Remedies', 'Career', 'Finances', 'Marriage', 'Health'];
-const DEFAULT_TIME_VALUE = '';
+const heroPills = ['Career', 'Finances', 'Marriage', 'Health'];
 
-const parseTimeInputValue = (value) => {
-  if (!value) {
-    return { hour: '', minute: '', meridiem: 'AM' };
-  }
+const faqs = [
+  {
+    question: 'How does a career AI astrologer work?',
+    answer:
+      'Our career AI astrologer combines your exact birth details (date, time, and location) with traditional astrological principles and numerology. Instead of generic daily horoscopes, it provides personalized insights specifically targeted at your professional growth, upcoming periods, and career doubts.',
+  },
+  {
+    question: 'What kind of career doubt can I ask during my session?',
+    answer:
+      'You can resolve any pressing career doubt—from choosing between a stable job vs. business, evaluating job changes or promotions, finding your ideal domain alignment, to understanding why you might be experiencing temporary workplace blockages.',
+  },
+  {
+    question: 'Is an AI astrologer consultation as accurate as a human astrologer?',
+    answer:
+      'Our AI astrologer operates with total mathematical precision on your birth chart without human error or bias. It acts as an instant, focused consultation tool that interprets house lordships, planetary transits, and numerology cycles specifically through a career lens.',
+  },
+  {
+    question: 'How much does a career astrologer consultation cost?',
+    answer:
+      'Every user gets 1 free question to test out the career astrologer. Additional follow-up questions for deeper consultation are available for just ₹49 per question.',
+  },
+  {
+    question: 'Does the career AI astrologer keep my birth details saved for follow-up questions?',
+    answer:
+      'Yes, your birth chart and numerology calculations are calculated once and stored securely for your session. This ensures every follow-up career doubt you ask is answered using the same personalized astrological context.',
+  },
+];
 
-  const [hourValue, minuteValue] = value.split(':');
-  const hours = Number(hourValue);
-  const minutes = Number(minuteValue);
-
-  if (Number.isNaN(hours) || Number.isNaN(minutes)) {
-    return { hour: '', minute: '', meridiem: 'AM' };
-  }
-
-  const meridiem = hours >= 12 ? 'PM' : 'AM';
-  const normalizedHour = ((hours + 11) % 12) + 1;
-
-  return {
-    hour: String(normalizedHour).padStart(2, '0'),
-    minute: String(minutes).padStart(2, '0'),
-    meridiem,
-  };
-};
-
-const buildTimeFromParts = (hour, minute, meridiem) => {
-  if (!hour || !minute) {
-    return '';
-  }
-
-  if (!meridiem) {
-    meridiem = 'AM';
-  }
-
-  let hourValue = Number(hour);
-
-  if (meridiem === 'AM' && hourValue === 12) {
-    hourValue = 0;
-  }
-
-  if (meridiem === 'PM' && hourValue !== 12) {
-    hourValue += 12;
-  }
-
-  return `${String(hourValue).padStart(2, '0')}:${String(minute).padStart(2, '0')}`;
-};
-
-export default function Home() {
-  const [formData, setFormData] = useState({
-    name: '',
-    dob: '',
-    time: DEFAULT_TIME_VALUE,
-    place: '',
-    lat: null,
-    lon: null,
-    system: 'vedic',
-  });
-  const [timeSelector, setTimeSelector] = useState(() => parseTimeInputValue(formData.time));
-
-  const [placeQuery, setPlaceQuery] = useState('');
-  const [suggestions, setSuggestions] = useState([]);
-  const [isSearchingLocation, setIsSearchingLocation] = useState(false);
-  const [showDropdown, setShowDropdown] = useState(false);
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const [hasSelectedLocation, setHasSelectedLocation] = useState(false);
-  const [showBrowserPrompt, setShowBrowserPrompt] = useState(false);
-  const dropdownRef = useRef(null);
-  const locationCacheRef = useRef(new Map());
-  const locationRequestRef = useRef(null);
-  const submitCooldownRef = useRef(0);
-  const SUBMIT_COOLDOWN_MS = 3000;
-
-  useEffect(() => {
-    const timer = window.setTimeout(() => {
-      setShowBrowserPrompt(/Instagram|FBAN|FBAV|FB_IAB|FBIOS|FB4A/i.test(navigator.userAgent));
-    }, 0);
-
-    return () => window.clearTimeout(timer);
-  }, []);
-
-  const handleOpenInBrowser = () => {
-    const currentUrl = window.location.href;
-    const userAgent = navigator.userAgent;
-
-    if (/Android/i.test(userAgent)) {
-      const browserIntent = `intent://${currentUrl.replace(/^https?:\/\//, '')}#Intent;action=android.intent.action.VIEW;scheme=https;category=android.intent.category.BROWSABLE;end`;
-      window.location.assign(browserIntent);
-      return;
-    }
-
-    const externalLink = document.createElement('a');
-    externalLink.href = currentUrl;
-    externalLink.target = '_blank';
-    externalLink.rel = 'noopener noreferrer';
-    externalLink.click();
-  };
-
-  useEffect(() => {
-    if (placeQuery.trim().length < 3 || hasSelectedLocation) {
-      locationRequestRef.current?.abort();
-      return;
-    }
-
-    const timer = setTimeout(async () => {
-      const query = placeQuery.trim();
-      const normalizedQuery = query.toLowerCase();
-      const cachedSuggestions = locationCacheRef.current.get(normalizedQuery);
-
-      if (cachedSuggestions) {
-        setSuggestions(cachedSuggestions);
-        setShowDropdown(cachedSuggestions.length > 0);
-        return;
-      }
-
-      locationRequestRef.current?.abort();
-      const controller = new AbortController();
-      locationRequestRef.current = controller;
-      setIsSearchingLocation(true);
-      try {
-        const response = await fetch(`/api/location-search?q=${encodeURIComponent(query)}`, {
-          signal: controller.signal,
-        });
-        const data = await response.json();
-        locationCacheRef.current.set(normalizedQuery, data);
-        setSuggestions(data);
-        setShowDropdown(data.length > 0);
-      } catch (error) {
-        if (error.name === 'AbortError') return;
-        console.error("Geocoding fetch error:", error);
-        setSuggestions([]);
-        setShowDropdown(false);
-      } {
-        if (!controller.signal.aborted) setIsSearchingLocation(false);
-      }
-    }, 350);
-
-    return () => {
-      clearTimeout(timer);
-      locationRequestRef.current?.abort();
-    };
-  }, [placeQuery, hasSelectedLocation]);
-
-  useEffect(() => {
-    function handleClickOutside(e) {
-      if (dropdownRef.current && !dropdownRef.current.contains(e.target)) {
-        setShowDropdown(false);
-      }
-    }
-    document.addEventListener('mousedown', handleClickOutside);
-    return () => document.removeEventListener('mousedown', handleClickOutside);
-  }, []);
-
-  const handleSelectLocation = (place) => {
-    const formattedName = place.display_name;
-    const latitude = parseFloat(place.lat);
-    const longitude = parseFloat(place.lon);
-    const timeZone = getBirthTimeZone(latitude, longitude);
-    setFormData((prev) => ({
-      ...prev,
-      place: formattedName,
-      lat: latitude,
-      lon: longitude,
-      timeZone,
-    }));
-    setPlaceQuery(formattedName);
-    setHasSelectedLocation(true);
-    setSuggestions([]);
-    setShowDropdown(false);
-  };
-
-  useEffect(() => {
-    setTimeSelector(parseTimeInputValue(formData.time));
-  }, [formData.time]);
-
-  const handleTimeSelectorChange = (key, value) => {
-    const nextSelector = {
-      ...timeSelector,
-      [key]: value,
-    };
-
-    setTimeSelector(nextSelector);
-    setFormData((prev) => ({
-      ...prev,
-      time: buildTimeFromParts(nextSelector.hour, nextSelector.minute, nextSelector.meridiem),
-    }));
-  };
-
-  const handleFormSubmit = (e) => {
-    e.preventDefault();
-
-    const now = Date.now();
-    if (isSubmitting || now - submitCooldownRef.current < SUBMIT_COOLDOWN_MS) {
-      return;
-    }
-
-    const trimmedName = (formData.name || '').trim();
-    if (!trimmedName) {
-      alert('Please enter your full name before generating the report.');
-      return;
-    }
-
-    if (!formData.dob) {
-      alert('Please select your date of birth before generating the report.');
-      return;
-    }
-
-    if (!formData.time || !/^\d{2}:\d{2}$/.test(formData.time)) {
-      alert('Please select your exact time of birth before generating the report.');
-      return;
-    }
-
-    if (formData.lat === null || formData.lon === null || !hasSelectedLocation) {
-      alert('Please choose your place of birth from the location suggestions so we can use accurate coordinates.');
-      return;
-    }
-
-    submitCooldownRef.current = now;
-    setIsSubmitting(true);
-
-    const safeTime = formData.time;
-    const latitude = formData.lat;
-    const longitude = formData.lon;
-
-    const timeZone = formData.timeZone || getBirthTimeZone(latitude, longitude);
-
-    try {
-      const dateObj = fromZonedTime(
-        `${formData.dob}T${safeTime}:00`,
-        timeZone
-      );
-
-      const chartResults = calculateChart(
-        dateObj,
-        latitude,
-        longitude,
-        timeZone,
-        formData.system
-      );
-
-      const fullUserData = {
-        ...formData,
-        name: trimmedName,
-        time: safeTime,
-        lat: latitude,
-        lon: longitude,
-        timeZone,
-        ...chartResults
-      };
-
-      console.log("Submitting User Payload & Chart Results:", fullUserData);
-
-      if (typeof window !== 'undefined') {
-        sessionStorage.setItem('astro_user_data', JSON.stringify(fullUserData));
-        localStorage.setItem('astro_user_data', JSON.stringify(fullUserData));
-      }
-
-      window.location.assign('/report');
-    } catch (error) {
-      console.error("Failed to calculate chart on submit:", error);
-      alert("There was an error calculating your birth chart. Please check your inputs.");
-    } finally {
-      setIsSubmitting(false);
-    }
-  };
-
+export default function HomeClient() {
   const [openFaq, setOpenFaq] = useState(null);
-  const toggleFaq = (index) => setOpenFaq(openFaq === index ? null : index);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [hasVoted, setHasVoted] = useState(false);
+  const [voteCount, setVoteCount] = useState(null); // null = loading
+  const [isVoting, setIsVoting] = useState(false);
 
-  const faqList = [
-    {
-      q: "How fast will I receive my astrological report?",
-      a: "Generates instantly right after submitting your birth details. You can view and download the full report immediately."
-    },
-    {
-      q: "What details do I need to provide?",
-      a: "You only need your Full Name, Date of Birth, Exact Time of Birth, and Place of Birth for precise astrological calculation."
-    },
-    {
-      q: "Are the remedy recommendations accurate?",
-      a: "Yes, calculations follow true sidereal Vedic algorithms (Lahiri Ayanamsa) or Western Tropical placements depending on your choice to suggest exact remedies, mantras, and planetary corrections."
-    },
-    {
-      q: "Is this completely free?",
-      a: "You can generate a free preview with your core planetary insights. The complete personalized remedy report is available to unlock for ₹49."
+  const toggleFaq = (index) => {
+    setOpenFaq(openFaq === index ? null : index);
+  };
+
+  useEffect(() => {
+    if (!isModalOpen || voteCount !== null) return;
+    fetch('/api/love-astrologer-votes')
+      .then((res) => res.json())
+      .then((data) => {
+        setVoteCount(data.count);
+        setHasVoted(data.hasVoted);
+      })
+      .catch(() => setVoteCount(1316));
+  }, [isModalOpen, voteCount]);
+
+  const handleVote = async () => {
+    if (hasVoted || isVoting) return;
+    setIsVoting(true);
+    try {
+      const res = await fetch('/api/love-astrologer-votes', { method: 'POST' });
+      const data = await res.json();
+      setVoteCount(data.count);
+      setHasVoted(true);
+    } catch {
+      // no-op, allow retry
+    } finally {
+      setIsVoting(false);
     }
-  ];
+  };
 
   return (
-    <div className="min-h-screen w-full max-w-full overflow-x-hidden bg-[#F7F5FB] text-[#26233D] font-sans antialiased">
-      {showBrowserPrompt && (
-        <div className="border-b border-amber-700/20 bg-amber-50 px-3 py-3 sm:px-6" role="status">
-          <aside
-            aria-labelledby="browser-prompt-title"
-            className="mx-auto flex max-w-6xl items-start gap-3"
-          >
-            <div className="min-w-0 flex-1">
-              <h2 id="browser-prompt-title" className="text-xs font-bold text-amber-900 sm:text-sm">
-                Open in your external browser for the best experience
-              </h2>
-              <p className="mt-1 text-[11px] leading-relaxed text-slate-600 sm:text-xs">
-                You are viewing AskMyMoon inside Instagram. Open this page in your external browser for reliable payment and PDF downloads.
-              </p>
+    <div className="min-h-screen bg-[#F7F5FB] text-[#26233D]">
+      <Navbar ctaLabel="Birth chart remedies" ctaHref="/astrologers/remedy" />
+      <main className="mx-auto max-w-6xl px-4 py-6 sm:px-6 sm:py-10 lg:py-14">
 
-            </div>
-            <button type="button" onClick={() => setShowBrowserPrompt(false)} aria-label="Close browser notice" className="shrink-0 rounded-md p-1 text-amber-900 transition hover:bg-amber-200">
-              <X className="h-4 w-4" />
-            </button>
-          </aside>
-        </div>
-      )}
+        {/* Hero Section */}
+        <section className="relative overflow-hidden pt-2 pb-8 sm:pt-4 sm:pb-12 lg:pb-16">
+          <div aria-hidden="true" className="pointer-events-none absolute right-[-4rem] top-1/2 z-0 h-[320px] w-[320px] -translate-y-1/2 opacity-40 lg:h-[380px] lg:w-[380px]">
+            <div className="absolute inset-12 rounded-full border border-violet-200/80" />
+            <div className="absolute inset-24 rounded-full border border-violet-200/70" />
+            <div className="absolute left-1/2 top-1/2 h-16 w-16 -translate-x-1/2 -translate-y-1/2 rounded-full bg-gradient-to-br from-violet-300 to-violet-700 shadow-[0_0_45px_12px_rgba(139,92,246,0.2)]" />
+          </div>
 
-      <Navbar />
-
-      {/* Hero Section */}
-      <section className="relative max-w-6xl mx-auto overflow-hidden px-3 sm:px-6 pt-8 sm:pt-12 pb-10 sm:pb-16">
-        <div aria-hidden="true" className="pointer-events-none absolute left-1/2 top-[70px] z-0 h-[390px] w-[390px] -translate-x-1/2 opacity-25 lg:bottom-0 lg:left-[-6rem] lg:top-auto lg:h-[420px] lg:w-[420px] lg:translate-x-0 lg:opacity-60">
-          <div className="absolute inset-12 rounded-full border border-violet-200/80" />
-          <div className="absolute inset-24 rounded-full border border-violet-200/70" />
-          <div className="absolute left-1/2 top-1/2 h-12 w-12 -translate-x-1/2 -translate-y-1/2 rounded-full bg-gradient-to-br from-violet-300 to-violet-700 shadow-[0_0_45px_12px_rgba(139,92,246,0.2)] lg:h-24 lg:w-24" />
-          <span className="absolute right-16 top-20 h-3 w-3 rounded-full bg-violet-400" />
-          <span className="absolute left-20 top-10 h-2 w-2 rounded-full bg-violet-300" />
-        </div>
-        <div className="grid md:grid-cols-12 gap-6 lg:gap-8 items-center">
-
-          {/* Left Column */}
-          <div className="relative z-10 md:col-span-6 space-y-4 sm:space-y-6 min-w-0">
-            {/* Top Badges & Astrologer Link */}
+          <div className="relative z-10 max-w-2xl">
             <div className="flex flex-wrap items-center gap-2">
-              <div className="relative inline-flex max-w-full items-center gap-1.5 sm:gap-2 rounded-md border border-violet-200 bg-violet-100/80 px-2.5 py-1 text-[10px] font-semibold text-[#26233D] sm:px-3 sm:text-xs">
-                <Sparkles className="w-3 h-3 sm:w-3.5 sm:h-3.5 text-violet-600 shrink-0" />
-                <span className="truncate">Pay as you ASK !!</span>
+              <div className="inline-flex items-center gap-1.5 rounded-md border border-violet-200 bg-violet-100/80 px-2.5 py-1 text-[10px] font-semibold text-[#26233D] sm:px-3 sm:text-xs">
+                <Sparkles className="h-3 w-3 shrink-0 text-violet-600 sm:h-3.5 sm:w-3.5" />
+                <span>Pay as you ASK !!</span>
               </div>
 
-              <Link
-                href="/astrologers"
-                className="inline-flex items-center gap-1.5 rounded-md border border-violet-300 bg-white px-2.5 py-1 text-[10px] font-bold text-violet-700 shadow-2xs hover:bg-violet-50 hover:text-violet-900 transition-colors sm:px-3 sm:text-xs"
-              >
-                <MessageCircle className="w-3 h-3 sm:w-3.5 sm:h-3.5 text-violet-600 shrink-0" />
-                <span>Chat to Astrologer</span>
-                <ArrowRight className="w-3 h-3 shrink-0" />
-              </Link>
             </div>
 
-            <h1 className="font-serif text-[2.35rem] sm:text-5xl md:text-6xl lg:text-[4.4rem] font-normal text-[#17152B] leading-[0.98] tracking-tight">
+            <h1 className="mt-4 font-serif text-[2.35rem] font-normal leading-[0.98] tracking-tight text-[#17152B] sm:mt-5 sm:text-5xl lg:text-[4rem]">
               Ancient wisdom,
               <span className="block italic text-violet-600">personal clarity.</span>
             </h1>
 
-            <p className="hidden max-w-xl text-[#39344F] text-sm leading-relaxed sm:block sm:text-base md:text-lg">
-              Read the patterns in your birth chart and turn ancient planetary wisdom into clearer decisions for career, love, money, and health.
+            <p className="mt-3 max-w-xl text-xs leading-relaxed text-slate-600 sm:mt-4 sm:text-base sm:leading-relaxed">
+              Start with one free, chart-based question. Your birth chart and numerology profile stay together for every answer — career, love, money, or health.
             </p>
 
-            {/* Feature Bullets */}
-            <div className="space-y-2.5 sm:space-y-3 pt-1 sm:pt-2">
-              <div className="flex items-start sm:items-center gap-2.5 sm:gap-3 text-xs sm:text-sm font-semibold text-[#39344F] leading-relaxed">
-                <CheckCircle2 className="w-4 h-4 sm:w-5 sm:h-5 text-violet-600 shrink-0 mt-0.5 sm:mt-0" />
+            <div className="mt-4 space-y-2.5 sm:mt-6 sm:space-y-3">
+              <div className="flex items-center gap-2.5 text-xs font-semibold text-[#39344F] sm:gap-3 sm:text-sm">
+                <CheckCircle2 className="h-4 w-4 shrink-0 text-violet-600 sm:h-5 sm:w-5" />
                 <span>See your planetary patterns in a free preview</span>
               </div>
-
-              <div className="flex items-start sm:items-center gap-2.5 sm:gap-3 text-xs sm:text-sm font-semibold text-slate-700 leading-relaxed">
-                <CheckCircle2 className="w-4 h-4 sm:w-5 sm:h-5 text-violet-600 shrink-0 mt-0.5 sm:mt-0" />
+              <div className="flex items-center gap-2.5 text-xs font-semibold text-slate-700 sm:gap-3 sm:text-sm">
+                <CheckCircle2 className="h-4 w-4 shrink-0 text-violet-600 sm:h-5 sm:w-5" />
                 <span>Unlock the complete remedy report instantly</span>
-              </div>
-
-              <div className="mx-auto flex w-fit max-w-full flex-wrap items-center justify-center gap-x-3 gap-y-1 text-center text-[11px] font-semibold text-[#39344F] sm:text-xs">
-                <span>Total visitors: <strong className="text-violet-800">3k</strong></span>
-                <span className="text-violet-300" aria-hidden="true">|</span>
-                <span>Total reports: <strong className="text-violet-800">60</strong></span>
               </div>
             </div>
 
-            {/* Pill Tags — auto-scrolling marquee */}
+            <div className="mt-4 flex flex-wrap items-center gap-x-3 gap-y-1 text-[11px] font-semibold text-[#39344F] sm:mt-5 sm:text-xs">
+              <span>Total visitors: <strong className="text-violet-800">6k</strong></span>
+              <span className="text-violet-300" aria-hidden="true">|</span>
+              <span>Total reports: <strong className="text-violet-800">60</strong></span>
+            </div>
+
+            {/* Pill Tags — auto-scrolling marquee, left to right */}
             <div
-              className="pt-3 sm:pt-4 w-full max-w-full overflow-hidden"
+              className="mt-5 w-full max-w-md overflow-hidden sm:mt-6"
               style={{
                 maskImage: 'linear-gradient(to right, transparent, black 5%, black 95%, transparent)',
                 WebkitMaskImage: 'linear-gradient(to right, transparent, black 5%, black 95%, transparent)',
@@ -411,300 +150,281 @@ export default function Home() {
                   </span>
                 ))}
               </div>
-
             </div>
+
+          </div>
+        </section>
+
+        {/* Astrologers Section */}
+        <section id="astrologers" className="mt-8 scroll-mt-24 sm:mt-10">
+          <div className="mb-4 flex items-end justify-between gap-4">
+            <div>
+              <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-orange-600 sm:text-[11px]">
+                Available now
+              </p>
+              <h2 className="mt-1 text-xl font-black text-slate-900 sm:text-2xl">
+                Meet your astrologer
+              </h2>
+            </div>
+            <span className="hidden text-xs text-slate-500 sm:block">
+              More specialists coming soon
+            </span>
           </div>
 
-          {/* Right Column: Direct Birth Form Card */}
-          <div id="birth-form" className="relative z-10 w-full max-w-full min-w-0 md:col-span-5 md:col-start-8 bg-white border border-violet-100 rounded-2xl sm:rounded-3xl p-4 sm:p-6 md:p-8 shadow-[0_18px_45px_rgba(63,35,99,0.10)]">
-            <div className="relative mb-3 sm:mb-5 pb-3 sm:pb-4 border-b border-violet-100">
-              <div className="flex flex-row items-center justify-between gap-3">
-                <div>
-                  <h2 className="text-base sm:text-xl font-extrabold text-slate-900 leading-tight">Get</h2>
-                  <p className="text-[10px] sm:text-xs text-slate-500 leading-relaxed">your personalized report</p>
-                </div>
-                <div className="bg-violet-50 px-2 sm:px-3 py-1 sm:py-1.5 rounded-lg border border-violet-200 flex items-center gap-1 text-violet-700 font-bold text-[9px] sm:text-xs uppercase shrink-0">
-                  <Gift className="w-3 h-3 sm:w-3.5 sm:h-3.5" />
-                  <span className="leading-tight sm:hidden">Free Preview</span>
-                  <span className="hidden leading-tight sm:inline">Free Preview</span>
-                </div>
-              </div>
-            </div>
-
-            <form onSubmit={handleFormSubmit} className="space-y-3 sm:space-y-4">
-              <div>
-                <label className="block text-[11px] sm:text-xs font-bold uppercase tracking-wider text-slate-700 mb-1">
-                  Full Name
-                </label>
-                <input
-                  type="text"
-                  required
-                  placeholder="e.g. Rahul Sharma"
-                  className="w-full bg-[#F8F7FC] border border-violet-100 rounded-xl px-3.5 sm:px-4 py-2.5 sm:py-3 text-sm text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-violet-500/20 focus:border-violet-500 transition-all"
-                  value={formData.name}
-                  onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                />
-              </div>
-
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 min-w-0">
-                <div className="min-w-0 w-full">
-                  <label className="block text-[11px] sm:text-xs font-bold uppercase tracking-wider text-slate-700 mb-1">
-                    Date of Birth
-                  </label>
-                  <input
-                    type="date"
-                    required
-                    style={{ minWidth: 0, width: '100%' }}
-                    className="w-full max-w-full min-w-0 bg-[#F8F7FC] border border-violet-100 rounded-xl px-3 py-2.5 sm:py-3 text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-violet-500/20 focus:border-violet-500 transition-all"
-                    value={formData.dob}
-                    onChange={(e) => setFormData({ ...formData, dob: e.target.value })}
-                  />
-                </div>
-                <div className="min-w-0 w-full">
-                  <label className="block text-[11px] sm:text-xs font-bold uppercase tracking-wider text-slate-700 mb-1">
-                    Time of Birth
-                  </label>
-                  <div className="grid grid-cols-3 gap-2 sm:gap-2.5 w-full min-w-0">
-                    <select
-                      required
-                      value={timeSelector.hour}
-                      onChange={(e) => handleTimeSelectorChange('hour', e.target.value)}
-                      className="w-full min-w-0 bg-[#F8F7FC] border border-violet-100 rounded-xl px-2 py-2.5 sm:py-3 text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-violet-500/20 focus:border-violet-500 transition-all"
-                    >
-                      <option value="" disabled>HH</option>
-                      {Array.from({ length: 12 }, (_, index) => {
-                        const value = String(index + 1).padStart(2, '0');
-                        return (
-                          <option key={value} value={value}>
-                            {value}
-                          </option>
-                        );
-                      })}
-                    </select>
-
-                    <select
-                      required
-                      value={timeSelector.minute}
-                      onChange={(e) => handleTimeSelectorChange('minute', e.target.value)}
-                      className="w-full min-w-0 bg-[#F8F7FC] border border-violet-100 rounded-xl px-2 py-2.5 sm:py-3 text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-violet-500/20 focus:border-violet-500 transition-all"
-                    >
-                      <option value="" disabled>MM</option>
-                      {Array.from({ length: 60 }, (_, index) => {
-                        const value = String(index).padStart(2, '0');
-                        return (
-                          <option key={value} value={value}>
-                            {value}
-                          </option>
-                        );
-                      })}
-                    </select>
-
-                    <select
-                      required
-                      value={timeSelector.meridiem || 'AM'}
-                      onChange={(e) => handleTimeSelectorChange('meridiem', e.target.value)}
-                      className="w-full min-w-0 bg-[#F8F7FC] border border-violet-100 rounded-xl px-2 py-2.5 sm:py-3 text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-violet-500/20 focus:border-violet-500 transition-all"
-                    >
-                      <option value="AM">AM</option>
-                      <option value="PM">PM</option>
-                    </select>
+          <div className="grid gap-4 md:grid-cols-3">
+            {/* Career Card */}
+            <Link
+              href="/astrologers/career"
+              className="group block rounded-2xl border border-violet-200 bg-white p-4 shadow-[0_10px_25px_rgba(76,29,149,0.06)] transition hover:-translate-y-0.5 hover:border-violet-400 sm:rounded-3xl sm:p-6"
+            >
+              <div className="flex h-full flex-col justify-between gap-4">
+                <div className="flex items-start gap-3.5 sm:gap-4">
+                  <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-violet-100 text-violet-800 sm:h-12 sm:w-12 sm:rounded-2xl">
+                    <BriefcaseBusiness className="h-5 w-5 sm:h-6 sm:w-6" />
                   </div>
-                </div>
-              </div>
 
-              {/* Location Autocomplete Field */}
-              <div className="relative" ref={dropdownRef}>
-                <label className="block text-[11px] sm:text-xs font-bold uppercase tracking-wider text-slate-700 mb-1">
-                  Place of Birth
-                </label>
-                <div className="relative">
-                  <input
-                    type="text"
-                    required
-                    placeholder="Type city name (e.g. Moradabad, U.P)"
-                    className="w-full bg-[#F8F7FC] border border-violet-100 rounded-xl pl-3.5 sm:pl-4 pr-10 py-2.5 sm:py-3 text-sm text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-violet-500/20 focus:border-violet-500 transition-all"
-                    value={placeQuery}
-                    onChange={(e) => {
-                      const nextValue = e.target.value;
-                      setPlaceQuery(nextValue);
-                      setHasSelectedLocation(false);
-                      setFormData((prev) => ({ ...prev, place: nextValue, lat: null, lon: null }));
-                    }}
-                  />
-                  <div className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none">
-                    {isSearchingLocation ? (
-                      <Loader2 className="w-4 h-4 animate-spin text-amber-700" />
-                    ) : (
-                      <MapPin className="w-4 h-4 text-slate-400" />
-                    )}
+                  <div>
+                    <div className="flex flex-wrap items-center gap-2">
+                      <h3 className="text-base font-bold text-slate-900 sm:text-xl">
+                        Career Astrologer
+                      </h3>
+                      <span className="rounded-full bg-emerald-50 px-2 py-0.5 text-[9px] font-bold uppercase tracking-wider text-emerald-700 sm:text-[10px]">
+                        Live
+                      </span>
+                    </div>
+
+                    <p className="mt-1 text-xs leading-relaxed text-slate-600 sm:mt-1.5 sm:text-sm">
+                      Understand your work strengths, timing, career direction, and the next practical move through astrology and numerology.
+                    </p>
+
+                    <div className="mt-3 flex flex-wrap gap-1.5 text-[11px] font-semibold">
+                      <span className="inline-flex items-center gap-1 rounded-full bg-violet-50 px-2.5 py-1 text-violet-700">
+                        <Sparkles className="h-3 w-3" />
+                        1 free question
+                      </span>
+                      <span className="inline-flex items-center rounded-full bg-orange-50 px-2.5 py-1 text-orange-800">
+                        ₹49 per question after
+                      </span>
+                    </div>
                   </div>
                 </div>
 
-                {/* Geo Suggestions Dropdown */}
-                {showDropdown && suggestions.length > 0 && (
-                  <ul className="absolute z-50 w-full mt-1 bg-white border border-violet-100 rounded-xl shadow-lg max-h-56 overflow-y-auto divide-y divide-violet-100">
-                    {suggestions.map((item) => (
-                      <li
-                        key={item.place_id}
-                        onClick={() => handleSelectLocation(item)}
-                        className="p-3 text-xs text-slate-700 hover:bg-violet-50 hover:text-violet-800 cursor-pointer flex items-start gap-2.5 transition-colors active:bg-violet-50"
-                      >
-                        <MapPin className="w-4 h-4 text-violet-600 shrink-0 mt-0.5" />
-                        <div className="min-w-0">
-                          <span className="font-semibold block break-words">{item.display_name}</span>
-                          <span className="text-[10px] text-slate-400 font-mono">
-                            Lat: {parseFloat(item.lat).toFixed(4)}, Lon: {parseFloat(item.lon).toFixed(4)}
-                          </span>
-                        </div>
-                      </li>
-                    ))}
-                  </ul>
-                )}
+                <div className="flex justify-end border-t border-slate-100 pt-2">
+                  <span className="inline-flex items-center gap-1.5 text-xs font-bold text-violet-700 group-hover:text-violet-900 sm:text-sm">
+                    Start session
+                    <ArrowRight className="h-3.5 w-3.5 transition group-hover:translate-x-1 sm:h-4 sm:w-4" />
+                  </span>
+                </div>
               </div>
+            </Link>
 
-              <div className="pt-1.5 sm:pt-2">
-                <button
-                  type="submit"
-                  disabled={isSubmitting}
-                  className="w-full flex items-center justify-center gap-2 bg-violet-600 hover:bg-violet-700 disabled:bg-violet-400 disabled:cursor-not-allowed text-white font-bold py-3 sm:py-3.5 px-6 rounded-xl text-sm transition-all shadow-[0_10px_20px_rgba(124,58,237,0.18)] active:scale-[0.99]"
-                >
-                  {isSubmitting ? (
-                    <>
-                      <Loader2 className="w-4 h-4 animate-spin" />
-                      <span className="text-xs sm:text-sm">Generating...</span>
-                    </>
-                  ) : (
-                    <>
-                      <span className="text-xs sm:text-sm">Get My Free Preview</span>
-                      <ArrowRight className="w-4 h-4" />
-                    </>
-                  )}
-                </button>
-              </div>
+            {/* Love & Marriage Card (Triggers Modal) */}
+            <div
+              onClick={() => setIsModalOpen(true)}
+              className="group cursor-pointer rounded-2xl border border-rose-100 bg-white p-4 shadow-[0_10px_25px_rgba(244,63,94,0.05)] transition hover:-translate-y-0.5 hover:border-rose-300 sm:rounded-3xl sm:p-6"
+            >
+              <div className="flex h-full flex-col justify-between gap-4">
+                <div className="flex items-start gap-3.5 sm:gap-4">
+                  <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-rose-50 text-rose-600 sm:h-12 sm:w-12 sm:rounded-2xl">
+                    <Heart className="h-5 w-5 sm:h-6 sm:w-6" />
+                  </div>
 
-              <div className="flex items-center justify-center gap-1.5 whitespace-nowrap pt-1 text-[9px] font-medium text-slate-500 sm:text-[11px]">
-                <CheckCircle2 className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-emerald-600 shrink-0" />
-                <span>No payment required • Instant results • ₹49 full report</span>
+                  <div>
+                    <div className="flex flex-wrap items-center gap-2">
+                      <h3 className="text-base font-bold text-slate-900 sm:text-xl">
+                        Love & Marriage Astrologer
+                      </h3>
+                      <span className="rounded-full bg-rose-50 px-2 py-0.5 text-[9px] font-bold uppercase tracking-wider text-rose-700 sm:text-[10px]">
+                        Coming Soon
+                      </span>
+                    </div>
+
+                    <p className="mt-1 text-xs leading-relaxed text-slate-600 sm:mt-1.5 sm:text-sm">
+                      Decode relationship timing, partner compatibility, marriage prospects, and emotional harmony with chart guidance.
+                    </p>
+
+                    <div className="mt-3 flex flex-wrap gap-1.5 text-[11px] font-semibold">
+                      <span className="inline-flex items-center gap-1 rounded-full bg-rose-50 px-2.5 py-1 text-rose-700">
+                        <Sparkles className="h-3 w-3" />
+                        Most Requested
+                      </span>
+                      <span className="inline-flex items-center rounded-full bg-slate-100 px-2.5 py-1 text-slate-600">
+                        Launch Vote Active
+                      </span>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="flex justify-end border-t border-slate-100 pt-2">
+                  <span className="inline-flex items-center gap-1.5 text-xs font-bold text-rose-600 group-hover:text-rose-800 sm:text-sm">
+                    Vote to Launch
+                    <ArrowRight className="h-3.5 w-3.5 transition group-hover:translate-x-1 sm:h-4 sm:w-4" />
+                  </span>
+                </div>
               </div>
-            </form>
+            </div>
+
+            {/* Remedy Tool Card */}
+            <Link
+              href="/astrologers/remedy"
+              className="group block rounded-2xl border border-amber-100 bg-white p-4 shadow-[0_10px_25px_rgba(180,83,9,0.05)] transition hover:-translate-y-0.5 hover:border-amber-300 sm:rounded-3xl sm:p-6"
+            >
+              <div className="flex h-full flex-col justify-between gap-4">
+                <div className="flex items-start gap-3.5 sm:gap-4">
+                  <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-amber-50 text-amber-700 sm:h-12 sm:w-12 sm:rounded-2xl">
+                    <Wand2 className="h-5 w-5 sm:h-6 sm:w-6" />
+                  </div>
+
+                  <div>
+                    <div className="flex flex-wrap items-center gap-2">
+                      <h3 className="text-base font-bold text-slate-900 sm:text-xl">
+                        Birth Chart Remedy Report
+                      </h3>
+                      <span className="rounded-full bg-emerald-50 px-2 py-0.5 text-[9px] font-bold uppercase tracking-wider text-emerald-700 sm:text-[10px]">
+                        Live
+                      </span>
+                    </div>
+
+                    <p className="mt-1 text-xs leading-relaxed text-slate-600 sm:mt-1.5 sm:text-sm">
+                      Get gemstone, mantra, and dosha remedy guidance — Sadhe-Sati, Mangalik Dosha, Kaal-Sarp Yoga, and more.
+                    </p>
+
+                    <div className="mt-3 flex flex-wrap gap-1.5 text-[11px] font-semibold">
+                      <span className="inline-flex items-center gap-1 rounded-full bg-amber-50 px-2.5 py-1 text-amber-700">
+                        <Sparkles className="h-3 w-3" />
+                        Free preview
+                      </span>
+                      <span className="inline-flex items-center rounded-full bg-orange-50 px-2.5 py-1 text-orange-800">
+                        ₹49 full report
+                      </span>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="flex justify-end border-t border-slate-100 pt-2">
+                  <span className="inline-flex items-center gap-1.5 text-xs font-bold text-amber-700 group-hover:text-amber-900 sm:text-sm">
+                    Generate report
+                    <ArrowRight className="h-3.5 w-3.5 transition group-hover:translate-x-1 sm:h-4 sm:w-4" />
+                  </span>
+                </div>
+              </div>
+            </Link>
           </div>
+        </section>
 
-        </div>
-      </section>
-
-      {/* Offers Section */}
-      <section id="offers" className="max-w-6xl mx-auto px-3 sm:px-6 py-4 sm:py-6">
-        <div className="bg-white/75 border border-violet-100 rounded-2xl sm:rounded-3xl p-4 sm:p-8 md:p-10 shadow-sm">
-          <div className="mb-5 sm:mb-8">
-            <h2 className="text-lg sm:text-2xl md:text-3xl font-extrabold text-violet-900 mb-2 leading-tight">
-              Birth Chart Remedy Tool & Astrology Software
-            </h2>
-            <div className="w-10 sm:w-12 h-1 bg-violet-500 rounded-full mb-2.5 sm:mb-3"></div>
-            <p className="text-slate-600 text-xs sm:text-sm md:text-base max-w-3xl leading-relaxed">
-              Astro Remedies 3.5 is designed for users who want practical remedy guidance and structured astrological analysis.
+        {/* FAQ Section */}
+        <section className="mt-12 sm:mt-16">
+          <div className="mb-6">
+            <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-violet-600 sm:text-[11px]">
+              Got questions?
             </p>
+            <h2 className="mt-1 text-xl font-black text-slate-900 sm:text-2xl">
+              Frequently Asked Questions
+            </h2>
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
-
-            {/* Box 1 */}
-            <div className="bg-white border border-violet-100 rounded-xl sm:rounded-2xl p-4 sm:p-6 flex flex-col justify-between shadow-sm">
-              <div>
-                <div className="w-6 h-6 sm:w-7 sm:h-7 rounded-full bg-violet-100 text-violet-700 font-bold text-xs flex items-center justify-center mb-3 sm:mb-4">
-                  1
-                </div>
-                <h3 className="font-bold text-slate-900 text-sm sm:text-base mb-1.5 sm:mb-2">
-                  Remedies first
-                </h3>
-                <p className="text-xs text-slate-600 leading-relaxed">
-                  Focused on gemstones, rudraksha, mantras, yantras, donations, and planet-wise remedy guidance.
-                </p>
-              </div>
-            </div>
-
-            {/* Box 2 */}
-            <div className="bg-white border border-violet-100 rounded-xl sm:rounded-2xl p-4 sm:p-6 flex flex-col justify-between shadow-sm">
-              <div>
-                <div className="w-6 h-6 sm:w-7 sm:h-7 rounded-full bg-violet-100 text-violet-700 font-bold text-xs flex items-center justify-center mb-3 sm:mb-4">
-                  2
-                </div>
-                <h3 className="font-bold text-slate-900 text-sm sm:text-base mb-1.5 sm:mb-2">
-                  Special dosha checks
-                </h3>
-                <p className="text-xs text-slate-600 leading-relaxed">
-                  Includes major remedy-oriented checks such as Sadhe-Sati, Mangalik Dosha, Kaal-Sarp Yoga, and Anapatya Blemish.
-                </p>
-              </div>
-            </div>
-
-            {/* Box 3 */}
-            <div className="bg-white border border-violet-100 rounded-xl sm:rounded-2xl p-4 sm:p-6 flex flex-col justify-between shadow-sm">
-              <div>
-                <div className="w-6 h-6 sm:w-7 sm:h-7 rounded-full bg-violet-100 text-violet-700 font-bold text-xs flex items-center justify-center mb-3 sm:mb-4">
-                  3
-                </div>
-                <h3 className="font-bold text-slate-900 text-sm sm:text-base mb-1.5 sm:mb-2">
-                  Useful charts and tables
-                </h3>
-                <p className="text-xs text-slate-600 leading-relaxed">
-                  Astrological particulars, planetary positions, kundalis, varga charts, dasha details, and more in a structured format.
-                </p>
-              </div>
-            </div>
-
-            {/* Box 4 */}
-            <div className="bg-white border border-violet-100 rounded-xl sm:rounded-2xl p-4 sm:p-6 flex flex-col justify-between shadow-sm">
-              <div>
-                <div className="w-6 h-6 sm:w-7 sm:h-7 rounded-full bg-violet-100 text-violet-700 font-bold text-xs flex items-center justify-center mb-3 sm:mb-4">
-                  4
-                </div>
-                <h3 className="font-bold text-slate-900 text-sm sm:text-base mb-1.5 sm:mb-2">
-                  Print-friendly output
-                </h3>
-                <p className="text-xs text-slate-600 leading-relaxed">
-                  Good for astrologers who need clear sample-style reports, work screens, and printable remedy presentations.
-                </p>
-              </div>
-            </div>
-
-          </div>
-        </div>
-      </section>
-
-      {/* FAQ Section */}
-      <section id="faq" className="max-w-6xl mx-auto px-3 sm:px-6 py-5 sm:py-8">
-        <div className="bg-white/75 border border-violet-100 rounded-2xl sm:rounded-3xl p-4 sm:p-8 md:p-10 shadow-sm">
-          <div className="text-center max-w-xl mx-auto mb-6 sm:mb-10">
-            <h2 className="text-lg sm:text-2xl md:text-3xl font-extrabold text-slate-900 mb-2 leading-tight">Frequently Asked Questions</h2>
-            <p className="text-xs sm:text-sm text-slate-500 leading-relaxed">Everything you need to know about generating your report.</p>
-          </div>
-
-          <div className="max-w-3xl mx-auto space-y-2.5 sm:space-y-3">
-            {faqList.map((faq, idx) => (
+          <div className="max-w-3xl space-y-3">
+            {faqs.map((faq, idx) => (
               <div
                 key={idx}
-                className="border border-violet-100 rounded-xl bg-violet-50/50 overflow-hidden transition-all"
+                className="rounded-2xl border border-violet-100 bg-white shadow-sm transition-colors"
               >
                 <button
                   onClick={() => toggleFaq(idx)}
-                  className="w-full px-3.5 sm:px-6 py-3.5 sm:py-4 text-left font-semibold text-slate-800 text-xs sm:text-sm leading-relaxed flex items-center justify-between gap-3 sm:gap-4"
+                  className="flex w-full items-center justify-between gap-4 p-4 text-left sm:p-5"
                 >
-                  <span>{faq.q}</span>
-                  <ChevronDown className={`w-4 h-4 text-slate-500 shrink-0 transition-transform ${openFaq === idx ? 'rotate-180' : ''}`} />
+                  <span className="text-xs font-bold text-slate-900 sm:text-sm">
+                    {faq.question}
+                  </span>
+                  <ChevronDown
+                    className={`h-4 w-4 shrink-0 text-violet-600 transition-transform duration-200 ${
+                      openFaq === idx ? 'rotate-180' : ''
+                    }`}
+                  />
                 </button>
                 {openFaq === idx && (
-                  <div className="px-3.5 sm:px-6 pb-3.5 sm:pb-4 text-xs text-slate-600 leading-relaxed border-t border-violet-100 pt-3 bg-white">
-                    {faq.a}
+                  <div className="border-t border-violet-50 px-4 pb-4 pt-3 text-xs leading-relaxed text-slate-600 sm:px-5 sm:pb-5 sm:text-sm">
+                    {faq.answer}
                   </div>
                 )}
               </div>
             ))}
           </div>
-        </div>
-      </section>
-
+        </section>
+      </main>
       <Footer />
 
+      {/* Coming Soon Voting Modal */}
+      {isModalOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/40 p-4 backdrop-blur-sm">
+          <div className="relative w-full max-w-md rounded-3xl border border-rose-100 bg-white p-6 shadow-2xl sm:p-8">
+            <button
+              onClick={() => setIsModalOpen(false)}
+              className="absolute right-4 top-4 flex h-8 w-8 items-center justify-center rounded-full text-slate-400 hover:bg-slate-100 hover:text-slate-600"
+            >
+              <X className="h-5 w-5" />
+            </button>
+
+            <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-2xl bg-rose-50 text-rose-600">
+              <Heart className="h-6 w-6" />
+            </div>
+
+            <div className="mt-4 text-center">
+              <span className="rounded-full bg-rose-50 px-3 py-1 text-[10px] font-bold uppercase tracking-wider text-rose-600">
+                Coming Soon
+              </span>
+              <h3 className="mt-2 text-xl font-black text-slate-900 sm:text-2xl">
+                Love & Marriage Astrologer
+              </h3>
+              <p className="mt-2 text-xs text-slate-600 leading-relaxed sm:text-sm">
+                We are currently training our specialized love and compatibility engine. Help us prioritize this feature!
+              </p>
+            </div>
+
+            <div className="mt-6 rounded-2xl bg-rose-50/50 p-4 border border-rose-100 text-center">
+              <p className="text-xs font-bold text-slate-700">
+                Should we release this next?
+              </p>
+
+              {!hasVoted ? (
+                <button
+                  onClick={handleVote}
+                  disabled={isVoting || voteCount === null}
+                  className="mt-3 inline-flex w-full items-center justify-center gap-2 rounded-xl bg-rose-600 px-4 py-3 text-xs font-bold text-white shadow-md transition hover:bg-rose-700 disabled:cursor-not-allowed disabled:opacity-70 sm:text-sm"
+                >
+                  <ThumbsUp className="h-4 w-4" />
+                  {isVoting ? 'Recording vote...' : 'Yes, launch this next!'}
+                </button>
+              ) : (
+                <div className="mt-3 flex items-center justify-center gap-2 text-xs font-bold text-emerald-700 bg-emerald-50 py-2.5 px-4 rounded-xl border border-emerald-200">
+                  <CheckCircle2 className="h-4 w-4 shrink-0" />
+                  Vote recorded! Thanks for your input.
+                </div>
+              )}
+
+              <div className="mt-4 flex items-center justify-between text-[11px] text-slate-500 font-semibold">
+                <span>Total Community Votes</span>
+                <span className="text-rose-600 font-bold">
+                  {voteCount === null ? '...' : voteCount.toLocaleString()} votes
+                </span>
+              </div>
+              <div className="mt-1.5 h-2 w-full rounded-full bg-slate-200 overflow-hidden">
+                <div
+                  className="h-full bg-rose-500 rounded-full transition-all duration-500"
+                  style={{ width: voteCount ? `${Math.min(100, (voteCount / 1500) * 100)}%` : '0%' }}
+                />
+              </div>
+            </div>
+
+            <button
+              onClick={() => setIsModalOpen(false)}
+              className="mt-6 w-full text-center text-xs font-bold text-slate-500 hover:text-slate-800"
+            >
+              Close
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

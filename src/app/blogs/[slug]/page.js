@@ -130,10 +130,19 @@ export default async function BlogPostPage({ params }) {
           </p>
 
           {/* CTA banner — full width, readable on small screens */}
-          <div className="mt-6 rounded-xl border border-violet-200 bg-violet-50 p-3 text-xs leading-relaxed text-violet-950 sm:mt-8 sm:rounded-2xl sm:p-4 sm:text-sm">
-            Looking for a personalised reading? Use the AskMyMoon report generator to get chart-based remedies tailored to your birth details.
+          {/* CTA banner — full width, readable on small screens */}
+          {/* CTA banner — full width, readable on small screens */}
+          <div className="mt-6 flex flex-col items-start gap-3 rounded-xl border border-violet-200 bg-violet-50 p-3 text-xs leading-relaxed text-violet-950 sm:mt-8 sm:flex-row sm:items-center sm:justify-between sm:rounded-2xl sm:p-4 sm:text-sm">
+            <span>
+              Looking for a personalised reading? Use the AskMyMoon report generator to get chart-based remedies tailored to your birth details.
+            </span>
+            <Link
+              href="/astrologers"
+              className="inline-flex w-full shrink-0 items-center justify-center gap-1.5 rounded-full bg-violet-700 px-4 py-2 text-xs font-semibold text-white transition-colors hover:bg-violet-800 sm:w-auto sm:text-sm"
+            >
+              Chat with Astrologer
+            </Link>
           </div>
-
           {/* Sections — reduced spacing on mobile */}
           <div className="mt-8 space-y-6 text-sm leading-relaxed text-slate-700 sm:mt-10 sm:space-y-8 sm:text-base">
             {post.sections.map((section) => (

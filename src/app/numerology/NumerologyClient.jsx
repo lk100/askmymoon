@@ -6,7 +6,7 @@ import { ArrowRight, CheckCircle2, Gift, Loader2, MapPin, Sparkles } from 'lucid
 import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
 import { calculateNumerology } from '@/lib/numerology';
-import { calculateChart } from '@/lib/astrology';
+
 import { fromZonedTime } from 'date-fns-tz';
 import { getBirthTimeZone } from '@/lib/birthTime';
 
@@ -86,7 +86,7 @@ export default function NumerologyClient() {
     const results = calculateNumerology(normalizedName, formData.dob);
     const timeZone = formData.timeZone || getBirthTimeZone(formData.lat, formData.lon);
     const dateObj = fromZonedTime(`${formData.dob}T${formData.time}:00`, timeZone);
-    const chartResults = calculateChart(dateObj, formData.lat, formData.lon, timeZone, 'vedic');
+    
     localStorage.setItem('astro_numerology_data', JSON.stringify({
       ...formData,
       name: normalizedName,

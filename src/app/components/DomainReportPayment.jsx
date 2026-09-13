@@ -43,7 +43,10 @@ export default function DomainReportPayment({
   buttonLabel = 'Get Full Report',
   buttonClassName = '',
   contactDetails = null,
-  product = 'domain_report', // NEW: 'domain_report' | 'ai_astrologer'
+  product = 'domain_report', // 'domain_report' | 'ai_astrologer' | 'ai_astrologer_bundle_5'
+  authedEmail = null, // Logged-in user's email. When present, the contact
+  // details modal is skipped entirely — we already know who they are, so
+  // clicking the button goes straight to Razorpay checkout.
 }) {
   const [pricing, setPricing] = useState(null);
   const [isLoadingPricing, setIsLoadingPricing] = useState(true);
@@ -52,19 +55,25 @@ export default function DomainReportPayment({
   const [status, setStatus] = useState({ type: '', message: '' });
   const [mounted, setMounted] = useState(false);
 
-  // Contact details collected in the modal, required before payment starts.
-  const [email, setEmail] = useState(contactDetails?.email || '');
+  // Contact details collected in the modal, required before payment starts
+  // for anonymous/guest users. Logged-in users skip this — see isContactValid.
+  const [email, setEmail] = useState(contactDetails?.email || authedEmail || '');
   const [phone, setPhone] = useState(contactDetails?.phone || '');
   const [touched, setTouched] = useState({ email: false, phone: false });
 
   const isEmailValid = EMAIL_PATTERN.test(email.trim());
   const isPhoneValid = PHONE_PATTERN.test(phone.trim());
-  const isContactValid = isEmailValid && isPhoneValid;
+  // Logged-in users only need a valid email on file (their account email);
+  // phone stays optional for them since we already have a way to identify
+  // and reach the user. Guests still need both email and phone.
+  const isContactValid = authedEmail
+    ? isEmailValid
+    : isEmailValid && isPhoneValid;
 
   useEffect(() => {
-    setEmail(contactDetails?.email || '');
+    setEmail(contactDetails?.email || authedEmail || '');
     setPhone(contactDetails?.phone || '');
-  }, [contactDetails?.email, contactDetails?.phone]);
+  }, [contactDetails?.email, contactDetails?.phone, authedEmail]);
 
   // Needed because createPortal touches document.body, which only exists client-side.
   useEffect(() => {
@@ -106,11 +115,13 @@ export default function DomainReportPayment({
     return () => {
       isMounted = false;
     };
-  }, [product]); // NEW: refetch pricing if product changes
+  }, [product]);
 
   async function handlePayment(event) {
     event?.preventDefault();
-    setTouched({ email: true, phone: true });
+    // Guests must confirm both fields via the modal before we proceed;
+    // logged-in users don't need to touch the (hidden) phone field.
+    setTouched({ email: true, phone: !authedEmail });
     if (!pricing || isPaying || !isContactValid) return;
     if (!process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID) {
       setStatus({ type: 'error', message: 'Payment is not configured yet.' });
@@ -313,6 +324,10 @@ export default function DomainReportPayment({
       <button
         type="button"
         onClick={() => {
+          // Logged-in users (authedEmail present) already satisfy
+          // isContactValid, so this goes straight to Razorpay checkout
+          // without ever showing the "where should we send your report"
+          // modal. Guests without valid contact info on file still see it.
           if (isContactValid) {
             handlePayment();
           } else {

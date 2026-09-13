@@ -1,23 +1,65 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import Link from 'next/link';
+import BottomNav from './components/BottomNav';
+import { HOROSCOPE_DATA, CATEGORY_LABELS } from '@/data/horoscopeData';
 import {
   ArrowRight,
-  BriefcaseBusiness,
   ChevronDown,
-  Heart,
-  MessageCircle,
-  Sparkles,
-  Wand2,
-  X,
   CheckCircle2,
-  ThumbsUp,
 } from 'lucide-react';
 import Navbar from './components/Navbar';
 import Footer from './components/Footer';
 
 const heroPills = ['Career', 'Finances', 'Marriage', 'Health'];
+
+const CATEGORY_GRADIENTS = {
+  emotions: 'from-rose-200 to-rose-500',
+  love: 'from-pink-200 to-pink-500',
+  career: 'from-purple-200 to-purple-500',
+  travel: 'from-sky-200 to-sky-500',
+  luck: 'from-violet-200 to-violet-500',
+  health: 'from-emerald-200 to-emerald-500',
+  money: 'from-orange-200 to-orange-500',
+};
+
+function getScoreLabel(score) {
+  if (score <= 2) return 'Poor';
+  if (score <= 4) return 'Weak';
+  if (score <= 6) return 'Fair';
+  if (score <= 8) return 'Good';
+  return 'Strong';
+}
+const SIGN_SYMBOLS = {
+  Aries: '♈',
+  Taurus: '♉',
+  Gemini: '♊',
+  Cancer: '♋',
+  Leo: '♌',
+  Virgo: '♍',
+  Libra: '♎',
+  Scorpio: '♏',
+  Sagittarius: '♐',
+  Capricorn: '♑',
+  Aquarius: '♒',
+  Pisces: '♓',
+};
+
+const SIGN_SANSKRIT = {
+  Aries: 'Mesh',
+  Taurus: 'Vrishabh',
+  Gemini: 'Mithun',
+  Cancer: 'Kark',
+  Leo: 'Singh',
+  Virgo: 'Kanya',
+  Libra: 'Tula',
+  Scorpio: 'Vrishchik',
+  Sagittarius: 'Dhanu',
+  Capricorn: 'Makar',
+  Aquarius: 'Kumbh',
+  Pisces: 'Meen',
+};
 
 const faqs = [
   {
@@ -49,263 +91,317 @@ const faqs = [
 
 export default function HomeClient() {
   const [openFaq, setOpenFaq] = useState(null);
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const [hasVoted, setHasVoted] = useState(false);
-  const [voteCount, setVoteCount] = useState(null); // null = loading
-  const [isVoting, setIsVoting] = useState(false);
-
+  const [activeSign, setActiveSign] = useState('Leo');
+  const [activeTimeframe, setActiveTimeframe] = useState('today');
   const toggleFaq = (index) => {
     setOpenFaq(openFaq === index ? null : index);
-  };
-
-  useEffect(() => {
-    if (!isModalOpen || voteCount !== null) return;
-    fetch('/api/love-astrologer-votes')
-      .then((res) => res.json())
-      .then((data) => {
-        setVoteCount(data.count);
-        setHasVoted(data.hasVoted);
-      })
-      .catch(() => setVoteCount(1316));
-  }, [isModalOpen, voteCount]);
-
-  const handleVote = async () => {
-    if (hasVoted || isVoting) return;
-    setIsVoting(true);
-    try {
-      const res = await fetch('/api/love-astrologer-votes', { method: 'POST' });
-      const data = await res.json();
-      setVoteCount(data.count);
-      setHasVoted(true);
-    } catch {
-      // no-op, allow retry
-    } finally {
-      setIsVoting(false);
-    }
   };
 
   return (
     <div className="min-h-screen bg-[#F7F5FB] text-[#1C1A2E]">
       <Navbar ctaLabel="Birth chart remedies" ctaHref="/astrologers/remedy" />
-      <main className="mx-auto max-w-6xl px-4 py-6 sm:px-6 sm:py-10 lg:py-14">
+      <main className="mx-auto max-w-7xl px-4 py-4 sm:px-6 sm:py-10 lg:py-14">
 
         {/* Hero Section */}
-        <section className="relative overflow-hidden pt-2 pb-4 sm:pt-4 sm:pb-12 lg:pb-16">
-          <div aria-hidden="true" className="pointer-events-none absolute right-[-4rem] top-1/2 z-0 h-[320px] w-[320px] -translate-y-1/2 opacity-40 lg:h-[380px] lg:w-[380px]">
-            <div className="absolute inset-12 rounded-full border border-violet-200/80" />
-            <div className="absolute inset-24 rounded-full border border-violet-200/70" />
-            <div className="absolute left-1/2 top-1/2 h-16 w-16 -translate-x-1/2 -translate-y-1/2 rounded-full bg-gradient-to-br from-violet-300 to-violet-700 shadow-[0_0_45px_12px_rgba(139,92,246,0.2)]" />
+        <section className="relative overflow-hidden pt-4 pb-0 sm:pt-6">
+          {/* Decorative background circles (desktop only) */}
+          <div aria-hidden="true" className="pointer-events-none absolute right-[-6rem] top-[20%] z-0 hidden h-[420px] w-[420px] opacity-30 lg:block lg:h-[500px] lg:w-[500px]">
+            <div className="absolute inset-10 rounded-full border border-purple-200/80" />
+            <div className="absolute inset-24 rounded-full border border-purple-200/70" />
+            <div className="absolute inset-40 rounded-full border border-purple-200/60" />
           </div>
 
-          <div className="relative z-10 max-w-2xl">
-            <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-violet-600 sm:text-[11px]">
-              Pay as you ASK !!
-            </p>
-
-            <h1 className="mt-1 font-serif text-[2.35rem] font-normal leading-[0.98] tracking-tight text-[#14121F] sm:mt-2 sm:text-5xl lg:text-[4rem]">
-              Ancient wisdom,
-              <span className="block italic text-violet-700">personal guidance.</span>
-            </h1>
-
-            <p className="mt-3 max-w-xl text-sm font-normal leading-relaxed text-slate-700 sm:mt-4 sm:text-base sm:leading-relaxed">
-              Consult with AI-powered specialized astrologer.
-            </p>
-            <div className="mt-4 space-y-2.5 sm:mt-6 sm:space-y-3">
-              <div className="flex items-center gap-2.5 text-xs font-semibold text-[#26233D] sm:gap-3 sm:text-sm">
-                <CheckCircle2 className="h-4 w-4 shrink-0 text-violet-600 sm:h-5 sm:w-5" />
-                <span>Average reply under 13 seconds</span>
+          <div className="relative z-10 grid gap-8 lg:grid-cols-2 lg:items-center lg:gap-8">
+            {/* Left column — copy, stats */}
+            <div className="max-w-xl">
+              {/* Live status pill */}
+              <div className="inline-flex items-center gap-2 rounded-full border border-slate-200 bg-white/80 px-3.5 py-1.5 shadow-sm backdrop-blur-sm sm:gap-2.5 sm:px-4 sm:py-2">
+                <span className="relative flex h-2 w-2">
+                  <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-green-400 opacity-75" />
+                  <span className="relative inline-flex h-2 w-2 rounded-full bg-blue-500" />
+                </span>
+                <span className="text-[10px] font-semibold text-slate-500 sm:text-sm">
+                  6k+ user guided
+                </span>
+                <div className="flex -space-x-2">
+                  {['from-red-300 to-red-500', 'from-green-300 to-green-500', 'from-blue-300 to-blue-500'].map((grad, i) => (
+                    <div key={i} className={`h-5 w-5 rounded-full border-2 border-white bg-gradient-to-br ${grad} sm:h-4 sm:w-4`} />
+                  ))}
+                </div>
               </div>
-              <div className="flex items-center gap-2.5 text-xs font-semibold text-[#26233D] sm:gap-3 sm:text-sm">
-                <CheckCircle2 className="h-4 w-4 shrink-0 text-violet-600 sm:h-5 sm:w-5" />
 
-                <span>GET you first free suggestive question</span>
+              {/* Headline */}
+              <h1 className="mt-4 font-sans text-[2rem] font-extrabold leading-[1.05] tracking-tight text-slate-900 sm:mt-5 sm:text-6xl sm:leading-[1.02] lg:text-7xl xl:text-[4.5rem]">
+                Precise life guidance
+                <span className="block text-purple-700">astrology system</span>
+              </h1>
+
+              {/* Checklist */}
+              <div className="mt-4 space-y-2.5 sm:mt-6 sm:space-y-3">
+                <div className="flex items-center gap-2.5 text-sm font-medium text-slate-700 sm:gap-3 sm:text-base">
+                  <CheckCircle2 className="h-5 w-5 shrink-0 text-violet-600" strokeWidth={2.4} />
+                  <span>ASK your first question FREE</span>
+                </div>
+                <div className="flex items-center gap-2.5 text-sm font-medium text-slate-700 sm:gap-3 sm:text-base">
+                  <CheckCircle2 className="h-5 w-5 shrink-0 text-violet-600" strokeWidth={2.4} />
+                  <span>Average reply under <strong>20 seconds</strong></span>
+                </div>
+              </div>
+
+              {/* Stats row — desktop */}
+              <div className="order-3 mt-6 hidden grid-cols-4 gap-2 border-t border-slate-200/70 pt-5 sm:mt-8 sm:pt-6 lg:grid">
+                {[
+                  ['6k+', 'Users guided'],
+                  ['100%', 'Personalized'],
+                  ['NO', 'Time Limit'],
+                  ['24/7', 'Availability'],
+                ].map(([num, label], i) => (
+                  <div key={i} className={i > 0 ? 'border-l border-slate-200/70 pl-3' : ''}>
+                    <p className="text-xl font-extrabold text-slate-900 sm:text-2xl">{num}</p>
+                    <p className="text-[11px] font-medium text-purple-700/80 sm:text-xs">{label}</p>
+                  </div>
+                ))}
+              </div>
+
+              {/* CTA — desktop */}
+              <div className="mt-6 hidden sm:mt-8 lg:block">
+                <Link
+                  href="/astrologers/career"
+                  className="inline-flex items-center gap-2 rounded-full bg-purple-300 px-7 py-4 text-sm font-bold text-slate-900 shadow-[0_10px_25px_rgba(217,169,32,0.35)] transition hover:-translate-y-0.5 hover:bg-purple-400 sm:text-base"
+                >
+                  Start Chat
+                  <ArrowRight className="h-4 w-4" />
+                </Link>
               </div>
             </div>
 
-            <div className="mt-4 flex flex-wrap items-center gap-x-3 gap-y-1 text-[11px] font-semibold text-[#26233D] sm:mt-5 sm:text-xs">
-              <span>Total users: <strong className="text-violet-800">6k</strong></span>
-
+            {/* Mobile-only: stats row */}
+            <div className="grid grid-cols-4 gap-1.5 lg:hidden">
+              {[
+                ['6k+', 'Users guided'],
+                ['100%', 'Personalized'],
+                ['NO', 'Time Limit'],
+                ['24/7', 'Availability'],
+              ].map(([num, label], i) => (
+                <div key={i} className={i > 0 ? 'border-l border-slate-200/70 pl-2' : ''}>
+                  <p className="text-base font-extrabold text-slate-900">{num}</p>
+                  <p className="text-[9px] font-medium leading-tight text-purple-700/80">{label}</p>
+                </div>
+              ))}
             </div>
 
-            {/* Pill Tags — auto-scrolling marquee, left to right */}
-            <div
-              className="mt-5 w-full max-w-md overflow-hidden sm:mt-6"
-              style={{
-                maskImage: 'linear-gradient(to right, transparent, black 5%, black 95%, transparent)',
-                WebkitMaskImage: 'linear-gradient(to right, transparent, black 5%, black 95%, transparent)',
-              }}
-            >
-              <div className="marquee-track flex w-max gap-2">
-                {[...heroPills, ...heroPills].map((pill, i) => (
-                  <span
-                    key={i}
-                    className="shrink-0 rounded-md border border-violet-200 bg-white px-2.5 py-1 text-[11px] font-semibold text-[#1C1A2E] shadow-sm sm:px-3 sm:text-xs"
+
+
+            {/* Mobile-only CTA */}
+            <div className="sm:hidden">
+              <Link
+                href="/astrologers/career"
+                className="inline-flex w-full items-center justify-center gap-2 rounded-full bg-purple-300 px-6 py-3.5 text-sm font-bold text-slate-900 shadow-[0_8px_20px_rgba(217,169,32,0.3)] transition active:scale-[0.98]"
+              >
+                Start Chat
+                <ArrowRight className="h-4 w-4" />
+              </Link>
+            </div>
+          </div>
+
+          {/* Live activity ticker — desktop only */}
+          <div className="relative z-10 mt-8 hidden border-t border-slate-200/70 py-3 lg:block">
+            <div className="overflow-hidden" style={{
+              maskImage: 'linear-gradient(to right, transparent, black 5%, black 95%, transparent)',
+              WebkitMaskImage: 'linear-gradient(to right, transparent, black 5%, black 95%, transparent)',
+            }}>
+              <div className="ticker-track flex w-max items-center gap-2 whitespace-nowrap text-xs text-slate-600">
+                {[
+                  <>Priya from Mumbai booked Saturn puja with <strong className="text-purple-700">Pt. Ram Naresh</strong> · just now</>,
+                  <>Neha from Hyderabad got her Kundli read by <strong className="text-purple-700">Saanvi Sharma</strong> · 4 min ago</>,
+                  <>Amit from Delhi consulted about career with <strong className="text-purple-700">Guru Devraj</strong> · 7 min ago</>,
+                ].flatMap((item, i) => [
+                  <span key={`item-${i}`} className="inline-flex items-center gap-2 px-3">
+                    <span className="h-1.5 w-1.5 rounded-full bg-purple-500" />
+                    {item}
+                  </span>,
+                  <span key={`sep-${i}`} className="text-slate-300">+</span>,
+                ])}
+              </div>
+            </div>
+          </div>
+        </section>
+
+        {/* Horoscope Section */}
+        <section className="mt-12 sm:mt-16">
+          <div className="mb-8 flex flex-col gap-6 sm:mb-10 lg:flex-row lg:items-end lg:justify-between">
+            <div>
+              <p className="text-[11px] font-bold uppercase tracking-[0.2em] text-purple-700 sm:text-xs">
+                CHECK HOROSCOPE
+              </p>
+              <h2 className="mt-2 font-sans text-4xl font-extrabold leading-[1.05] tracking-tight text-slate-900 sm:text-5xl lg:text-7xl">
+                Your daily
+                <br />
+                <span className="text-purple-700">horoscope</span> reading
+              </h2>
+              <p className="mt-3 text-sm text-slate-500 sm:text-base">Pick your rashi to see today's pillars at a glance.</p>
+            </div>
+
+            {/* Timeframe tabs wrapper */}
+            <div className="max-w-full overflow-x-auto no-scrollbar py-1">
+              <div className="inline-flex items-center gap-0.5 whitespace-nowrap rounded-full border border-slate-200 bg-white p-1 shadow-sm">
+                {[
+                  { key: 'today', label: 'Today' },
+                  { key: 'tomorrow', label: 'Tomorrow' },
+                  { key: 'monthly', label: 'Monthly' },
+
+                ].map((tf) => (
+                  <button
+                    key={tf.key}
+                    type="button"
+                    onClick={() => setActiveTimeframe(tf.key)}
+                    className={`rounded-full px-2.5 py-1 text-[11px] font-medium transition sm:px-3.5 sm:py-1.5 sm:text-xs ${activeTimeframe === tf.key
+                      ? 'bg-purple-600 text-white shadow-sm'
+                      : 'text-slate-500 hover:text-purple-700'
+                      }`}
                   >
-                    {pill}
-                  </span>
+                    {tf.label}
+                  </button>
                 ))}
               </div>
             </div>
-
           </div>
+
+          {/* Sign picker */}
+          <div className="mb-6 flex gap-3 overflow-x-auto pb-2 sm:mb-8 sm:grid sm:grid-cols-6 sm:gap-3 sm:overflow-visible lg:grid-cols-12">
+            {Object.keys(HOROSCOPE_DATA).map((sign) => {
+              const sanskrit = SIGN_SANSKRIT[sign];
+              const isActive = activeSign === sign;
+              const symbol = SIGN_SYMBOLS[sign] || sign.slice(0, 2);
+
+              return (
+                <button
+                  key={sign}
+                  type="button"
+                  onClick={() => setActiveSign(sign)}
+                  className={`flex w-28 shrink-0 flex-col items-center justify-center gap-1.5 rounded-2xl border-2 p-3 text-center transition sm:w-auto sm:shrink ${isActive
+                    ? 'border-amber-400 bg-amber-50/80 shadow-sm'
+                    : 'border-slate-200 bg-white hover:border-amber-200'
+                    }`}
+                >
+                  <div
+                    className={`flex h-12 w-12 items-center justify-center rounded-full text-xl transition-all ${isActive
+                      ? 'bg-amber-300/60 text-amber-950 scale-105'
+                      : 'bg-slate-100 text-slate-700'
+                      }`}
+                  >
+                    {symbol}
+                  </div>
+
+                  <div>
+                    <span className="block text-xs font-bold text-slate-900 sm:text-sm">
+                      {sign}
+                    </span>
+                    {sanskrit && (
+                      <span className="block text-[10px] text-slate-500 sm:text-[11px]">
+                        {sanskrit}
+                      </span>
+                    )}
+                  </div>
+                </button>
+              );
+            })}
+          </div>
+
+          {/* Reading card */}
+          {(() => {
+            const reading = HOROSCOPE_DATA[activeSign]?.[activeTimeframe];
+            if (!reading) return null;
+            const hasDailyExtras = activeTimeframe === 'today' || activeTimeframe === 'tomorrow';
+            const todayLabel = new Date().toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' });
+
+            return (
+              <div className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm sm:rounded-3xl sm:p-8">
+                <div className="flex flex-col gap-4 border-b border-slate-100 pb-5 sm:flex-row sm:items-center sm:justify-between">
+                  <div className="flex items-center gap-3">
+                    {/* Circular badge displaying the zodiac glyph */}
+                    <div className="flex h-11 w-11 items-center justify-center rounded-full bg-violet-100 text-xl font-black text-violet-700">
+                      {SIGN_SYMBOLS[activeSign] || activeSign.slice(0, 2)}
+                    </div>
+                    <div>
+                      <h3 className="text-base font-bold text-slate-900 sm:text-lg">{activeSign}</h3>
+                      <p className="text-[11px] text-slate-500 sm:text-xs">
+                        {activeTimeframe === 'today' && 'Today'}
+                        {activeTimeframe === 'tomorrow' && 'Tomorrow'}
+                        {activeTimeframe === 'monthly' && 'This month'}
+                        {activeTimeframe === 'yearly' && 'This year'}
+                      </p>
+                    </div>
+                  </div>
+
+                  <span className="w-fit rounded-full border border-slate-200 px-3.5 py-1.5 text-[11px] font-semibold text-slate-600 sm:text-xs">
+                    {activeTimeframe === 'today' && `Today · ${todayLabel}`}
+                    {activeTimeframe === 'tomorrow' && `Tomorrow · ${todayLabel}`}
+                    {activeTimeframe === 'monthly' && 'This month'}
+                    {activeTimeframe === 'yearly' && 'This year'}
+                  </span>
+                </div>
+
+                <div className="flex flex-col gap-6 pt-5 lg:flex-row lg:items-start lg:justify-between">
+                  {/* Reading Text & Extras - Left Side on Desktop */}
+                  <div className="w-full lg:w-7/12 lg:order-1">
+                    <p className="text-[13px] leading-snug text-slate-700 sm:text-base sm:leading-relaxed">
+                      {reading.text}
+                    </p>
+
+                    {hasDailyExtras && (
+                      <div className="mt-4 flex flex-wrap items-center gap-4 text-xs">
+                        <div className="flex items-center gap-1.5">
+                          <span className="text-lg">{reading.mood.emoji}</span>
+                          <span className="font-semibold text-slate-700">
+                            {reading.mood.label}
+                          </span>
+                        </div>
+                        <div className="flex items-center gap-1.5">
+                          <span className="font-bold text-violet-700">{reading.lucky}</span>
+                          <span className="text-slate-500">lucky</span>
+                        </div>
+                        <div className="flex items-center gap-1.5">
+                          <span
+                            className="h-3.5 w-3.5 rounded-full border border-slate-200"
+                            style={{ backgroundColor: reading.color.hex }}
+                          />
+                          <span className="text-slate-500">{reading.color.name}</span>
+                        </div>
+                      </div>
+                    )}
+                  </div>
+
+                  {/* Score Box - Right Side on Desktop */}
+                  <div className="w-full lg:w-5/12 lg:order-2">
+                    <div className="rounded-xl border border-slate-200 bg-white p-5 shadow-sm">
+                      <div className="space-y-4">
+                        {Object.entries(reading.scores).map(([category, score]) => (
+                          <div key={category}>
+                            <div className="mb-1 flex items-center justify-between text-[10px] font-semibold sm:text-xs">
+                              <span className="uppercase tracking-wide text-slate-500">
+                                {CATEGORY_LABELS[category]}
+                              </span>
+                              <span className="text-slate-700">{getScoreLabel(score)}</span>
+                            </div>
+                            <div className="h-1.5 w-full overflow-hidden rounded-full bg-slate-100">
+                              <div
+                                className={`h-full rounded-full bg-gradient-to-r ${CATEGORY_GRADIENTS[category] || CATEGORY_GRADIENTS.career
+                                  } transition-all duration-500`}
+                                style={{ width: `${score * 10}%` }}
+                              />
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            );
+          })()}
         </section>
 
-        {/* Astrologers Section */}
-        <section id="astrologers" className="mt-8 scroll-mt-24 sm:mt-10">
-          <div className="mb-4 flex items-end justify-between gap-4">
-            <div>
-              <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-violet-600 sm:text-[11px]">
-                Available now
-              </p>
-              <h2 className="mt-1 font-serif text-2xl font-normal text-[#14121F] sm:text-3xl">
-                Meet your astrologer
-              </h2>
-            </div>
-            <span className="hidden text-xs font-medium text-slate-600 sm:block">
-              More specialists coming soon
-            </span>
-          </div>
-
-          <div className="grid gap-4 md:grid-cols-3">
-            {/* Career Card */}
-            <Link
-              href="/astrologers/career"
-              className="group block rounded-2xl border border-violet-200 bg-white p-4 shadow-[0_10px_25px_rgba(76,29,149,0.06)] transition hover:-translate-y-0.5 hover:border-violet-400 sm:rounded-3xl sm:p-6"
-            >
-              <div className="flex h-full flex-col justify-between gap-4">
-                <div className="flex items-start gap-3.5 sm:gap-4">
-                  <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-violet-100 text-violet-800 sm:h-12 sm:w-12 sm:rounded-2xl">
-                    <BriefcaseBusiness className="h-5 w-5 sm:h-6 sm:w-6" />
-                  </div>
-
-                  <div>
-                    <div className="flex flex-wrap items-center gap-2">
-                      <h3 className="text-base font-bold text-slate-900 sm:text-xl">
-                        Career Astrologer
-                      </h3>
-                      <span className="rounded-full bg-emerald-50 px-2 py-0.5 text-[9px] font-bold uppercase tracking-wider text-emerald-700 sm:text-[10px]">
-                        Live
-                      </span>
-                    </div>
-
-                    <p className="mt-1 text-xs leading-relaxed text-slate-700 sm:mt-1.5 sm:text-sm">
-                      Understand your work strengths, timing, career direction, and the next practical move through astrology and numerology.
-                    </p>
-
-                    <div className="mt-3 flex flex-wrap gap-1.5 text-[11px] font-semibold">
-                      <span className="inline-flex items-center gap-1 rounded-full bg-violet-50 px-2.5 py-1 text-violet-700">
-                        <Sparkles className="h-3 w-3" />
-                        1 free question
-                      </span>
-                      <span className="inline-flex items-center rounded-full bg-orange-50 px-2.5 py-1 text-orange-800">
-                        ₹49 per question after
-                      </span>
-                    </div>
-                  </div>
-                </div>
-
-                <div className="flex justify-end border-t border-slate-100 pt-2">
-                  <span className="inline-flex items-center gap-1.5 text-xs font-bold text-violet-700 group-hover:text-violet-900 sm:text-sm">
-                    Start session
-                    <ArrowRight className="h-3.5 w-3.5 transition group-hover:translate-x-1 sm:h-4 sm:w-4" />
-                  </span>
-                </div>
-              </div>
-            </Link>
-
-            {/* Love & Marriage Card (Triggers Modal) */}
-            <div
-              onClick={() => setIsModalOpen(true)}
-              className="group cursor-pointer rounded-2xl border border-rose-100 bg-white p-4 shadow-[0_10px_25px_rgba(244,63,94,0.05)] transition hover:-translate-y-0.5 hover:border-rose-300 sm:rounded-3xl sm:p-6"
-            >
-              <div className="flex h-full flex-col justify-between gap-4">
-                <div className="flex items-start gap-3.5 sm:gap-4">
-                  <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-rose-50 text-rose-600 sm:h-12 sm:w-12 sm:rounded-2xl">
-                    <Heart className="h-5 w-5 sm:h-6 sm:w-6" />
-                  </div>
-
-                  <div>
-                    <div className="flex flex-wrap items-center gap-2">
-                      <h3 className="text-base font-bold text-slate-900 sm:text-xl">
-                        Love & Marriage Astrologer
-                      </h3>
-                      <span className="rounded-full bg-rose-50 px-2 py-0.5 text-[9px] font-bold uppercase tracking-wider text-rose-700 sm:text-[10px]">
-                        Coming Soon
-                      </span>
-                    </div>
-
-                    <p className="mt-1 text-xs leading-relaxed text-slate-700 sm:mt-1.5 sm:text-sm">
-                      Decode relationship timing, partner compatibility, marriage prospects, and emotional harmony with chart guidance.
-                    </p>
-
-                    <div className="mt-3 flex flex-wrap gap-1.5 text-[11px] font-semibold">
-                      <span className="inline-flex items-center gap-1 rounded-full bg-rose-50 px-2.5 py-1 text-rose-700">
-                        <Sparkles className="h-3 w-3" />
-                        Most Requested
-                      </span>
-                      <span className="inline-flex items-center rounded-full bg-slate-100 px-2.5 py-1 text-slate-700">
-                        Launch Vote Active
-                      </span>
-                    </div>
-                  </div>
-                </div>
-
-                <div className="flex justify-end border-t border-slate-100 pt-2">
-                  <span className="inline-flex items-center gap-1.5 text-xs font-bold text-rose-600 group-hover:text-rose-800 sm:text-sm">
-                    Vote to Launch
-                    <ArrowRight className="h-3.5 w-3.5 transition group-hover:translate-x-1 sm:h-4 sm:w-4" />
-                  </span>
-                </div>
-              </div>
-            </div>
-
-            {/* Remedy Tool Card */}
-            <Link
-              href="/astrologers/remedy"
-              className="group block rounded-2xl border border-amber-100 bg-white p-4 shadow-[0_10px_25px_rgba(180,83,9,0.05)] transition hover:-translate-y-0.5 hover:border-amber-300 sm:rounded-3xl sm:p-6"
-            >
-              <div className="flex h-full flex-col justify-between gap-4">
-                <div className="flex items-start gap-3.5 sm:gap-4">
-                  <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-amber-50 text-amber-700 sm:h-12 sm:w-12 sm:rounded-2xl">
-                    <Wand2 className="h-5 w-5 sm:h-6 sm:w-6" />
-                  </div>
-
-                  <div>
-                    <div className="flex flex-wrap items-center gap-2">
-                      <h3 className="text-base font-bold text-slate-900 sm:text-xl">
-                        Birth Chart Remedy Report
-                      </h3>
-                      <span className="rounded-full bg-emerald-50 px-2 py-0.5 text-[9px] font-bold uppercase tracking-wider text-emerald-700 sm:text-[10px]">
-                        Live
-                      </span>
-                    </div>
-
-                    <p className="mt-1 text-xs leading-relaxed text-slate-700 sm:mt-1.5 sm:text-sm">
-                      Get gemstone, mantra, and dosha remedy guidance — Sadhe-Sati, Mangalik Dosha, Kaal-Sarp Yoga, and more.
-                    </p>
-
-                    <div className="mt-3 flex flex-wrap gap-1.5 text-[11px] font-semibold">
-                      <span className="inline-flex items-center gap-1 rounded-full bg-amber-50 px-2.5 py-1 text-amber-700">
-                        <Sparkles className="h-3 w-3" />
-                        Free preview
-                      </span>
-                      <span className="inline-flex items-center rounded-full bg-orange-50 px-2.5 py-1 text-orange-800">
-                        ₹49 full report
-                      </span>
-                    </div>
-                  </div>
-                </div>
-
-                <div className="flex justify-end border-t border-slate-100 pt-2">
-                  <span className="inline-flex items-center gap-1.5 text-xs font-bold text-amber-700 group-hover:text-amber-900 sm:text-sm">
-                    Generate report
-                    <ArrowRight className="h-3.5 w-3.5 transition group-hover:translate-x-1 sm:h-4 sm:w-4" />
-                  </span>
-                </div>
-              </div>
-            </Link>
-          </div>
-        </section>
 
         {/* FAQ Section */}
         <section className="mt-12 sm:mt-16">
@@ -347,78 +443,7 @@ export default function HomeClient() {
         </section>
       </main>
       <Footer />
-
-      {/* Coming Soon Voting Modal */}
-      {isModalOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/40 p-4 backdrop-blur-sm">
-          <div className="relative w-full max-w-md rounded-3xl border border-rose-100 bg-white p-6 shadow-2xl sm:p-8">
-            <button
-              onClick={() => setIsModalOpen(false)}
-              className="absolute right-4 top-4 flex h-8 w-8 items-center justify-center rounded-full text-slate-400 hover:bg-slate-100 hover:text-slate-600"
-            >
-              <X className="h-5 w-5" />
-            </button>
-
-            <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-2xl bg-rose-50 text-rose-600">
-              <Heart className="h-6 w-6" />
-            </div>
-
-            <div className="mt-4 text-center">
-              <span className="rounded-full bg-rose-50 px-3 py-1 text-[10px] font-bold uppercase tracking-wider text-rose-600">
-                Coming Soon
-              </span>
-              <h3 className="mt-2 text-xl font-black text-slate-900 sm:text-2xl">
-                Love & Marriage Astrologer
-              </h3>
-              <p className="mt-2 text-xs leading-relaxed text-slate-700 sm:text-sm">
-                We are currently training our specialized love and compatibility engine. Help us prioritize this feature!
-              </p>
-            </div>
-
-            <div className="mt-6 rounded-2xl bg-rose-50/50 p-4 border border-rose-100 text-center">
-              <p className="text-xs font-bold text-slate-800">
-                Should we release this next?
-              </p>
-
-              {!hasVoted ? (
-                <button
-                  onClick={handleVote}
-                  disabled={isVoting || voteCount === null}
-                  className="mt-3 inline-flex w-full items-center justify-center gap-2 rounded-xl bg-rose-600 px-4 py-3 text-xs font-bold text-white shadow-md transition hover:bg-rose-700 disabled:cursor-not-allowed disabled:opacity-70 sm:text-sm"
-                >
-                  <ThumbsUp className="h-4 w-4" />
-                  {isVoting ? 'Recording vote...' : 'Yes, launch this next!'}
-                </button>
-              ) : (
-                <div className="mt-3 flex items-center justify-center gap-2 text-xs font-bold text-emerald-700 bg-emerald-50 py-2.5 px-4 rounded-xl border border-emerald-200">
-                  <CheckCircle2 className="h-4 w-4 shrink-0" />
-                  Vote recorded! Thanks for your input.
-                </div>
-              )}
-
-              <div className="mt-4 flex items-center justify-between text-[11px] font-semibold text-slate-700">
-                <span>Total Community Votes</span>
-                <span className="text-rose-600 font-bold">
-                  {voteCount === null ? '...' : voteCount.toLocaleString()} votes
-                </span>
-              </div>
-              <div className="mt-1.5 h-2 w-full rounded-full bg-slate-200 overflow-hidden">
-                <div
-                  className="h-full bg-rose-500 rounded-full transition-all duration-500"
-                  style={{ width: voteCount ? `${Math.min(100, (voteCount / 1500) * 100)}%` : '0%' }}
-                />
-              </div>
-            </div>
-
-            <button
-              onClick={() => setIsModalOpen(false)}
-              className="mt-6 w-full text-center text-xs font-bold text-slate-500 hover:text-slate-800"
-            >
-              Close
-            </button>
-          </div>
-        </div>
-      )}
+      <BottomNav />
     </div>
   );
 }

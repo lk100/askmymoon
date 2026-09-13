@@ -2,6 +2,7 @@ import './globals.css';
 import Script from 'next/script';
 import { Analytics } from '@vercel/analytics/next';
 import { Cormorant_Garamond, DM_Sans } from 'next/font/google';
+import BottomNav from './components/BottomNav';
 
 const displayFont = Cormorant_Garamond({
   subsets: ['latin'],
@@ -88,7 +89,7 @@ export default function RootLayout({ children }) {
         </>
       )}
       <body
-        className={`${displayFont.variable} ${bodyFont.variable} bg-slate-950 text-slate-100 antialiased overflow-x-hidden`}
+        className={`${displayFont.variable} ${bodyFont.variable} bg-slate-950 text-slate-100 antialiased overflow-x-hidden pb-16 sm:pb-0`}
         suppressHydrationWarning={true}
       >
         {/* Overrides standard framework fallback text for Googlebot */}
@@ -99,6 +100,7 @@ export default function RootLayout({ children }) {
           </div>
         </noscript>
         {children}
+        <BottomNav />
         <Analytics />
       </body>
     </html>

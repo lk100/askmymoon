@@ -6,8 +6,6 @@ import { ArrowRight, CheckCircle2, Gift, Loader2, MapPin, Sparkles } from 'lucid
 import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
 import { calculateNumerology } from '@/lib/numerology';
-
-import { fromZonedTime } from 'date-fns-tz';
 import { getBirthTimeZone } from '@/lib/birthTime';
 
 const DEFAULT_TIME = { hour: '', minute: '', meridiem: 'AM' };
@@ -85,13 +83,11 @@ export default function NumerologyClient() {
     const normalizedName = formData.name.trim();
     const results = calculateNumerology(normalizedName, formData.dob);
     const timeZone = formData.timeZone || getBirthTimeZone(formData.lat, formData.lon);
-    const dateObj = fromZonedTime(`${formData.dob}T${formData.time}:00`, timeZone);
-    
+
     localStorage.setItem('astro_numerology_data', JSON.stringify({
       ...formData,
       name: normalizedName,
       timeZone,
-      ...chartResults,
       results,
     }));
     router.push('/numerology/report');
@@ -123,7 +119,6 @@ export default function NumerologyClient() {
                 </div>
               ))}
             </div>
-
           </div>
 
           <div id="numerology-form" className="rounded-2xl border border-violet-100 bg-white p-4 shadow-sm sm:rounded-3xl sm:p-7">
@@ -168,7 +163,12 @@ export default function NumerologyClient() {
                 <div className="rounded-xl border border-violet-100 bg-white p-3">
                   <p className="text-[10px] font-bold uppercase tracking-wide text-slate-500">Challenge Numbers</p>
                   <div className="mt-2 grid gap-2 sm:grid-cols-2">
-                    {[['1st', numerologyResults.challengeOne], ['2nd', numerologyResults.challengeTwo], ['3rd', numerologyResults.challengeThree], ['4th', numerologyResults.challengeFour]].map(([label, result]) => (
+                    {[
+                      ['1st', numerologyResults.challengeOne],
+                      ['2nd', numerologyResults.challengeTwo],
+                      ['3rd', numerologyResults.challengeThree],
+                      ['4th', numerologyResults.challengeFour],
+                    ].map(([label, result]) => (
                       <div key={label} className="rounded-lg bg-[#F8F7FC] p-2">
                         <div className="flex items-center gap-2">
                           <span className="text-[9px] font-semibold text-slate-500">{label}</span>

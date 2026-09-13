@@ -103,7 +103,6 @@ export default async function BlogPostPage({ params }) {
         dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }}
       />
 
-      <Navbar ctaLabel="Generate Report" ctaHref="/#birth-form" />
 
       <main className="mx-auto max-w-4xl px-3 py-8 sm:px-6 lg:py-16">
         <article className="rounded-2xl border border-violet-100 bg-white p-4 shadow-sm sm:rounded-[32px] sm:p-8 lg:p-12">

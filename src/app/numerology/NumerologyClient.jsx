@@ -95,7 +95,6 @@ export default function NumerologyClient() {
 
   return (
     <div className="min-h-screen bg-[#F7F5FB] text-[#26233D] antialiased">
-      <Navbar ctaLabel="Astrology Report" ctaHref="/#birth-form" />
 
       <main className="mx-auto max-w-6xl px-3.5 py-6 sm:px-6 sm:py-10">
         <section className="flex flex-col gap-6 lg:gap-10">

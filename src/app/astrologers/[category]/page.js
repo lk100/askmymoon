@@ -500,7 +500,7 @@
 
     return (
       <div className="min-h-screen bg-[#F7F5FB] text-[#26233D]">
-        <Navbar ctaLabel="Astrologers" ctaHref="/astrologers" />
+        
         <main className={`mx-auto ${chart ? 'h-[calc(100vh-4rem)] max-w-none overflow-hidden px-0 py-0' : 'max-w-6xl px-4 py-6 sm:px-6 sm:py-10 lg:py-14'}`}>
           {!chart && (
             <div className="mb-8 max-w-3xl sm:mb-10">

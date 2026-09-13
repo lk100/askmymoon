@@ -34,7 +34,6 @@ export default function BlogIndexPage() {
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }}
       />
-      <Navbar ctaLabel="Generate Report" ctaHref="/#birth-form" />
 
       <main className="mx-auto max-w-6xl px-4 py-8 sm:px-6 sm:py-10 lg:py-14">
         <section className="border-b border-[#E8E0F5] pb-8 sm:pb-10">

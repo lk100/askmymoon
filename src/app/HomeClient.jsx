@@ -99,7 +99,7 @@ export default function HomeClient() {
 
   return (
     <div className="min-h-screen bg-[#F7F5FB] text-[#1C1A2E]">
-      <Navbar ctaLabel="Birth chart remedies" ctaHref="/astrologers/remedy" />
+
       <main className="mx-auto max-w-7xl px-4 py-4 sm:px-6 sm:py-10 lg:py-14">
 
         {/* Hero Section */}
@@ -166,7 +166,7 @@ export default function HomeClient() {
               {/* CTA — desktop */}
               <div className="mt-6 hidden sm:mt-8 lg:block">
                 <Link
-                  href="/astrologers/career"
+                  href="/astrologers"
                   className="inline-flex items-center gap-2 rounded-full bg-purple-300 px-7 py-4 text-sm font-bold text-slate-900 shadow-[0_10px_25px_rgba(217,169,32,0.35)] transition hover:-translate-y-0.5 hover:bg-purple-400 sm:text-base"
                 >
                   Start Chat
@@ -205,7 +205,7 @@ export default function HomeClient() {
           </div>
 
           {/* Live activity ticker — desktop only */}
-          <div className="relative z-10 mt-8 hidden border-t border-slate-200/70 py-3 lg:block">
+          {/* <div className="relative z-10 mt-8 border-t border-slate-200/70 py-3">
             <div className="overflow-hidden" style={{
               maskImage: 'linear-gradient(to right, transparent, black 5%, black 95%, transparent)',
               WebkitMaskImage: 'linear-gradient(to right, transparent, black 5%, black 95%, transparent)',
@@ -224,12 +224,12 @@ export default function HomeClient() {
                 ])}
               </div>
             </div>
-          </div>
+          </div> */}
         </section>
 
         {/* Horoscope Section */}
         <section className="mt-12 sm:mt-16">
-          <div className="mb-8 flex flex-col gap-6 sm:mb-10 lg:flex-row lg:items-end lg:justify-between">
+          <div className="mb-8 flex flex-col gap-6 sm:mb-8 lg:flex-row lg:items-end lg:justify-between">
             <div>
               <p className="text-[11px] font-bold uppercase tracking-[0.2em] text-purple-700 sm:text-xs">
                 CHECK HOROSCOPE

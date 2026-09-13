@@ -2,6 +2,7 @@ import './globals.css';
 import Script from 'next/script';
 import { Analytics } from '@vercel/analytics/next';
 import { Cormorant_Garamond, DM_Sans } from 'next/font/google';
+import Navbar from './components/Navbar';
 import BottomNav from './components/BottomNav';
 
 const displayFont = Cormorant_Garamond({
@@ -29,11 +30,8 @@ export const metadata = {
   },
   description: 'Instant Vedic astrology remedy tool for birth charts, dosha analysis, mantras, and personalized spiritual guidance.',
   keywords: [
-    // Brand
     'AskMyMoon',
     'AskMyMoon astrology',
-
-    // Core / generic astrology
     'Vedic astrology',
     'astrology tool',
     'online astrology',
@@ -44,8 +42,6 @@ export const metadata = {
     'astrology consultation online',
     'spiritual guidance',
     'spiritual remedy tool',
-
-    // Free / remedy focused
     'free Vedic astrology remedies',
     'free astrology consultation',
     'free kundli reading',
@@ -56,8 +52,6 @@ export const metadata = {
     'astrological remedies',
     'mantra remedies',
     'gemstone remedies astrology',
-
-    // Birth chart / kundli
     'birth chart reading',
     'kundli analysis',
     'janam kundli',
@@ -66,59 +60,41 @@ export const metadata = {
     'kundli matching',
     'kundli by date of birth',
     'birth chart remedies',
-
-    // Dosha analysis
     'dosha analysis',
     'mangal dosha',
     'kaal sarp dosha',
     'shani dosha',
     'nadi dosha',
     'dosha remedies',
-
-    // Category-specific: career
     'career astrology',
     'career astrology consultation',
     'job astrology prediction',
     'career horoscope',
-
-    // Category-specific: love & marriage
     'love astrology',
     'marriage astrology',
     'relationship compatibility astrology',
     'love marriage prediction',
     'partner compatibility kundli',
-
-    // Category-specific: business & money
     'business astrology',
     'money astrology',
     'wealth astrology prediction',
     'financial astrology guidance',
-
-    // Category-specific: health & family
     'health astrology',
     'family astrology guidance',
     'astrology for family wellbeing',
-
-    // Astrologer / consultation intent
     'talk to astrologer online',
     'chat with astrologer',
     'live astrology chat',
     'instant astrological insights',
     'online Vedic astrology platform',
     'astrology predictions online',
-
-    // Planetary / dasha
     'planetary positions astrology',
     'mahadasha antardasha',
     'dasha analysis',
     'navgraha remedies',
-
-    // Numerology (if this is on your site, per your file tree)
     'numerology reading',
     'numerology calculator',
     'name numerology',
-
-    // India-specific search intent
     'astrology India',
     'Indian astrology online',
     'Hindi astrology guidance',
@@ -176,13 +152,14 @@ export default function RootLayout({ children }) {
         className={`${displayFont.variable} ${bodyFont.variable} bg-slate-950 text-slate-100 antialiased overflow-x-hidden pb-16 sm:pb-0`}
         suppressHydrationWarning={true}
       >
-        {/* Overrides standard framework fallback text for Googlebot */}
         <noscript>
           <div style={{ padding: '20px', textAlign: 'center' }}>
             <h1>AskMyMoon - Online Vedic Astrology & Spiritual Remedy Tool</h1>
             <p>Generate instant astrology reports, birth chart remedies, dosha analysis, and spiritual guidance.</p>
           </div>
         </noscript>
+        <Navbar />
+        <div style={{ height: 'var(--navbar-height)' }} aria-hidden="true" />
         {children}
         <BottomNav />
         <Analytics />

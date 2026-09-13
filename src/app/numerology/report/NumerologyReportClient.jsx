@@ -51,7 +51,7 @@ export default function NumerologyReportClient() {
 
   return (
     <div className="min-h-screen bg-[#F7F5FB] text-[#26233D] antialiased">
-      <Navbar ctaLabel="New Calculation" ctaHref="/numerology" />
+      
       <main className="mx-auto max-w-6xl px-3.5 py-6 sm:px-6 sm:py-10">
         <div className="mb-5 flex items-center justify-between gap-3">
           <Link href="/numerology" className="inline-flex items-center gap-2 text-xs font-semibold text-slate-600 hover:text-violet-900">

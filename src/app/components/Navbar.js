@@ -64,8 +64,34 @@ export default function Navbar({
   const [isProfileOpen, setIsProfileOpen] = useState(false);
   const [isMobileProfileOpen, setIsMobileProfileOpen] = useState(false);
   const [showAuthModal, setShowAuthModal] = useState(false);
+  const [isScrolled, setIsScrolled] = useState(false);
   const profileRef = useRef(null);
   const mobileProfileRef = useRef(null);
+  const headerRef = useRef(null);
+
+  // Flip once the page scrolls past a small threshold — this drives the
+  // transparent -> frosted-glass swap, on every breakpoint.
+  useEffect(() => {
+    const handleScroll = () => setIsScrolled(window.scrollY > 8);
+    handleScroll(); // correct on mount if the page loads already scrolled
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
+
+  // Publish the real rendered header height as a CSS var so the layout can
+  // reserve exactly that much space right after <Navbar />. Needed because
+  // the header is `fixed` and therefore out of normal document flow.
+  useEffect(() => {
+    const setVar = () => {
+      document.documentElement.style.setProperty(
+        '--navbar-height',
+        `${headerRef.current?.offsetHeight || 0}px`
+      );
+    };
+    setVar();
+    window.addEventListener('resize', setVar);
+    return () => window.removeEventListener('resize', setVar);
+  }, []);
 
   // Site-wide auth state — Supabase Auth cookies are shared across every
   // page/route on the domain, so signing in here (or on any astrologer page)
@@ -122,13 +148,21 @@ export default function Navbar({
   };
 
   return (
-    <header className={`relative z-40 w-full border-b border-violet-100 bg-[#F7F5FB]/95 backdrop-blur ${className}`}>
+    <header
+      ref={headerRef}
+      className={`fixed top-0 left-0 z-40 w-full transition-all duration-300 ${isScrolled
+        ? 'border-b border-violet-100/80 bg-white/80 backdrop-blur-md shadow-sm'
+        : 'border-b border-transparent bg-transparent backdrop-blur-0'
+        } ${className}`}
+    >
       <div className="mx-auto max-w-6xl px-3 sm:px-6">
         <div className="relative flex min-h-14 items-center justify-between gap-4 sm:min-h-[64px]">
-          <Link href="/" aria-label="AskMyMoon home" className="flex items-center">
+          <Link href="/" aria-label="AskMyMoon home" className="flex items-center gap-2">
             <BrandLogo />
+            <span className="font-sans text-lg font-bold tracking-tight text-slate-600 sm:text-xl">
+              AskMyMoon
+            </span>
           </Link>
-
           <nav className="absolute left-1/2 hidden -translate-x-1/2 items-center gap-6 text-[13px] font-semibold text-slate-700 md:flex">
             <div className="relative">
               <button
@@ -225,8 +259,9 @@ export default function Navbar({
             {/* Header row: logo + close only — no dropdown here, so nothing
                 gets clipped by the panel's overflow-y-auto. */}
             <div className="flex items-center justify-between border-b border-violet-100 pb-4">
-              <Link href="/" aria-label="AskMyMoon home" onClick={() => setIsOpen(false)}>
+              <Link href="/" aria-label="AskMyMoon home" onClick={() => setIsOpen(false)} className="flex items-center gap-2">
                 <BrandLogo />
+                <span className="font-sans font-bold text-slate-900">AskMyMoon</span>
               </Link>
               <div className="flex items-center gap-2">
                 <div className="relative" ref={mobileProfileRef}>

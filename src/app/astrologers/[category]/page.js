@@ -547,7 +547,7 @@
                   <div className="grid gap-4 sm:grid-cols-2">
                     <label className="sm:col-span-2">
                       <span className="mb-1 block text-xs font-bold uppercase tracking-wider text-slate-700">Full name</span>
-                      <input required value={form.name} onChan  ge={(event) => setForm({ ...form, name: event.target.value })} className="w-full rounded-xl border border-violet-100 bg-[#F8F7FC] px-4 py-3 text-sm outline-none focus:border-violet-500" placeholder="e.g. Rahul Sharma" />
+                      <input required value={form.name} onChange  ge={(event) => setForm({ ...form, name: event.target.value })} className="w-full rounded-xl border border-violet-100 bg-[#F8F7FC] px-4 py-3 text-sm outline-none focus:border-violet-500" placeholder="e.g. Rahul Sharma" />
                     </label>
                     <label>
                       <span className="mb-1 block text-xs font-bold uppercase tracking-wider text-slate-700">Date of birth</span>

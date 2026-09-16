@@ -1,7 +1,8 @@
-'use client';
+  'use client';
 
 import { useState } from 'react';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import BottomNav from './components/BottomNav';
 import { HOROSCOPE_DATA, CATEGORY_LABELS } from '@/data/horoscopeData';
 import {
@@ -31,6 +32,7 @@ function getScoreLabel(score) {
   if (score <= 8) return 'Good';
   return 'Strong';
 }
+
 const SIGN_SYMBOLS = {
   Aries: '♈',
   Taurus: '♉',
@@ -90,11 +92,21 @@ const faqs = [
 ];
 
 export default function HomeClient() {
+  const router = useRouter();
   const [openFaq, setOpenFaq] = useState(null);
   const [activeSign, setActiveSign] = useState('Leo');
   const [activeTimeframe, setActiveTimeframe] = useState('today');
+
   const toggleFaq = (index) => {
     setOpenFaq(openFaq === index ? null : index);
+  };
+
+  const handleGetDetailedHoroscope = (sign, timeframe) => {
+    router.push(`/horoscope/${sign.toLowerCase()}?timeframe=${timeframe}`);
+  };
+
+  const handleChatWithSpecialist = (sign) => {
+    router.push(`/astrologer/love`); // or whichever category page fits, or open your chat modal
   };
 
   return (
@@ -190,12 +202,10 @@ export default function HomeClient() {
               ))}
             </div>
 
-
-
             {/* Mobile-only CTA */}
             <div className="sm:hidden">
               <Link
-                href="/astrologers/career"
+                href="/astrologers"
                 className="inline-flex w-full items-center justify-center gap-2 rounded-full bg-purple-300 px-6 py-3.5 text-sm font-bold text-slate-900 shadow-[0_8px_20px_rgba(217,169,32,0.3)] transition active:scale-[0.98]"
               >
                 Start Chat
@@ -203,28 +213,6 @@ export default function HomeClient() {
               </Link>
             </div>
           </div>
-
-          {/* Live activity ticker — desktop only */}
-          {/* <div className="relative z-10 mt-8 border-t border-slate-200/70 py-3">
-            <div className="overflow-hidden" style={{
-              maskImage: 'linear-gradient(to right, transparent, black 5%, black 95%, transparent)',
-              WebkitMaskImage: 'linear-gradient(to right, transparent, black 5%, black 95%, transparent)',
-            }}>
-              <div className="ticker-track flex w-max items-center gap-2 whitespace-nowrap text-xs text-slate-600">
-                {[
-                  <>Priya from Mumbai booked Saturn puja with <strong className="text-purple-700">Pt. Ram Naresh</strong> · just now</>,
-                  <>Neha from Hyderabad got her Kundli read by <strong className="text-purple-700">Saanvi Sharma</strong> · 4 min ago</>,
-                  <>Amit from Delhi consulted about career with <strong className="text-purple-700">Guru Devraj</strong> · 7 min ago</>,
-                ].flatMap((item, i) => [
-                  <span key={`item-${i}`} className="inline-flex items-center gap-2 px-3">
-                    <span className="h-1.5 w-1.5 rounded-full bg-purple-500" />
-                    {item}
-                  </span>,
-                  <span key={`sep-${i}`} className="text-slate-300">+</span>,
-                ])}
-              </div>
-            </div>
-          </div> */}
         </section>
 
         {/* Horoscope Section */}
@@ -249,7 +237,6 @@ export default function HomeClient() {
                   { key: 'today', label: 'Today' },
                   { key: 'tomorrow', label: 'Tomorrow' },
                   { key: 'monthly', label: 'Monthly' },
-
                 ].map((tf) => (
                   <button
                     key={tf.key}
@@ -319,7 +306,6 @@ export default function HomeClient() {
               <div className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm sm:rounded-3xl sm:p-8">
                 <div className="flex flex-col gap-4 border-b border-slate-100 pb-5 sm:flex-row sm:items-center sm:justify-between">
                   <div className="flex items-center gap-3">
-                    {/* Circular badge displaying the zodiac glyph */}
                     <div className="flex h-11 w-11 items-center justify-center rounded-full bg-violet-100 text-xl font-black text-violet-700">
                       {SIGN_SYMBOLS[activeSign] || activeSign.slice(0, 2)}
                     </div>
@@ -370,6 +356,23 @@ export default function HomeClient() {
                         </div>
                       </div>
                     )}
+
+                    <div className="mt-6 flex flex-col gap-2.5 sm:flex-row sm:gap-3">
+                      <button
+                        type="button"
+                        onClick={() => handleGetDetailedHoroscope(activeSign, activeTimeframe)}
+                        className="inline-flex items-center justify-center rounded-full bg-violet-700 px-5 py-2.5 text-xs font-bold text-white transition hover:bg-violet-800 sm:text-sm"
+                      >
+                        Get detailed horoscope
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => handleChatWithSpecialist(activeSign)}
+                        className="inline-flex items-center justify-center rounded-full border border-violet-200 bg-violet-50 px-5 py-2.5 text-xs font-bold text-violet-700 transition hover:bg-violet-100 sm:text-sm"
+                      >
+                        Chat with specialist
+                      </button>
+                    </div>
                   </div>
 
                   {/* Score Box - Right Side on Desktop */}
@@ -401,7 +404,6 @@ export default function HomeClient() {
             );
           })()}
         </section>
-
 
         {/* FAQ Section */}
         <section className="mt-12 sm:mt-16">

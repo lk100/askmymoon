@@ -10,18 +10,18 @@
 // Shared, sign-level metadata (used across all timeframes for a sign)
 // ---------------------------------------------------------------------------
 export const ZODIAC_META = {
-  Aries:       { hindiName: 'Mesh',     dateRange: 'Mar 21 – Apr 19', symbol: '♈', rulingPlanet: 'Mars' },
-  Taurus:      { hindiName: 'Vrishabh', dateRange: 'Apr 20 – May 20', symbol: '♉', rulingPlanet: 'Venus' },
-  Gemini:      { hindiName: 'Mithun',   dateRange: 'May 21 – Jun 20', symbol: '♊', rulingPlanet: 'Mercury' },
-  Cancer:      { hindiName: 'Kark',     dateRange: 'Jun 21 – Jul 22', symbol: '♋', rulingPlanet: 'Moon' },
-  Leo:         { hindiName: 'Singh',    dateRange: 'Jul 23 – Aug 22', symbol: '♌', rulingPlanet: 'Sun' },
-  Virgo:       { hindiName: 'Kanya',    dateRange: 'Aug 23 – Sep 22', symbol: '♍', rulingPlanet: 'Mercury' },
-  Libra:       { hindiName: 'Tula',     dateRange: 'Sep 23 – Oct 22', symbol: '♎', rulingPlanet: 'Venus' },
-  Scorpio:     { hindiName: 'Vrishchik',dateRange: 'Oct 23 – Nov 21', symbol: '♏', rulingPlanet: 'Mars/Pluto' },
-  Sagittarius: { hindiName: 'Dhanu',    dateRange: 'Nov 22 – Dec 21', symbol: '♐', rulingPlanet: 'Jupiter' },
-  Capricorn:   { hindiName: 'Makar',    dateRange: 'Dec 22 – Jan 19', symbol: '♑', rulingPlanet: 'Saturn' },
-  Aquarius:    { hindiName: 'Kumbh',    dateRange: 'Jan 20 – Feb 18', symbol: '♒', rulingPlanet: 'Saturn/Uranus' },
-  Pisces:      { hindiName: 'Meen',     dateRange: 'Feb 19 – Mar 20', symbol: '♓', rulingPlanet: 'Jupiter/Neptune' },
+  Aries: { dateRange: 'Mar 21 – Apr 19', symbol: '♈', rulingPlanet: 'Mars' },
+  Taurus: { dateRange: 'Apr 20 – May 20', symbol: '♉', rulingPlanet: 'Venus' },
+  Gemini: { dateRange: 'May 21 – Jun 20', symbol: '♊', rulingPlanet: 'Mercury' },
+  Cancer: { dateRange: 'Jun 21 – Jul 22', symbol: '♋', rulingPlanet: 'Moon' },
+  Leo: { dateRange: 'Jul 23 – Aug 22', symbol: '♌', rulingPlanet: 'Sun' },
+  Virgo: { dateRange: 'Aug 23 – Sep 22', symbol: '♍', rulingPlanet: 'Mercury' },
+  Libra: { dateRange: 'Sep 23 – Oct 22', symbol: '♎', rulingPlanet: 'Venus' },
+  Scorpio: { dateRange: 'Oct 23 – Nov 21', symbol: '♏', rulingPlanet: 'Mars' },
+  Sagittarius: { dateRange: 'Nov 22 – Dec 21', symbol: '♐', rulingPlanet: 'Jupiter' },
+  Capricorn: { dateRange: 'Dec 22 – Jan 19', symbol: '♑', rulingPlanet: 'Saturn' },
+  Aquarius: { dateRange: 'Jan 20 – Feb 18', symbol: '♒', rulingPlanet: 'Saturn' },
+  Pisces: { dateRange: 'Feb 19 – Mar 20', symbol: '♓', rulingPlanet: 'Jupiter' },
 };
 
 // ---------------------------------------------------------------------------
@@ -29,18 +29,18 @@ export const ZODIAC_META = {
 // copy distinct instead of interchangeable filler.
 // ---------------------------------------------------------------------------
 const SIGN_TRAITS = {
-  Aries:       { element: 'fire',  transitPlanet: 'Mars',    focus: 'a burst of initiative', caution: 'impatience with slower colleagues', strength: 'decisive action', colors: [{ hex: '#DC2626', name: 'Red' }, { hex: '#F97316', name: 'Orange' }], numbers: [9, 1] },
-  Taurus:      { element: 'earth', transitPlanet: 'Venus',   focus: 'steady, grounded progress', caution: 'digging in out of stubbornness', strength: 'patience and follow-through', colors: [{ hex: '#16A34A', name: 'Green' }, { hex: '#EAB308', name: 'Gold' }], numbers: [6, 2] },
-  Gemini:      { element: 'air',   transitPlanet: 'Mercury', focus: 'conversations and quick thinking', caution: 'scattering your energy across too much', strength: 'adaptability', colors: [{ hex: '#FACC15', name: 'Yellow' }, { hex: '#38BDF8', name: 'Sky Blue' }], numbers: [5, 3] },
-  Cancer:      { element: 'water', transitPlanet: 'the Moon',focus: 'home, family and emotional security', caution: 'withdrawing instead of speaking up', strength: 'intuition', colors: [{ hex: '#E5E7EB', name: 'Silver' }, { hex: '#BFDBFE', name: 'Pale Blue' }], numbers: [2, 7] },
-  Leo:         { element: 'fire',  transitPlanet: 'the Sun', focus: 'confidence and recognition', caution: 'letting pride crowd out compromise', strength: 'warmth and leadership', colors: [{ hex: '#EAB308', name: 'Yellow' }, { hex: '#DC2626', name: 'Red' }], numbers: [1, 3] },
-  Virgo:       { element: 'earth', transitPlanet: 'Mercury', focus: 'organisation and practical fixes', caution: 'over-analysing small details', strength: 'precision', colors: [{ hex: '#16A34A', name: 'Green' }, { hex: '#A16207', name: 'Earthy Brown' }], numbers: [5, 6] },
-  Libra:       { element: 'air',   transitPlanet: 'Venus',   focus: 'balance and partnership', caution: 'avoiding a decision to keep the peace', strength: 'diplomacy', colors: [{ hex: '#F9A8D4', name: 'Pastel Pink' }, { hex: '#93C5FD', name: 'Powder Blue' }], numbers: [6, 9] },
-  Scorpio:     { element: 'water', transitPlanet: 'Mars',    focus: 'depth and transformation', caution: 'holding onto old grudges', strength: 'resolve', colors: [{ hex: '#7F1D1D', name: 'Maroon' }, { hex: '#000000', name: 'Black' }], numbers: [8, 4] },
-  Sagittarius: { element: 'fire',  transitPlanet: 'Jupiter', focus: 'expansion and honesty', caution: 'overpromising in the moment', strength: 'optimism', colors: [{ hex: '#7C3AED', name: 'Purple' }, { hex: '#2563EB', name: 'Royal Blue' }], numbers: [3, 9] },
-  Capricorn:   { element: 'earth', transitPlanet: 'Saturn',  focus: 'discipline and long-term goals', caution: 'working so hard you skip rest', strength: 'reliability', colors: [{ hex: '#1F2937', name: 'Charcoal' }, { hex: '#A16207', name: 'Brown' }], numbers: [8, 10] },
-  Aquarius:    { element: 'air',   transitPlanet: 'Saturn',  focus: 'fresh ideas and community', caution: 'detaching from those closest to you', strength: 'originality', colors: [{ hex: '#0891B2', name: 'Turquoise' }, { hex: '#6366F1', name: 'Electric Blue' }], numbers: [4, 11] },
-  Pisces:      { element: 'water', transitPlanet: 'Neptune', focus: 'imagination and compassion', caution: 'avoiding a hard conversation', strength: 'empathy', colors: [{ hex: '#22D3EE', name: 'Sea Green' }, { hex: '#C4B5FD', name: 'Lavender' }], numbers: [7, 12] },
+  Aries: { element: 'fire', transitPlanet: 'Mars', focus: 'a burst of initiative', caution: 'impatience with slower colleagues', strength: 'decisive action', colors: [{ hex: '#DC2626', name: 'Red' }, { hex: '#F97316', name: 'Orange' }], numbers: [9, 1] },
+  Taurus: { element: 'earth', transitPlanet: 'Venus', focus: 'steady, grounded progress', caution: 'digging in out of stubbornness', strength: 'patience and follow-through', colors: [{ hex: '#16A34A', name: 'Green' }, { hex: '#EAB308', name: 'Gold' }], numbers: [6, 2] },
+  Gemini: { element: 'air', transitPlanet: 'Mercury', focus: 'conversations and quick thinking', caution: 'scattering your energy across too much', strength: 'adaptability', colors: [{ hex: '#FACC15', name: 'Yellow' }, { hex: '#38BDF8', name: 'Sky Blue' }], numbers: [5, 3] },
+  Cancer: { element: 'water', transitPlanet: 'Moon', focus: 'home, family and emotional security', caution: 'withdrawing instead of speaking up', strength: 'intuition', colors: [{ hex: '#E5E7EB', name: 'Silver' }, { hex: '#BFDBFE', name: 'Pale Blue' }], numbers: [2, 7] },
+  Leo: { element: 'fire', transitPlanet: 'Sun', focus: 'confidence and recognition', caution: 'letting pride crowd out compromise', strength: 'warmth and leadership', colors: [{ hex: '#EAB308', name: 'Yellow' }, { hex: '#DC2626', name: 'Red' }], numbers: [1, 3] },
+  Virgo: { element: 'earth', transitPlanet: 'Mercury', focus: 'organisation and practical fixes', caution: 'over-analysing small details', strength: 'precision', colors: [{ hex: '#16A34A', name: 'Green' }, { hex: '#A16207', name: 'Earthy Brown' }], numbers: [5, 6] },
+  Libra: { element: 'air', transitPlanet: 'Venus', focus: 'balance and partnership', caution: 'avoiding a decision to keep the peace', strength: 'diplomacy', colors: [{ hex: '#F9A8D4', name: 'Pastel Pink' }, { hex: '#93C5FD', name: 'Powder Blue' }], numbers: [6, 9] },
+  Scorpio: { element: 'water', transitPlanet: 'Mars', focus: 'depth and transformation', caution: 'holding onto old grudges', strength: 'resolve', colors: [{ hex: '#7F1D1D', name: 'Maroon' }, { hex: '#000000', name: 'Black' }], numbers: [8, 4] },
+  Sagittarius: { element: 'fire', transitPlanet: 'Jupiter', focus: 'expansion and honesty', caution: 'overpromising in the moment', strength: 'optimism', colors: [{ hex: '#7C3AED', name: 'Purple' }, { hex: '#2563EB', name: 'Royal Blue' }], numbers: [3, 9] },
+  Capricorn: { element: 'earth', transitPlanet: 'Saturn', focus: 'discipline and long-term goals', caution: 'working so hard you skip rest', strength: 'reliability', colors: [{ hex: '#1F2937', name: 'Charcoal' }, { hex: '#A16207', name: 'Brown' }], numbers: [8, 10] },
+  Aquarius: { element: 'air', transitPlanet: 'Saturn', focus: 'fresh ideas and community', caution: 'detaching from those closest to you', strength: 'originality', colors: [{ hex: '#0891B2', name: 'Turquoise' }, { hex: '#6366F1', name: 'Electric Blue' }], numbers: [4, 11] },
+  Pisces: { element: 'water', transitPlanet: 'Jupiter', focus: 'imagination and compassion', caution: 'avoiding a hard conversation', strength: 'empathy', colors: [{ hex: '#22D3EE', name: 'Sea Green' }, { hex: '#C4B5FD', name: 'Lavender' }], numbers: [7, 12] },
 };
 
 const AREA_TEMPLATES = {
@@ -57,10 +57,10 @@ function pct(base, offset) {
 
 function buildAreas(traits, seed) {
   return {
-    love:    { percent: pct(70, ((seed * 7) % 4) * 10),  blurb: AREA_TEMPLATES.love(traits) },
-    finance: { percent: pct(60, ((seed * 3) % 5) * 8),   blurb: AREA_TEMPLATES.finance(traits) },
-    career:  { percent: pct(65, ((seed * 5) % 4) * 9),   blurb: AREA_TEMPLATES.career(traits) },
-    health:  { percent: pct(55, ((seed * 2) % 6) * 7),   blurb: AREA_TEMPLATES.health(traits) },
+    love: { percent: pct(70, ((seed * 7) % 4) * 10), blurb: AREA_TEMPLATES.love(traits) },
+    finance: { percent: pct(60, ((seed * 3) % 5) * 8), blurb: AREA_TEMPLATES.finance(traits) },
+    career: { percent: pct(65, ((seed * 5) % 4) * 9), blurb: AREA_TEMPLATES.career(traits) },
+    health: { percent: pct(55, ((seed * 2) % 6) * 7), blurb: AREA_TEMPLATES.health(traits) },
   };
 }
 
@@ -104,11 +104,11 @@ function generateSignData(signName) {
   const seed = signName.length + signName.charCodeAt(0);
   return {
     yesterday: buildDailyBlock(signName, traits, seed + 1, `Looking back, that same energy was already building.`),
-    today:     buildDailyBlock(signName, traits, seed + 2, `Be mindful not to overcommit just because things feel like they're flowing.`),
-    tomorrow:  buildDailyBlock(signName, traits, seed + 3, `Use today to prepare, since tomorrow will ask you to act on it.`),
-    weekly:    buildLongBlock(signName, traits, seed + 4, 'week'),
-    monthly:   buildLongBlock(signName, traits, seed + 5, 'month'),
-    yearly:    buildLongBlock(signName, traits, seed + 6, 'year'),
+    today: buildDailyBlock(signName, traits, seed + 2, `Be mindful not to overcommit just because things feel like they're flowing.`),
+    tomorrow: buildDailyBlock(signName, traits, seed + 3, `Use today to prepare, since tomorrow will ask you to act on it.`),
+    weekly: buildLongBlock(signName, traits, seed + 4, 'week'),
+    monthly: buildLongBlock(signName, traits, seed + 5, 'month'),
+    yearly: buildLongBlock(signName, traits, seed + 6, 'year'),
   };
 }
 
